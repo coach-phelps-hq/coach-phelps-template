@@ -63,8 +63,9 @@ At the end of every session, the coach commits updates to `training/state.md`, `
 | `strava/rename_activities.py` / `rename_core.py` / `rename_single.py` | Rename Strava activities to a consistent naming pattern (dry-run by default) |
 | `scripts/generate_quest_log.py` | Regenerate `training/quest_log.md` |
 | `scripts/generate_quest_history.py` | Regenerate `training/quest_history.json` for the dashboard |
-| `scripts/generate_workouts.py` | Build workout sessions from templates |
 | `scripts/run_sync_pipeline.py` | Full sync pipeline - fetch, rename, regenerate quest data (used by the GitHub Actions workflow) |
+
+Workout templates and sessions are compiled separately, by `ui/scripts/build-data.mjs` - it runs automatically every time you do `npm run dev` or `npm run build` inside `ui/`, so there's nothing to run by hand for those.
 
 ## Multi-agent setup
 

@@ -14,7 +14,7 @@
 
 ## Done (v2)
 - [x] **Automated sync pipeline** — `scripts/run_sync_pipeline.py` + `.github/workflows/sync.yml`, manually triggered by default (`workflow_dispatch`), can be put on a cron schedule per SETUP.md step 8.
-- [x] **Workout template system** — `templates/` folder with generic starter templates (calisthenics, strength, foundation, recovery), `scripts/generate_workouts.py` builds sessions from them.
+- [x] **Workout template system** — `templates/` folder with generic starter templates (calisthenics, strength, foundation, recovery). `ui/scripts/build-data.mjs` compiles templates plus any coach-written `sessions/*.json` overrides into the dashboard's workout data automatically on every `npm run dev`/`build`.
 - [x] **Dashboard on Vercel** — `ui/` deploys via Vercel (`vercel.json`, `ui/api/trigger-sync.ts`), includes three example analytics pages (Badminton/Run/Monthly) as reference implementations.
 - [x] **Activity rename system** — `strava/rename_core.py` + `rename_activities.py` for consistent naming.
 - [x] **Multi-agent setup** — `.github/agents/` (Tech Lead, UI Expert, Bob the Builder) for engineering work on the repo itself, routed via `CLAUDE.md`.
