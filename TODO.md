@@ -18,6 +18,7 @@
 - [x] **Dashboard on Vercel** — `ui/` deploys via Vercel (`vercel.json`, `ui/api/trigger-sync.ts`), includes three example analytics pages (Badminton/Run/Monthly) as reference implementations.
 - [x] **Activity rename system** — `strava/rename_core.py` + `rename_activities.py` for consistent naming.
 - [x] **Multi-agent setup** — `.github/agents/` (Tech Lead, UI Expert, Bob the Builder) for engineering work on the repo itself, routed via `CLAUDE.md`.
+- [x] **HOW_IT_WORKS.md** — conceptual guide explaining Season/Challenge/Quest, the file map, quest types, and dashboard-to-file relationships, so new users understand day-to-day usage rather than just account setup. Also removed `scripts/generate_workouts.py`, a dead/duplicate script that always wrote empty sessions and could silently wipe real session data if run by mistake - `ui/scripts/build-data.mjs` already handles this correctly.
 
 ## P1 — V2 Enhancements
 

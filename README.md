@@ -12,6 +12,8 @@ Coach Phelps is Michael Phelps as a coaching persona: process-obsessed, emotiona
 
 **New here? Start with [SETUP.md](SETUP.md)** - a complete beginner walkthrough covering GitHub repo setup, GitHub tokens, Strava API credentials, and deploying your dashboard to Vercel, with no assumed prior experience.
 
+**Once you're set up, read [HOW_IT_WORKS.md](HOW_IT_WORKS.md)** - explains the concepts (seasons, challenges, quests) and day-to-day workflow, so your first session doesn't feel like a black box.
+
 The quick version, if you've done this kind of thing before:
 
 1. **Use this template** on GitHub, then clone your new repo locally.
