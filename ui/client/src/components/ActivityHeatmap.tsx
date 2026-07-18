@@ -33,8 +33,10 @@ interface DayData {
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const CATEGORY_PRIORITY = [
-  "badminton_ranked", "badminton_friendly", "badminton_league", "badminton_casual",
-  "calisthenics", "foundation", "ride", "run", "recovery", "realign", "other",
+  "badminton_club", "badminton_drills", "badminton_casual",
+  "calisthenics",
+  "run", "swim", "hike", "strength", "weight_training", "foundation", "recovery", "realign",
+  "ride", "walk", "cricket", "football", "workout", "other",
 ];
 
 function buildDayMap(activities: Activity[]): Map<string, DayData> {
@@ -121,7 +123,7 @@ function MonthGrid({ year, month, dayMap }: { year: number; month: number; dayMa
           }
 
           const hours = day.totalSeconds / 3600;
-          const opacity = Math.min(0.4 + (hours / 3) * 0.6, 1.0);
+          const opacity = Math.min(0.4 + (hours / 2) * 0.6, 1.0);
 
           return (
             <Tooltip key={i} delayDuration={0}>

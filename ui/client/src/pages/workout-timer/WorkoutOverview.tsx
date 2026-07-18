@@ -91,13 +91,18 @@ export function WorkoutOverview({
         {/* Phase list */}
         <div className="space-y-4 flex-1">
           {workout.phases.map((phase, pi) => (
-            <div key={pi} className="border-2 border-foreground/10">
-              <div className="px-4 py-2 bg-secondary border-b border-foreground/10">
+            <div key={pi} className={`border-2 ${phase.optional ? "border-amber-300/40" : "border-foreground/10"}`}>
+              <div className={`px-4 py-2 border-b ${phase.optional ? "bg-amber-50/50 border-amber-200/40 dark:bg-amber-900/10 dark:border-amber-700/20" : "bg-secondary border-foreground/10"}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold uppercase tracking-wider">
                       {phase.name}
                     </h3>
+                    {phase.optional && (
+                      <span className="text-[9px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.5 bg-amber-400/20 text-amber-700 dark:text-amber-400 border border-amber-400/30">
+                        optional
+                      </span>
+                    )}
                     {phase.circuit && (
                       <span className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
                         <Repeat className="w-3 h-3" />
@@ -109,6 +114,11 @@ export function WorkoutOverview({
                     {phase.duration}
                   </span>
                 </div>
+                {phase.coaching_note && (
+                  <p className="text-[11px] text-muted-foreground mt-1.5 italic">
+                    {phase.coaching_note}
+                  </p>
+                )}
               </div>
               <div className="divide-y divide-foreground/5">
                 {phase.exercises.map((ex) => (

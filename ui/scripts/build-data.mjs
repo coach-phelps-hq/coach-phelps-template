@@ -24,30 +24,33 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // 1. Merge history/*.json → activities.json
 const historyDir = path.join(REPO_ROOT, "training", "history");
+const outPath = path.join(OUT_DIR, "activities.json");
 if (fs.existsSync(historyDir)) {
   const files = fs.readdirSync(historyDir).filter((f) => f.endsWith(".json"));
-  const activities = [];
 
-  for (const file of files) {
-    try {
-      const raw = fs.readFileSync(path.join(historyDir, file), "utf-8");
-      const data = JSON.parse(raw);
-      activities.push(data);
-    } catch (e) {
-      console.warn(`⚠ Skipping ${file}: ${e.message}`);
+  if (files.length === 0) {
+    // history/ exists but has no JSON files (e.g. Netlify build — only .gitkeep present).
+    // Keep the committed activities.json rather than overwriting with an empty array.
+    console.log(`✓ activities.json — no local history files, keeping committed version`);
+  } else {
+    const activities = [];
+    for (const file of files) {
+      try {
+        const raw = fs.readFileSync(path.join(historyDir, file), "utf-8");
+        const data = JSON.parse(raw);
+        activities.push(data);
+      } catch (e) {
+        console.warn(`⚠ Skipping ${file}: ${e.message}`);
+      }
     }
+    activities.sort(
+      (a, b) =>
+        new Date(b.start_date_local).getTime() -
+        new Date(a.start_date_local).getTime()
+    );
+    fs.writeFileSync(outPath, JSON.stringify(activities, null, 0));
+    console.log(`✓ activities.json — ${activities.length} activities`);
   }
-
-  // Sort newest first by start_date_local
-  activities.sort(
-    (a, b) =>
-      new Date(b.start_date_local).getTime() -
-      new Date(a.start_date_local).getTime()
-  );
-
-  const outPath = path.join(OUT_DIR, "activities.json");
-  fs.writeFileSync(outPath, JSON.stringify(activities, null, 0));
-  console.log(`✓ activities.json — ${activities.length} activities`);
 } else {
   console.warn("⚠ No data/history/ directory found");
 }
@@ -111,7 +114,7 @@ if (fs.existsSync(sessionsDir)) {
 }
 
 const workoutsPath = path.join(OUT_DIR, "workouts.json");
-fs.writeFileSync(workoutsPath, JSON.stringify(workouts, null, 0));
+fs.writeFileSync(workoutsPath, JSON.stringify(workouts, null, 2));
 console.log("✓ workouts.json written");
 
 // 4. Copy sync_status.json (if exists)

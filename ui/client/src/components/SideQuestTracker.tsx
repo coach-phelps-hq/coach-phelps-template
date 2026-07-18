@@ -12,6 +12,7 @@ import {
   getTrainingCategory,
   computeFoundationStreak,
   totalCalories,
+  parseLocal,
 } from "@/lib/activities";
 import type { ChallengeV2, ChallengeMetadata, MainQuest, Quest } from "@/lib/challenge";
 
@@ -34,11 +35,10 @@ function daysSince(startDate: string): number {
 }
 
 const QUEST_COLORS: Record<string, string> = {
-  foundation: "#60a5fa",
-  cold_shower: "#2dd4bf",
-  visualization: "#a78bfa",
-  reading: "#f59e0b",
-  protein: "#ef4444",
+  cold_shower:  "#2dd4bf",
+  "6am_wakeup": "#ef4444",
+  protein:      "#f59e0b",
+  sleep:        "#a78bfa",
 };
 
 function getQuestColor(id: string): string {
@@ -67,9 +67,12 @@ function QuestBar({ label, current, target, color }: { label: string; current: n
 
 function MainQuestCard({ activities, challenge, mainQuest }: { activities: Activity[]; challenge: ChallengeMetadata; mainQuest: MainQuest }) {
   const target = mainQuest.target;
+  const pattern = mainQuest.count_pattern ? new RegExp(mainQuest.count_pattern, "i") : null;
   const completed = activities.filter((a) => {
-    const cat = getTrainingCategory(a);
-    return cat === "calisthenics" && a.start_date_local.slice(0, 10) >= challenge.start_date;
+    if (a.start_date_local.slice(0, 10) < challenge.start_date) return false;
+    // Match by name pattern if defined, otherwise fall back to run category
+    if (pattern) return pattern.test(a.name);
+    return getTrainingCategory(a) === "run";
   }).length;
   const pct = Math.min((completed / target) * 100, 100);
 
@@ -83,8 +86,8 @@ function MainQuestCard({ activities, challenge, mainQuest }: { activities: Activ
 
   // Pace: expected sessions by now
   const expectedByNow = (dayNum / totalDays) * target;
-  const pace = completed >= expectedByNow ? "ahead" : completed >= expectedByNow - 1 ? "on track" : "behind";
-  const paceColor = pace === "behind" ? "#FF4D00" : "#22c55e";
+  const paceStatus = completed >= expectedByNow ? "ahead" : completed >= expectedByNow - 1 ? "on track" : "behind";
+  const paceColor = paceStatus === "behind" ? "#FF4D00" : "#22c55e";
 
   return (
     <div className="mb-6">
@@ -104,6 +107,9 @@ function MainQuestCard({ activities, challenge, mainQuest }: { activities: Activ
           className="h-full transition-all duration-500 bg-foreground"
           style={{ width: `${pct}%` }}
         />
+      </div>
+      <div className="mt-1.5 text-[10px] font-mono" style={{ color: paceColor }}>
+        {paceStatus}
       </div>
     </div>
   );
@@ -168,7 +174,7 @@ export function SideQuestTracker({ activities, challengeData }: Props) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const monthActivities = activities.filter((a) => {
-    const d = new Date(a.start_date_local);
+    const d = parseLocal(a.start_date_local);
     return d.getFullYear() === year && d.getMonth() === month;
   });
   const burned = totalCalories(monthActivities);

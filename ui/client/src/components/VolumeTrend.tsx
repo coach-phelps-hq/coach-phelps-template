@@ -9,6 +9,7 @@ import {
   getTrainingCategory,
   CATEGORY_CONFIG,
   totalTime,
+  parseLocal,
 } from "@/lib/activities";
 import {
   BarChart,
@@ -26,16 +27,27 @@ interface Props {
 }
 
 const STACK_GROUPS = [
-  { key: "foundation", label: "Foundation", color: CATEGORY_CONFIG.foundation.color },
-  { key: "calisthenics", label: "Calisthenics", color: CATEGORY_CONFIG.calisthenics.color },
-  { key: "badminton", label: "Badminton", color: CATEGORY_CONFIG.badminton_ranked.color },
-  { key: "ride", label: "Rides", color: CATEGORY_CONFIG.ride.color },
-  { key: "other", label: "Other", color: CATEGORY_CONFIG.other.color },
+  { key: "foundation",       label: "Foundation",         color: CATEGORY_CONFIG.foundation.color },
+  { key: "strength",         label: "Strength",           color: CATEGORY_CONFIG.strength.color },
+  { key: "calisthenics",     label: "Calisthenics",       color: CATEGORY_CONFIG.calisthenics.color },
+  { key: "run",              label: "Run",                color: CATEGORY_CONFIG.run.color },
+  { key: "swim",             label: "Swim",               color: CATEGORY_CONFIG.swim.color },
+  { key: "hike",             label: "Hike",               color: CATEGORY_CONFIG.hike.color },
+  { key: "walk",             label: "Walk",               color: CATEGORY_CONFIG.walk.color },
+  { key: "cricket",          label: "Cricket",            color: CATEGORY_CONFIG.cricket.color },
+  { key: "football",         label: "Football",           color: CATEGORY_CONFIG.football.color },
+  { key: "workout",          label: "Workout",            color: CATEGORY_CONFIG.workout.color },
+  { key: "badminton_club",   label: "Badminton (Club)",   color: CATEGORY_CONFIG.badminton_club.color },
+  { key: "badminton_drills", label: "Badminton (Drills)", color: CATEGORY_CONFIG.badminton_drills.color },
+  { key: "badminton_casual", label: "Badminton (Casual)", color: CATEGORY_CONFIG.badminton_casual.color },
+  { key: "other",            label: "Other",              color: CATEGORY_CONFIG.other.color },
 ];
 
 function categoryToStackGroup(cat: string): string {
-  if (cat.startsWith("badminton")) return "badminton";
-  if (cat === "foundation" || cat === "calisthenics" || cat === "ride") return cat;
+  if (cat === "badminton_club" || cat === "badminton_drills" || cat === "badminton_casual") return cat;
+  if (cat === "calisthenics") return "calisthenics";
+  if (["foundation", "run", "swim", "hike", "walk", "cricket", "football", "workout"].includes(cat)) return cat;
+  if (cat === "strength" || cat === "weight_training") return "strength";
   return "other";
 }
 
@@ -138,7 +150,7 @@ function HrTrendChart({ activities }: { activities: Activity[] }) {
       .slice(-30)
       .reverse()
       .map((a) => {
-        const d = new Date(a.start_date_local);
+        const d = parseLocal(a.start_date_local);
         return {
           date: `${d.getDate()}/${d.getMonth() + 1}`,
           avg: Math.round(a.average_heartrate!),

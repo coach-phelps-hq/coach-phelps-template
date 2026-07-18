@@ -15,6 +15,7 @@ import {
   getLastWeekActivities,
   totalCalories,
   avgHr,
+  parseLocal,
 } from "@/lib/activities";
 import {
   BarChart,
@@ -164,7 +165,7 @@ function HrTrendChart({ activities }: { activities: Activity[] }) {
       .slice(0, 30) // last 30 sessions with HR
       .reverse()
       .map((a) => {
-        const d = new Date(a.start_date_local);
+        const d = parseLocal(a.start_date_local);
         return {
           date: `${d.getDate()}/${d.getMonth() + 1}`,
           avg: Math.round(a.average_heartrate!),

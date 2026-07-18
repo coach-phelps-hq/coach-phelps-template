@@ -8,7 +8,9 @@ import Home from "./pages/Home";
 import Deprecated from "./pages/Deprecated";
 import Workouts from "./pages/Workouts";
 import WorkoutTimer from "./pages/workout-timer";
-import Analytics from "./pages/Analytics";
+import RunAnalytics from "./pages/RunAnalytics";
+import MonthlyAnalytics from "./pages/MonthlyAnalytics";
+import BadmintonAnalytics from "./pages/BadmintonAnalytics";
 
 function Router() {
   return (
@@ -16,7 +18,9 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path="/workouts" component={Workouts} />
       <Route path="/workouts/:id" component={WorkoutTimer} />
-      <Route path="/analytics" component={Analytics} />
+      <Route path="/analytics" component={RunAnalytics} />
+      <Route path="/monthly" component={MonthlyAnalytics} />
+      <Route path="/badminton" component={BadmintonAnalytics} />
       <Route path="/deprecated" component={Deprecated} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

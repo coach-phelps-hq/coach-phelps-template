@@ -124,8 +124,7 @@ export default function Workouts() {
     return groups;
   }, [workoutCards]);
 
-  // Order: foundation, calisthenics, recovery, realign
-  const typeOrder: WorkoutType[] = ["foundation", "calisthenics", "recovery", "realign"];
+  const typeOrder: WorkoutType[] = ["foundation", "calisthenics", "strength", "recovery", "realign"];
 
   return (
     <div className="min-h-screen bg-background">

@@ -13,9 +13,11 @@ import {
   Activity,
   getSportGroup,
   DISPLAY_SPORT_TYPES,
-  computeFoundationStreak,
+  computeSleepStreak,
+  parseLocal,
 } from "@/lib/activities";
 import { CommandStrip } from "@/components/CommandStrip";
+import { MissionBanner } from "@/components/MissionBanner";
 import { SyncStatusBanner } from "@/components/SyncStatusCard";
 import { WeeklySummaryCards } from "@/components/WeeklySummaryCards";
 import { VolumeTrend } from "@/components/VolumeTrend";
@@ -53,7 +55,7 @@ export default function Home() {
         default:
           cutoff = new Date(0);
       }
-      filtered = filtered.filter((a) => new Date(a.start_date_local) >= cutoff);
+      filtered = filtered.filter((a) => parseLocal(a.start_date_local) >= cutoff);
     }
 
     return filtered;
@@ -63,28 +65,35 @@ export default function Home() {
     return [...DISPLAY_SPORT_TYPES];
   }, []);
 
-  // Foundation quest uses excused_dates (v2) for streak — find the quest
-  const foundationQuest = challengeData.quests.find((q) => q.id === "foundation");
-  const foundationExcused = foundationQuest?.excused_dates ?? [];
-
-  const foundationStreak = useMemo(
-    () => computeFoundationStreak(activities, foundationExcused),
-    [foundationExcused],
+  const sleepQuest = challengeData.quests.find((q) => q.id === "sleep");
+  const sleepStreak = useMemo(
+    () => computeSleepStreak(sleepQuest?.completed_dates ?? []),
+    [sleepQuest],
   );
 
   return (
     <div className="min-h-screen bg-background">
       {/* Command Strip — top bar with streaks + sync button (tooltip shows last sync) */}
-      <CommandStrip challengeData={challengeData} foundationStreak={foundationStreak} syncStatus={syncStatusData} />
+      <CommandStrip challengeData={challengeData} sleepStreak={sleepStreak} syncStatus={syncStatusData} />
 
       {/* Sync warning/error banner — only renders when status is partial or error */}
       <SyncStatusBanner syncStatus={syncStatusData} />
+
+      {/* Mission banner — days to event, run progress, pace */}
+      <MissionBanner
+        mainQuest={challengeData.main_quest}
+        activities={activities}
+        challengeStartDate={challengeData.challenge.start_date}
+      />
 
       {/* Divider */}
       <div className="border-b-2 border-foreground" />
 
       {/* Weekly Summary Cards */}
-      <WeeklySummaryCards activities={activities} weeklyTargets={challengeData.weekly_targets} quests={challengeData.quests} />
+      <WeeklySummaryCards
+        activities={activities}
+        weeklyTargets={challengeData.weekly_targets}
+      />
 
       {/* Volume Trend + HR Trend */}
       <VolumeTrend activities={activities} />

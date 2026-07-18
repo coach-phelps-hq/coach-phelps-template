@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Activity,
   getSportConfig,
+  getCategoryConfig,
   formatDuration,
   formatDate,
   formatTime,
@@ -138,7 +139,7 @@ function FilterSelect({
 
 function ActivityRow({ activity }: { activity: Activity }) {
   const [expanded, setExpanded] = useState(false);
-  const config = getSportConfig(activity.sport_type);
+  const config = getCategoryConfig(activity);
   const hasDetail = activity.has_heartrate || activity.description;
 
   return (

@@ -4,7 +4,7 @@
  * v3: Reads all metadata from challenge_v2.json — zero hardcoded values.
  */
 import { useState } from "react";
-import { RefreshCw, Dumbbell, BarChart3 } from "lucide-react";
+import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -23,8 +23,9 @@ interface SyncStatus {
 
 interface Props {
   challengeData: ChallengeV2;
-  foundationStreak: number;
+  sleepStreak: number;
   syncStatus: SyncStatus;
+  showBack?: boolean;
 }
 
 function daysSince(startDate: string): number {
@@ -59,17 +60,23 @@ function buildTooltipText(s: SyncStatus): string {
   return `${ago} — ${summary}`;
 }
 
-export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Props) {
+export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack }: Props) {
   const [syncing, setSyncing] = useState(false);
 
   const ch = challengeData.challenge;
   const currentDay = daysSince(ch.start_date);
   const pct = Math.round((currentDay / ch.duration_days) * 100);
 
-  // Cold shower streak from quests array
+  // Cold shower streak
   const coldQuest = challengeData.quests.find((q) => q.id === "cold_shower");
   const coldStreak = coldQuest
     ? computeColdShowerStreak(coldQuest.start_date, coldQuest.missed_dates ?? [])
+    : 0;
+
+  // 6am wake-up streak (same default_done logic as cold shower)
+  const wakeupQuest = challengeData.quests.find((q) => q.id === "6am_wakeup");
+  const wakeupStreak = wakeupQuest
+    ? computeColdShowerStreak(wakeupQuest.start_date, wakeupQuest.missed_dates ?? [])
     : 0;
 
   // Challenge display name (e.g., "60-Day" from "60-Day Challenge")
@@ -87,7 +94,9 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
     toast.info("Syncing... usually takes ~30s");
 
     try {
-      const res = await fetch("/.netlify/functions/trigger-sync", { method: "POST" });
+      // NETLIFY: const res = await fetch("/.netlify/functions/trigger-sync", { method: "POST" });
+      // TEMP: Using Vercel endpoint while Netlify credits are out. Swap back when returning to Netlify.
+      const res = await fetch("/api/trigger-sync", { method: "POST" });
       const data = await res.json();
 
       if (data.ok) {
@@ -109,11 +118,20 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
           {/* Main row: title + streaks (desktop) + actions */}
           <div className="flex items-center justify-between gap-4">
             {/* Title */}
-            <Link href="/">
-              <h1 className="text-base font-bold tracking-tight uppercase shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-                Coach Phelps HQ
-              </h1>
-            </Link>
+            <div className="flex items-center gap-2 shrink-0">
+              {showBack && (
+                <Link href="/">
+                  <button className="p-2 -ml-2 hover:bg-background/10 transition-colors">
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                </Link>
+              )}
+              <Link href="/">
+                <h1 className="text-base font-bold tracking-tight uppercase cursor-pointer hover:opacity-80 transition-opacity">
+                  Coach Phelps HQ
+                </h1>
+              </Link>
+            </div>
 
             {/* Challenge + Streaks — center, desktop only */}
             <div className="hidden sm:flex items-center gap-3 flex-1 justify-center">
@@ -130,11 +148,11 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
 
               <span className="text-background/20">│</span>
 
-              {/* Foundation streak */}
+              {/* Sleep streak */}
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase tracking-wider text-background/50">Foundation</span>
-                <span className="text-xs font-mono font-bold" style={{ color: "#60a5fa" }}>
-                  {foundationStreak}d
+                <span className="text-[10px] uppercase tracking-wider text-background/50">Sleep</span>
+                <span className="text-xs font-mono font-bold" style={{ color: "#a78bfa" }}>
+                  {sleepStreak}d
                 </span>
               </div>
 
@@ -145,6 +163,16 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
                 <span className="text-[10px] uppercase tracking-wider text-background/50">Cold</span>
                 <span className="text-xs font-mono font-bold" style={{ color: "#2dd4bf" }}>
                   {coldStreak}d
+                </span>
+              </div>
+
+              <span className="text-background/20">│</span>
+
+              {/* 6am wake-up streak */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-background/50">6am</span>
+                <span className="text-xs font-mono font-bold" style={{ color: "#f59e0b" }}>
+                  {wakeupStreak}d
                 </span>
               </div>
             </div>
@@ -162,9 +190,25 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
               <Link href="/analytics">
                 <button
                   className="p-2 hover:bg-background/10 transition-colors"
-                  title="Match Analytics"
+                  title="Run Analytics"
                 >
-                  <BarChart3 className="w-4 h-4" />
+                  <SportShoe className="w-4 h-4" />
+                </button>
+              </Link>
+              <Link href="/badminton">
+                <button
+                  className="p-2 hover:bg-background/10 transition-colors"
+                  title="Badminton Analytics"
+                >
+                  <Trophy className="w-4 h-4" />
+                </button>
+              </Link>
+              <Link href="/monthly">
+                <button
+                  className="p-2 hover:bg-background/10 transition-colors"
+                  title="Monthly Analytics"
+                >
+                  <CalendarDays className="w-4 h-4" />
                 </button>
               </Link>
               <Tooltip>
@@ -189,11 +233,14 @@ export function CommandStrip({ challengeData, foundationStreak, syncStatus }: Pr
 
           {/* Mobile-only streak row */}
           <div className="flex sm:hidden items-center gap-2 text-[10px] text-background/60">
-            <span className="uppercase tracking-wider text-background/50">Foundation</span>
-            <span className="font-mono font-bold" style={{ color: "#60a5fa" }}>{foundationStreak}d</span>
+            <span className="uppercase tracking-wider text-background/50">Sleep</span>
+            <span className="font-mono font-bold" style={{ color: "#a78bfa" }}>{sleepStreak}d</span>
             <span className="text-background/30">·</span>
             <span className="uppercase tracking-wider text-background/50">Cold</span>
             <span className="font-mono font-bold" style={{ color: "#2dd4bf" }}>{coldStreak}d</span>
+            <span className="text-background/30">·</span>
+            <span className="uppercase tracking-wider text-background/50">6am</span>
+            <span className="font-mono font-bold" style={{ color: "#f59e0b" }}>{wakeupStreak}d</span>
             <span className="text-background/30">·</span>
             <span className="font-mono text-background/40">
               Day {Math.min(currentDay, ch.duration_days)} · {Math.min(pct, 100)}%

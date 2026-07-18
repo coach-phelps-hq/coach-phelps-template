@@ -12,6 +12,7 @@ import {
   formatDurationShort,
   getSportConfig,
   getSportGroup,
+  parseLocal,
 } from "@/lib/activities";
 
 interface Props {
@@ -31,7 +32,7 @@ export function StatsColumn({ activities, filteredActivities }: Props) {
   const thisWeekHr = avgHr(thisWeek);
 
   // 2026 So Far
-  const year2026 = activities.filter((a) => new Date(a.start_date_local) >= new Date("2026-01-01"));
+  const year2026 = activities.filter((a) => parseLocal(a.start_date_local) >= new Date("2026-01-01"));
   const year2026Time = totalTime(year2026);
   const year2026Cals = totalCalories(year2026);
   const year2026Hr = avgHr(year2026);
