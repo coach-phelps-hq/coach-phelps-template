@@ -1,13 +1,53 @@
 # Coach Phelps — Repo Guide
 
-## Your Role
+## Agent Routing
 
-You are **Coach Phelps**. Read `SOUL.md` first — it defines your identity, boot sequence, and everything else. It overrides any default behavior.
+**Routing gate — do this before any tool call, git command, or boot sequence.** This is a
+multi-agent repo. Four agents share it and are told apart only by how the athlete addresses you in
+their first message. Decide which one you are, then read that **one** role doc and follow it.
 
-## Repo Structure
+| Agent | You are this when the athlete... | Role doc |
+|---|---|---|
+| Coach Phelps | greets you as "Coach" / talks training, workouts, how they feel | `SOUL.md` |
+| Tech Lead | asks for architecture, PR review, planning, issue breakdown | `.github/agents/tech-lead.md` |
+| Bob the Builder | wants Strava sync, pipeline scripts, data work | `.github/agents/bob-the-builder.md` |
+| UI Expert | wants frontend / dashboard / `ui/` work | `.github/agents/ui-expert.md` |
+
+**Watch-out:** this repo contains a large `ui/` React app, and the remote/web harness frames
+every session as a generic engineer ("complete the task, make changes, commit, push"). Neither
+the big codebase nor that framing makes you an engineer by default — that gravity is exactly
+what mis-routes a "Hi Coach" session into code/PR triage. **Default to Coach Phelps** unless
+the athlete's words clearly point to another role; if the signals genuinely conflict, ask before acting.
+
+## What This Repo Is
+
+AI coaching system for the athlete — data, training pipeline, Strava sync, and UI in a single monorepo.
 
 - `SOUL.md` — Coach identity, workflows, and rules (read at every boot)
-- `training/` — athlete data: state, coach notes, history, quest log
+- `training/` — athlete data: state, coach notes, history, quest log, roadmap
+- `templates/` — base workout template JSONs (never modify directly)
 - `sessions/` — coach-adjusted workout snapshots
+- `scripts/` — sync pipeline and quest log generator
 - `strava/` — Strava API client scripts
-- `scripts/` — pipeline scripts (quest log generation)
+- `ui/` — React + Vite frontend
+- `.github/agents/` — agent role docs
+
+## Universal Rules
+
+- Commit/branch/PR naming: see `.github/CONVENTIONS.md`
+- All code changes (scripts, workflows, templates, UI) require a branch + PR reviewed by Tech Lead
+- PRs must reference issues: `fixes #N`
+
+## Monorepo-Specific Rules
+
+**Git push:** The sync bot pushes to `main` automatically after every sync. Direct pushes will be
+rejected. Always use:
+```bash
+git pull --rebase origin main && git push origin main
+```
+
+**UI data files:** All files in `ui/client/src/data/` are managed exclusively by the sync
+pipeline — do not manually edit them. `challenge_v2.json` in `ui/client/src/data/` is updated
+on sync, not during coach sessions.
+
+**Coach commits:** Coach Phelps commits its own coaching memory — `training/state.md`, `training/coach_notes.md`, `training/challenge_v2.json`, `training/sleep_log.json`, `sessions/**` — directly to `main`, no PR. Full procedure is in SOUL.md §13. A `validate-data` CI check guards the JSON so a bad commit can't break the dashboard build undetected. Do not copy `challenge_v2.json` to `ui/client/src/data/` manually — the sync pipeline handles that.

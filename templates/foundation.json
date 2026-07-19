@@ -1,0 +1,96 @@
+{
+  "id": "foundation",
+  "title": "Foundation",
+  "subtitle": "Morning activation - done before 8am",
+  "workout_type": "foundation",
+  "estimated_duration_mins": 20,
+  "location": "Home",
+  "equipment": ["skipping rope", "pilates band"],
+  "coaching_note": "This is the habit. Not a workout - a ritual. 20 minutes, every morning, before the day gets in the way. On rest days, on travel days, on tired days. The bar is low by design.",
+  "phases": [
+    {
+      "name": "Wake-Up",
+      "duration": "5 min",
+      "default_rest_secs": 20,
+      "exercises": [
+        {
+          "num": 1,
+          "name": "Skip Rope",
+          "type": "timed",
+          "duration_secs": 60,
+          "sets": 3,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 30,
+          "form_cue": "Light on your feet. Land on the balls of your feet, not flat. If no rope, do jumping jacks or high knees instead.",
+          "why": "Gets the heart rate up and body temperature rising fast. No better way to shake off morning grogginess."
+        }
+      ]
+    },
+    {
+      "name": "Activation",
+      "duration": "15 min",
+      "default_rest_secs": 30,
+      "coaching_note": "These aren't hard. They're setting you up for the day and protecting the hips and back.",
+      "exercises": [
+        {
+          "num": 2,
+          "name": "Glute Bridge",
+          "type": "reps",
+          "reps": 15,
+          "sets": 2,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 30,
+          "form_cue": "Drive through heels. Squeeze glutes at top and hold 1 second.",
+          "why": "Wakes up the posterior chain before you load it during the day. Non-negotiable for lower back health."
+        },
+        {
+          "num": 3,
+          "name": "Clamshell (pilates band)",
+          "type": "reps",
+          "reps": 15,
+          "sets": 2,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 30,
+          "both_sides": true,
+          "form_cue": "Lying on side, band just above knees, hips stacked. Rotate top knee up like a clamshell. Don't let the hip roll back.",
+          "why": "Gluteus medius activation - this small muscle group stabilizes the hip and is easy to neglect. Also protects knees on runs."
+        },
+        {
+          "num": 4,
+          "name": "World's Greatest Stretch",
+          "type": "reps",
+          "reps": 5,
+          "sets": 1,
+          "rest_after_exercise_secs": 20,
+          "both_sides": true,
+          "form_cue": "Lunge forward, drop back knee. Place same-side hand on floor. Reach opposite hand to sky, rotating torso. Hold 2 seconds at the top.",
+          "why": "One movement that hits hip flexors, thoracic rotation, hamstrings, and glutes. Best single exercise for morning mobility."
+        },
+        {
+          "num": 5,
+          "name": "Dead Bug",
+          "type": "reps",
+          "reps": 8,
+          "sets": 2,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 30,
+          "both_sides": true,
+          "form_cue": "Lower back pressed into floor. Extend opposite arm and leg slowly. Return slowly. Don't rush.",
+          "why": "Deep core activation. Sets the spine for the day."
+        },
+        {
+          "num": 6,
+          "name": "Calf Raise",
+          "type": "reps",
+          "reps": 20,
+          "sets": 2,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 0,
+          "form_cue": "On the edge of a step or flat floor. Rise all the way up, lower all the way down. Don't bounce.",
+          "why": "Calf and Achilles tendon conditioning. As run volume builds, this is injury prevention on every morning."
+        }
+      ]
+    }
+  ],
+  "progression_notes": "On days when you have a strength or run session later, keep this light - it's activation, not fatigue. On rest days, you can extend the stretching section instead of doing the skip rope."
+}

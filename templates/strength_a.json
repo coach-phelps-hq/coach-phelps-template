@@ -1,0 +1,234 @@
+{
+  "id": "strength_a",
+  "title": "Strength A",
+  "subtitle": "Lower body + core",
+  "workout_type": "strength",
+  "estimated_duration_mins": 60,
+  "location": "Home",
+  "equipment": [
+    "dumbbells",
+    "resistance band",
+    "ankle weights",
+    "foam roller"
+  ],
+  "coaching_note": "Hip hinge on RDLs - push hips back, not down. If your lower back flares up on RDLs, swap to bird dogs for the day. Shoulder & Wrist phase is optional if you're short on time or energy, but it's worth keeping in when you can - that maintenance work pays off over the long run.",
+  "phases": [
+    {
+      "name": "Warm-up",
+      "duration": "5 min",
+      "default_rest_secs": 30,
+      "exercises": [
+        {
+          "num": 1,
+          "name": "Glute Bridge",
+          "type": "reps",
+          "reps": 15,
+          "sets": 2,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 30,
+          "form_cue": "Drive through heels, squeeze glutes at top. Keep ribs down.",
+          "why": "Activates glutes before loading them. Protects lower back."
+        },
+        {
+          "num": 2,
+          "name": "Leg Swings (front-back)",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 1,
+          "both_sides": true,
+          "rest_after_exercise_secs": 20,
+          "form_cue": "Hold wall for balance. Controlled swing, not a flail.",
+          "why": "Loosens hip flexors and hamstrings before squats and RDLs."
+        },
+        {
+          "num": 3,
+          "name": "Hip Circles",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 1,
+          "both_sides": true,
+          "rest_after_exercise_secs": 20,
+          "form_cue": "Big slow circles. Feel the hip socket open up.",
+          "why": "Hip mobility for squats and split squats."
+        }
+      ]
+    },
+    {
+      "name": "Lower Body",
+      "duration": "25 min",
+      "default_rest_secs": 75,
+      "coaching_note": "Start at 8kg per side. Add 1kg when all reps feel controlled with good form.",
+      "exercises": [
+        {
+          "num": 4,
+          "name": "Goblet Squat",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 75,
+          "rest_after_exercise_secs": 90,
+          "form_cue": "Hold one DB at chest. Chest tall, knees track toes, sit into heels. Don't let lower back round at the bottom.",
+          "why": "Builds quad and glute strength. Goblet position keeps torso upright - easier on lower back than back squat."
+        },
+        {
+          "num": 5,
+          "name": "Romanian Deadlift (DB)",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 75,
+          "rest_after_exercise_secs": 90,
+          "form_cue": "Push hips back, not down. Soft knee bend. DBs stay close to legs. Feel the hamstring stretch. Stop when lower back starts to round - that's your end range.",
+          "why": "Hamstring and posterior chain strength. Critical for running economy and knee health."
+        },
+        {
+          "num": 6,
+          "name": "Bulgarian Split Squat",
+          "type": "reps",
+          "reps": 8,
+          "sets": 3,
+          "rest_between_sets_secs": 60,
+          "rest_after_exercise_secs": 90,
+          "both_sides": true,
+          "form_cue": "Back foot on dip bar or chair. Front foot far enough forward so knee doesn't cave over toes. Torso upright. Add DBs when bodyweight feels easy.",
+          "why": "Single-leg strength builds symmetry between both sides and protects knees on long runs."
+        },
+        {
+          "num": 7,
+          "name": "Ankle Weight Leg Raises",
+          "type": "reps",
+          "reps": 15,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "form_cue": "Lying on back. Lower back stays flat on floor throughout. Slow and controlled - no swinging.",
+          "why": "Hip flexor and lower abs strength. Helps running posture and protects the lower back."
+        }
+      ]
+    },
+    {
+      "name": "Core",
+      "duration": "15 min",
+      "default_rest_secs": 45,
+      "coaching_note": "These are your lower back's insurance policy. Don't rush them.",
+      "exercises": [
+        {
+          "num": 8,
+          "name": "Dead Bug",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "both_sides": true,
+          "form_cue": "Lower back pressed firmly into floor the whole time. Opposite arm and leg extend slow. If lower back lifts, shorten the range.",
+          "why": "Deep core stability without spinal loading. Safe for the lower back flag."
+        },
+        {
+          "num": 9,
+          "name": "Bird Dog",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "both_sides": true,
+          "form_cue": "On all fours. Don't let the hip drop or rotate. Extend opposite arm and leg until parallel to floor. Hold 2 seconds.",
+          "why": "QL and erector stabilisation. Sub for RDLs if lower back flared during the session."
+        },
+        {
+          "num": 10,
+          "name": "Plank",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "form_cue": "Forearms down. Body straight line - no sagging hips, no raised butt. Breathe.",
+          "why": "Full anterior core endurance. Foundation for everything else."
+        },
+        {
+          "num": 11,
+          "name": "Side Plank",
+          "type": "timed",
+          "duration_secs": 20,
+          "sets": 2,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 45,
+          "both_sides": true,
+          "form_cue": "Hip stacked, don't let it sag. Modified on knee if needed.",
+          "why": "Lateral core strength - targets the QL and obliques on each side, an area regular training often neglects."
+        }
+      ]
+    },
+    {
+      "name": "Shoulder & Wrist",
+      "duration": "15 min",
+      "default_rest_secs": 45,
+      "optional": true,
+      "coaching_note": "Skip this block if you're short on time or energy. But if you keep just one piece, make it the eccentric wrist curls - that slow-lowering pattern is what builds tendon resilience.",
+      "exercises": [
+        {
+          "num": 12,
+          "name": "External Rotation (band)",
+          "type": "reps",
+          "reps": 12,
+          "sets": 3,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 45,
+          "both_sides": true,
+          "form_cue": "Anchor band at waist height. Elbow bent 90 degrees, pinned to side. Rotate forearm outward only - elbow doesn't move. Slow and controlled.",
+          "why": "Rotator cuff strengthening - builds the stabilizers that protect the shoulder during any overhead movement, whether that's a sport, a lift, or daily life."
+        },
+        {
+          "num": 13,
+          "name": "Y Raise (light DB)",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 45,
+          "form_cue": "Slight forward lean. Arms form a Y at 45 degrees, thumbs up. Raise to shoulder height only. Use 2-3kg max.",
+          "why": "Targets lower trapezius and posterior deltoid - prevents shoulder impingement on overhead movements."
+        },
+        {
+          "num": 14,
+          "name": "Wrist Flexor Stretch",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 3,
+          "rest_between_sets_secs": 10,
+          "rest_after_exercise_secs": 30,
+          "both_sides": true,
+          "form_cue": "Arm straight, palm up. Gently pull fingers back with other hand. Feel the stretch on the inside of the forearm. Don't force it.",
+          "why": "Lengthens the wrist flexors and medial forearm tendons - keeps the forearm mobile and reduces the tension that builds up around the inner elbow from gripping and pressing work."
+        },
+        {
+          "num": 15,
+          "name": "Eccentric Wrist Curl",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "both_sides": true,
+          "form_cue": "Forearm on thigh, palm up, 2-3kg DB. Use other hand to lift the weight up. Lower slowly with working arm only - 3 counts down. That slow lowering is the whole point.",
+          "why": "Eccentric loading is one of the best tools for building tendon resilience in the wrist flexors. The slow lowering phase is what does the work - don't rush it."
+        },
+        {
+          "num": 16,
+          "name": "Reverse Wrist Curl",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 0,
+          "both_sides": true,
+          "form_cue": "Forearm on thigh, palm down, 2-3kg DB. Curl knuckles up toward you, lower slowly. Don't let the forearm lift off the thigh.",
+          "why": "Strengthens the wrist extensors to balance the flexor-focused work above. Balanced forearm strength reduces overall tendon stress."
+        }
+      ]
+    }
+  ],
+  "progression_notes": "Week 1-2: 8kg DBs. Add 1kg per side every 1-2 weeks when all reps are clean. If lower back is sore, drop RDLs and add an extra set of bird dogs."
+}

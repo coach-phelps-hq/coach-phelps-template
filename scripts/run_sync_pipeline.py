@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""Sync pipeline for CI — chains all steps for workflow_dispatch.
+
+Steps:
+  1. Sync Strava activities to training/history/ via fetch_strava.py --sync
+  2. Auto-rename new unrenamed activities via rename_single.py (new files only)
+  3. Generate quest_log.md
+  4. Generate quest_history.json (merged history across all seasons)
+  5. Rebuild activities.json from all history/ files and write UI data bundle
+  6. Populate training/last_week/ (activities from past 7 days)
+  7. Write sync_status.json
+  (Commit & push is handled by sync.yml, not this script)
+
+Usage:
+  python scripts/run_sync_pipeline.py
+"""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Optional
+
+REPO_DIR = Path(__file__).resolve().parent.parent
+TRAINING_DIR = REPO_DIR / "training"
+HISTORY_DIR = TRAINING_DIR / "history"
+LAST_WEEK_DIR = TRAINING_DIR / "last_week"
+DATA_DIR = REPO_DIR / "ui" / "client" / "src" / "data"
+TOKENS_PATH = REPO_DIR / "strava" / "strava_tokens.json"
+SYNC_STATUS_PATH = TRAINING_DIR / "sync_status.json"
+TIMEOUT = 600
+
+sys.path.insert(0, str(REPO_DIR / "strava"))
+
+
+def log(msg: str) -> None:
+    print(f"[pipeline] {msg}", file=sys.stderr)
+
+
+def write_tokens_from_env() -> None:
+    client_id = os.environ.get("STRAVA_CLIENT_ID")
+    client_secret = os.environ.get("STRAVA_CLIENT_SECRET")
+    refresh_token = os.environ.get("STRAVA_REFRESH_TOKEN")
+    if not all([client_id, client_secret, refresh_token]):
+        sys.exit("CI sync requires STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN secrets.")
+    tokens = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "access_token": "",
+        "refresh_token": refresh_token,
+        "expires_at": 0,
+    }
+    TOKENS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    TOKENS_PATH.write_text(json.dumps(tokens, indent=2) + "\n")
+    log("Strava tokens written from environment.")
+
+
+def step_sync_strava() -> tuple[int, list[Path]]:
+    """Run fetch_strava.py --sync. Detect new files by diffing directory before/after."""
+    existing = set(HISTORY_DIR.glob("*.json")) if HISTORY_DIR.exists() else set()
+    result = subprocess.run(
+        [sys.executable, str(REPO_DIR / "strava" / "fetch_strava.py"), "--sync"],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=TIMEOUT,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"fetch_strava.py failed:\n{result.stderr}")
+    if result.stderr:
+        log(result.stderr.strip())
+    current = set(HISTORY_DIR.glob("*.json")) if HISTORY_DIR.exists() else set()
+    new_files = sorted(current - existing)
+    return len(new_files), new_files
+
+
+def step_auto_rename(new_files: list[Path]) -> tuple[int, list[str]]:
+    """Call rename_single.py <id> --apply for each new unrenamed activity."""
+    from rename_core import is_already_renamed, SKIP_SPORTS, classify_activity
+
+    rename_script = REPO_DIR / "strava" / "rename_single.py"
+    count = 0
+    warnings: list[str] = []
+
+    for fpath in new_files:
+        data = json.loads(fpath.read_text())
+        sport = data.get("sport_type", data.get("type", ""))
+        name = data.get("name", "")
+
+        if sport in SKIP_SPORTS:
+            continue
+        if is_already_renamed(name):
+            continue
+        category, _, _ = classify_activity(data)
+        if category == "skip":
+            continue
+
+        activity_id = data["id"]
+        log(f"Renaming {activity_id} ({name})")
+        result = subprocess.run(
+            [sys.executable, str(rename_script), str(activity_id), "--apply"],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=TIMEOUT,
+        )
+        if result.returncode != 0:
+            msg = f"Activity {activity_id}: rename failed - {result.stderr.strip()}"
+            warnings.append(msg)
+            log(f"  ERROR: {result.stderr.strip()}")
+        else:
+            count += 1
+            if result.stdout:
+                log(result.stdout.strip())
+
+    return count, warnings
+
+
+def step_generate_quest_log() -> None:
+    result = subprocess.run(
+        [sys.executable, str(REPO_DIR / "scripts" / "generate_quest_log.py")],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=TIMEOUT,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"generate_quest_log.py failed:\n{result.stderr}")
+    log("quest_log.md regenerated")
+
+
+def step_generate_quest_history() -> None:
+    result = subprocess.run(
+        [sys.executable, str(REPO_DIR / "scripts" / "generate_quest_history.py")],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=TIMEOUT,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"generate_quest_history.py failed:\n{result.stderr}")
+    if result.stderr:
+        log(result.stderr.strip())
+    log("quest_history.json generated")
+
+
+def step_populate_last_week() -> int:
+    """Copy activities from the past 7 days into training/last_week/."""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
+    LAST_WEEK_DIR.mkdir(parents=True, exist_ok=True)
+    for f in LAST_WEEK_DIR.glob("*.json"):
+        f.unlink()
+    count = 0
+    for f in HISTORY_DIR.glob("*.json"):
+        try:
+            data = json.loads(f.read_text())
+            act_date = (data.get("start_date") or "")[:10]
+            if act_date >= cutoff:
+                shutil.copy2(f, LAST_WEEK_DIR / f.name)
+                count += 1
+        except Exception:
+            pass
+    log(f"last_week/ populated: {count} activities")
+    return count
+
+
+def build_activities_json() -> list:
+    activities = []
+    for f in HISTORY_DIR.glob("*.json"):
+        try:
+            activities.append(json.loads(f.read_text()))
+        except Exception:
+            pass
+    return sorted(activities, key=lambda a: a.get("start_date_local", ""), reverse=True)
+
+
+def write_sync_status(synced: int, renamed: int, warnings: list[str], error: Optional[str] = None) -> None:
+    status = "error" if error else ("partial" if warnings else "success")
+    payload = {
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "status": status,
+        "activities_synced": synced,
+        "activities_renamed": renamed,
+        "descriptions_parsed": 0,
+        "warnings": warnings,
+        "commit_message": (
+            f"core: sync pipeline — {synced} synced, {renamed} renamed [skip ci]"
+        ),
+    }
+    if error:
+        payload["error"] = error
+    TRAINING_DIR.mkdir(parents=True, exist_ok=True)
+    SYNC_STATUS_PATH.write_text(json.dumps(payload, indent=2) + "\n")
+    log(f"sync_status.json written: {status}")
+
+
+def main():
+    synced, renamed = 0, 0
+    warnings: list[str] = []
+    new_files: list[Path] = []
+
+    try:
+        if os.environ.get("CI"):
+            write_tokens_from_env()
+
+        log("Step 1/6: Syncing Strava activities...")
+        synced, new_files = step_sync_strava()
+        log(f"  {synced} new activities")
+
+        if new_files:
+            log("Step 2/6: Renaming new activities...")
+            renamed, rename_warnings = step_auto_rename(new_files)
+            warnings.extend(rename_warnings)
+            log(f"  {renamed} renamed")
+        else:
+            log("Step 2/6: No new activities - skipping rename")
+
+        log("Step 3/6: Generating quest_log.md...")
+        step_generate_quest_log()
+
+        log("Step 4/6: Generating quest_history.json...")
+        step_generate_quest_history()
+
+        log("Step 5/6: Rebuilding activities.json and UI data bundle...")
+        merged = build_activities_json()
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "activities.json").write_text(json.dumps(merged))
+        log(f"  activities.json: {len(merged)} total")
+
+        src = TRAINING_DIR / "challenge_v2.json"
+        if src.exists():
+            (DATA_DIR / "challenge_v2.json").write_text(src.read_text())
+
+        sleep_src = TRAINING_DIR / "sleep_log.json"
+        (DATA_DIR / "sleep_log.json").write_text(
+            sleep_src.read_text() if sleep_src.exists() else "[]"
+        )
+
+        (DATA_DIR / "workouts.json").write_text(json.dumps({"templates": [], "sessions": []}))
+
+        log("Step 6/6: Populating last_week/...")
+        step_populate_last_week()
+
+        write_sync_status(synced, renamed, warnings)
+        log("Pipeline complete.")
+
+    except Exception as e:
+        log(f"Pipeline error: {e}")
+        write_sync_status(synced, renamed, warnings, error=str(e))
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

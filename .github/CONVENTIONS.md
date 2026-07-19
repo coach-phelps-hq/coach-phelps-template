@@ -1,0 +1,71 @@
+# Conventions
+
+Universal conventions for all agents. All agent docs reference this file — don't duplicate rules locally.
+
+---
+
+## Commit Messages
+
+Format: `<prefix>: <description>`
+
+| Prefix | Used by | When |
+|---|---|---|
+| `coach:` | Coach Phelps | Session data: state.md, coach_notes.md, challenge_v2.json, sessions/, roadmap.md |
+| `core:` | Tech Lead | Architecture, SOUL.md, docs, agent configs |
+| `feat:` | Bob, UI Expert | New features — include issue ref: `feat: <desc> (#N)` |
+| `fix:` | Bob, UI Expert | Bug fixes — include issue ref: `fix: <desc> (#N)` |
+| `data:` | Pipeline (auto) | Auto-generated: sync, quest_log, sync_status |
+| `ui:` | UI Expert | Frontend-only changes with no data impact |
+
+**Coach format:** `coach: day-N — <brief summary>`
+Example: `coach: day-8 — shoulder-modified workout, strong session`
+
+**feat/fix must reference the issue:** `feat: add session heatmap (#12)`
+
+No `Co-Authored-By` footers on any commit.
+
+---
+
+## Branch Naming
+
+| Pattern | Used by | Example |
+|---|---|---|
+| `feat/<issue-N>-<brief>` | Bob, UI Expert | `feat/12-session-heatmap` |
+| `fix/<issue-N>-<brief>` | Bob, UI Expert | `fix/7-quest-log-clamp` |
+| `core/<brief>` | Tech Lead | `core/soul-v2` |
+
+Coach Phelps pushes session data **directly to main** — no branches needed.
+
+Note: this is a discipline-based convention, not a GitHub-enforced path rule — branch protection applies repo/branch-wide, not per-path.
+
+---
+
+## PR Titles
+
+Format: `<prefix>: <description> (#N)`
+
+Examples:
+- `feat: add run pace chart (#12)`
+- `fix: clamp quest streak display at 0 (#7)`
+- `core: SOUL.md v2.0 — periodization overhaul`
+
+Always include `fixes #N` in the PR body. PR body must follow `.github/agents/issue-template.md`.
+
+---
+
+## Direct-to-Main vs Branch + PR
+
+**Direct to main (no PR):**
+- Coach session data: `training/state.md`, `training/coach_notes.md`, `training/challenge_v2.json`, `training/roadmap.md`, `sessions/`
+- Pipeline-generated: `training/history/`, `training/quest_log.md`, `training/sync_status.json`, `strava/strava_tokens.json`
+- UI data bundle (pipeline writes): `ui/client/src/data/`
+- Activity renames (history JSON only)
+
+**Always branch + PR:**
+- Scripts, workflows, GitHub Actions
+- Templates (`templates/*.json`)
+- SOUL.md, agent docs, CLAUDE.md, CONVENTIONS.md
+- UI source: `ui/client/src/` (components, pages, styles)
+- Anything that changes how data is processed or displayed
+
+**If in doubt:** use a branch.

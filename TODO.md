@@ -12,21 +12,19 @@
 
 ---
 
-## P0 — V2 Core
-
-- [ ] **Automated daily sync (GitHub Action)** — daily cron that runs `fetch_strava.py --sync` and pushes new history files. Removes the need to manually sync after every workout. Adapt from Sky's pipeline (strip badminton-specific steps).
-
-- [ ] **Workout template system** — blank template schema + SOUL.md section guiding Coach to build sport-specific templates during first session. Enables the session file workflow (`sessions/YYYY-MM-DD_<id>.json`) and opens the path to a timer app.
-
----
+## Done (v2)
+- [x] **Automated sync pipeline** — `scripts/run_sync_pipeline.py` + `.github/workflows/sync.yml`, manually triggered by default (`workflow_dispatch`), can be put on a cron schedule per SETUP.md step 8.
+- [x] **Workout template system** — `templates/` folder with generic starter templates (calisthenics, strength, foundation, recovery). `ui/scripts/build-data.mjs` compiles templates plus any coach-written `sessions/*.json` overrides into the dashboard's workout data automatically on every `npm run dev`/`build`.
+- [x] **Dashboard on Vercel** — `ui/` deploys via Vercel (`vercel.json`, `ui/api/trigger-sync.ts`), includes three example analytics pages (Badminton/Run/Monthly) as reference implementations.
+- [x] **Activity rename system** — `strava/rename_core.py` + `rename_activities.py` for consistent naming.
+- [x] **Multi-agent setup** — `.github/agents/` (Tech Lead, UI Expert, Bob the Builder) for engineering work on the repo itself, routed via `CLAUDE.md`.
+- [x] **HOW_IT_WORKS.md** — conceptual guide explaining Season/Challenge/Quest, the file map, quest types, and dashboard-to-file relationships, so new users understand day-to-day usage rather than just account setup. Also removed `scripts/generate_workouts.py`, a dead/duplicate script that always wrote empty sessions and could silently wipe real session data if run by mistake - `ui/scripts/build-data.mjs` already handles this correctly.
 
 ## P1 — V2 Enhancements
 
-- [ ] **Dashboard (coach-dashboard-template)** — separate repo fork. Generic only: activity heatmap, volume by sport type over time, HR zone distribution, streak counters. No match/game analytics (those are sport-specific extensions). Needs `build-data.mjs` equivalent that works from generic Strava history.
-
-- [ ] **Activity rename system** — config-driven rename pipeline. User defines sport → naming pattern mappings in a config file. Makes activity names consistent and makes quest `count_pattern` matching more reliable. Adapt `rename_core.py` to read from config instead of hardcoded sport logic.
-
 - [ ] **SOUL.md v2** — iterate on First Session Protocol and coaching quality after first 2-3 real users. Expected gaps: quest setup flow, weekly planning for unfamiliar sports, goal-setting depth.
+
+- [ ] **Sport-agnostic analytics option** — the three analytics pages (`BadmintonAnalytics`, `RunAnalytics`, `MonthlyAnalytics`) are provided as examples from one real setup. A user doing a different sport has to build their own page from scratch rather than adapt a generic one. Consider adding a lightweight generic analytics page alongside them (activity heatmap, volume by sport type, HR zone distribution, streak counters) that works for any sport out of the box.
 
 ---
 

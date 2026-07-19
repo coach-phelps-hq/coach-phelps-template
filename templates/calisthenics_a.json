@@ -1,0 +1,259 @@
+{
+  "id": "calisthenics_a",
+  "title": "Calisthenics A",
+  "subtitle": "Upper Body & Skills",
+  "workout_type": "calisthenics",
+  "estimated_duration_mins": 68,
+  "location": "Home",
+  "equipment": ["parallettes", "resistance band", "foam roller"],
+  "coaching_note": "L-sit is the featured skill goal for this session, trained alongside calisthenics_b to build hold time through frequency. Wall holds and peel-offs keep handstand progressing as a secondary skill without competing for focus. Push work goes after skill work, not before, so the nervous system is fresh for balance and control. Dips are band-assisted to start - a beginner-appropriate load that lets you build full range of motion before adding bodyweight-only reps. Wrist and forearm conditioning at the end supports every parallette and handstand exercise in this session, so don't skip it.",
+  "phases": [
+    {
+      "name": "Warm-up",
+      "duration": "8 min",
+      "default_rest_secs": 15,
+      "exercises": [
+        {
+          "num": 1,
+          "name": "Wrist circles & stretches",
+          "type": "timed",
+          "duration_secs": 60,
+          "sets": 1,
+          "form_cue": "Full range of motion, both directions. Spend extra time on any stiff spots.",
+          "why": "Wrists take load in every handstand and parallette exercise - non-negotiable warm-up"
+        },
+        {
+          "num": 2,
+          "name": "Band overhead pass-throughs",
+          "type": "reps",
+          "reps": 10,
+          "sets": 2,
+          "rest_between_sets_secs": 15,
+          "form_cue": "Arms straight, wide grip. Move slow through the full arc - chest to overhead to behind.",
+          "why": "Opens shoulder flexion range needed for overhead handstand position"
+        },
+        {
+          "num": 3,
+          "name": "Shoulder circles (arm swings)",
+          "type": "reps",
+          "reps": 10,
+          "sets": 1,
+          "form_cue": "Big slow circles, both directions",
+          "why": "Gets blood into the shoulder joint before loading"
+        },
+        {
+          "num": 4,
+          "name": "Cat-cow",
+          "type": "reps",
+          "reps": 10,
+          "sets": 1,
+          "form_cue": "Slow and deliberate. Full spinal flexion and extension.",
+          "why": "Wakes up the spine and core - foundation for hollow body position"
+        }
+      ]
+    },
+    {
+      "name": "Handstand Block",
+      "duration": "15 min",
+      "default_rest_secs": 60,
+      "transition_rest_secs": 30,
+      "exercises": [
+        {
+          "num": 5,
+          "name": "Wall walks",
+          "type": "reps",
+          "reps": 3,
+          "sets": 3,
+          "rest_between_sets_secs": 60,
+          "form_cue": "Hands stay shoulder-width. Walk feet up the wall until arms are vertical. Squeeze core and glutes at the top. Walk back down with control.",
+          "why": "Builds the shoulder strength and body alignment needed for a freestanding handstand"
+        },
+        {
+          "num": 6,
+          "name": "Chest-to-wall handstand holds",
+          "type": "timed",
+          "duration_secs": 20,
+          "sets": 3,
+          "rest_between_sets_secs": 60,
+          "prep_secs": 5,
+          "form_cue": "Face the wall, hands ~15cm from the base. Kick up to hold. Arms locked, core tight, push the floor away. Find the balance point.",
+          "why": "Chest-to-wall puts you in the correct stacked position - trains the balance feel without the fear of falling forward"
+        },
+        {
+          "num": 7,
+          "name": "Peel-off attempts",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 2,
+          "rest_between_sets_secs": 60,
+          "prep_secs": 5,
+          "optional": true,
+          "form_cue": "From chest-to-wall hold, slowly peel feet off one at a time. Find the balance point. Don't chase it - let it come.",
+          "why": "Transition to freestanding - attempt only when wall holds feel solid"
+        }
+      ]
+    },
+    {
+      "name": "L-Sit Block",
+      "duration": "12 min",
+      "default_rest_secs": 60,
+      "exercises": [
+        {
+          "num": 8,
+          "name": "Tuck L-sit holds (parallettes)",
+          "type": "timed",
+          "duration_secs": 10,
+          "sets": 5,
+          "rest_between_sets_secs": 60,
+          "prep_secs": 5,
+          "form_cue": "Hands on parallettes. Arms locked straight. Lift hips off the ground, bring knees to chest. Hold. Don't let elbows bend.",
+          "why": "Foundation of the L-sit skill. Build hold time before extending legs. Training this twice a week (paired with calisthenics_b) beats one big weekly dose for skill work."
+        },
+        {
+          "num": 9,
+          "name": "One-leg L-sit attempts",
+          "type": "timed",
+          "duration_secs": 8,
+          "sets": 3,
+          "both_sides": true,
+          "rest_between_sets_secs": 45,
+          "prep_secs": 5,
+          "optional": true,
+          "form_cue": "From tuck hold, extend one leg straight. Other leg stays tucked. Try to hold. This is the bridge to a full L-sit.",
+          "why": "Progression toward full L-sit - attempt when tuck hold is consistent at 10s"
+        }
+      ]
+    },
+    {
+      "name": "Push Block",
+      "duration": "13 min",
+      "default_rest_secs": 60,
+      "exercises": [
+        {
+          "num": 10,
+          "name": "Parallette push-ups",
+          "type": "reps",
+          "reps": 10,
+          "sets": 2,
+          "rest_between_sets_secs": 60,
+          "form_cue": "Full depth - chest below the bars. Straight body, squeeze core. Slow down (2s), explode up.",
+          "why": "Greater depth than floor push-ups builds more chest and tricep range. Dropped to 2 sets - beginner volume."
+        },
+        {
+          "num": 11,
+          "name": "Elevated pike push-ups",
+          "type": "reps",
+          "reps": 6,
+          "sets": 2,
+          "rest_between_sets_secs": 60,
+          "form_cue": "Feet on a chair or box, hips high, head toward the floor. Elbows track back, not out. This is a shoulder press, not a push-up.",
+          "why": "Directly trains the overhead pressing strength needed for handstand push-ups. Dropped to 2 sets - beginner volume."
+        },
+        {
+          "num": 12,
+          "name": "Band-assisted parallette dips",
+          "type": "reps",
+          "reps": 8,
+          "sets": 2,
+          "rest_between_sets_secs": 60,
+          "form_cue": "Loop the resistance band under the parallettes and over your shoulders/knees to assist the press. Full ROM - lower until upper arms are parallel to the ground, full lockout at top. Slow eccentric (2-3s down). If you don't have the band set up, sub bench dips instead. Stop if you feel any joint pain, not just muscle fatigue.",
+          "why": "Full-ROM parallette dips load the elbow and shoulder hard - too much for a beginner all at once. Band assistance (or bench dips) builds the tricep/chest work without the load spike."
+        }
+      ]
+    },
+    {
+      "name": "Core",
+      "duration": "9 min",
+      "default_rest_secs": 45,
+      "exercises": [
+        {
+          "num": 13,
+          "name": "Hollow body holds",
+          "type": "timed",
+          "duration_secs": 40,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "prep_secs": 5,
+          "form_cue": "Lower back pressed flat. Arms overhead, legs straight and low. If back arches, bring legs higher. This shape is the body position in a handstand.",
+          "why": "The hollow body is non-negotiable for a straight handstand - train it every session. Building toward 60s - add time only once 40s holds the shape clean."
+        },
+        {
+          "num": 14,
+          "name": "Plank",
+          "type": "timed",
+          "duration_secs": 90,
+          "sets": 2,
+          "rest_between_sets_secs": 45,
+          "prep_secs": 5,
+          "form_cue": "Straight line from head to heel. Don't let hips sag or pike. Push the floor away.",
+          "why": "Base core stability"
+        }
+      ]
+    },
+    {
+      "name": "Wrist & Forearm Conditioning",
+      "duration": "6 min",
+      "default_rest_secs": 30,
+      "exercises": [
+        {
+          "num": 15,
+          "name": "Eccentric wrist curls",
+          "type": "reps",
+          "reps": 10,
+          "sets": 2,
+          "rest_between_sets_secs": 30,
+          "form_cue": "Use other hand to curl up, then slowly lower with the working arm over 3-4 seconds. Light weight only.",
+          "why": "Eccentric load builds tendon resilience in the wrist flexors - good maintenance for anyone putting regular load through their wrists in handstand and parallette work"
+        },
+        {
+          "num": 16,
+          "name": "Reverse wrist curls",
+          "type": "reps",
+          "reps": 10,
+          "sets": 2,
+          "rest_between_sets_secs": 30,
+          "form_cue": "Palm down. Curl the wrist up, lower slowly. Light weight.",
+          "why": "Strengthens the extensor side so flexor and extensor strength stay balanced"
+        },
+        {
+          "num": 17,
+          "name": "Wrist flexor stretch",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 2,
+          "both_sides": true,
+          "rest_between_sets_secs": 15,
+          "form_cue": "Arm straight, palm facing up, gently pull fingers back with other hand. Hold, don't bounce.",
+          "why": "Lengthens the flexor tendons under tension - pairs with the eccentric curls for full forearm health"
+        }
+      ]
+    },
+    {
+      "name": "Cool-down",
+      "duration": "5 min",
+      "default_rest_secs": 10,
+      "exercises": [
+        {
+          "num": 18,
+          "name": "Chest opener stretch",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 2,
+          "rest_between_sets_secs": 10,
+          "form_cue": "Arms behind back, clasp hands, squeeze shoulder blades, open chest toward ceiling.",
+          "why": "Counterbalances the pressing work - keeps posture from rounding forward"
+        },
+        {
+          "num": 19,
+          "name": "Foam roll: lats and upper back",
+          "type": "timed",
+          "duration_secs": 90,
+          "sets": 1,
+          "form_cue": "Slow passes, pause 2-3 seconds on tight spots. Work lats on each side, then thoracic spine.",
+          "why": "Releases the shoulder and back tension from wall walks and pushing work"
+        }
+      ]
+    }
+  ],
+  "progression_notes": "Handstand: add 5s to wall holds each week. Peel-offs: attempt when holds feel easy. L-sit: add 2s to tuck holds each week, attempt one-leg extension when 10s is consistent - keep this block in sync with calisthenics_b's progression. Push work: return to 3 sets once 2x sets feels below RPE 6. Band-assisted dips: reduce band assistance, then move to bodyweight bench/parallette dips once reps feel solid and any joints stay quiet. Pike push-ups: elevate feet higher as shoulders get stronger. Hollow body: add 5s per week toward a 60s target - don't add time if the lower back arches."
+}

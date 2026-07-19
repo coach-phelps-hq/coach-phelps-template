@@ -1,143 +1,31 @@
 # Coach Phelps
 
-An AI coaching system powered by Claude. Clone this repo, connect your Strava, open a Claude session — Coach Phelps runs your intake and gets started.
+An AI coaching system powered by Claude. Clone this repo, connect your Strava, open a Claude session - Coach Phelps runs your intake and gets started.
 
 Coach Phelps is Michael Phelps as a coaching persona: process-obsessed, emotionally honest, no platitudes. He tracks your training via Strava, manages a quest/streak system, and builds a living memory of your progress across sessions.
+
+**⚠️ Requires Strava Premium (Summit).** Almost everything here depends on syncing activity data from Strava, and that requires a paid Strava Premium subscription - a free Strava account will not work.
 
 ---
 
 ## Setup
 
-### 1. Use this template
+**New here? Start with [SETUP.md](SETUP.md)** - a complete beginner walkthrough covering GitHub repo setup, GitHub tokens, Strava API credentials, and deploying your dashboard to Vercel, with no assumed prior experience.
 
-Click **"Use this template"** on GitHub to create your own repo, then clone it locally.
+**Once you're set up, read [HOW_IT_WORKS.md](HOW_IT_WORKS.md)** - explains the concepts (seasons, challenges, quests) and day-to-day workflow, so your first session doesn't feel like a black box.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
-```
+The quick version, if you've done this kind of thing before:
 
-### 2. Install dependencies
+1. **Use this template** on GitHub, then clone your new repo locally.
+2. `pip3 install requests`
+3. Create a Strava API app at [strava.com/settings/api](https://www.strava.com/settings/api), copy `.env.example` to `.env` and fill in your Client ID/Secret, then run `python3 strava/oauth_reauth.py` to authorize and `python3 strava/fetch_strava.py --last 3` to confirm it works.
+4. Fill in your HR zones in `strava/README.md`.
+5. Sync history: `python3 strava/fetch_strava.py --sync --since YYYY-MM-DD`.
+6. Start your first session with `claude` (Claude Code) or by uploading `SOUL.md` + `training/state.md` to Claude.ai. Coach Phelps detects the blank `training/state.md` and runs intake automatically.
+7. Generate your quest log: `python3 scripts/generate_quest_log.py`.
+8. Deploy the dashboard in `ui/` to [Vercel](https://vercel.com) (root directory `ui`), add `GITHUB_REPO`, `GITHUB_WORKFLOW`, `GITHUB_PAT` as environment variables, and add `PAT_TOKEN`, `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN` as GitHub repo secrets so the sync workflow can run.
 
-```bash
-pip3 install requests
-```
-
-### 3. Connect Strava
-
-**Create a Strava API app:**
-1. Go to [strava.com/settings/api](https://www.strava.com/settings/api)
-2. Create an app — set the callback URL to `http://localhost`
-3. Note your **Client ID** and **Client Secret**
-
-**Set up credentials:**
-```bash
-cp .env.example .env
-# Open .env and fill in STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET
-```
-
-**Authorize:**
-```bash
-python strava/oauth_reauth.py
-```
-A browser window opens. Authorize the app. Tokens are saved automatically to `strava/strava_tokens.json` (git-ignored — stays local).
-
-**Test the connection:**
-```bash
-python strava/fetch_strava.py --last 3
-```
-You should see your last 3 Strava activities.
-
-### 4. Customize HR zones
-
-Open `strava/fetch_strava.py` and `strava/query_history.py`. Find the `HR_ZONES` block marked `# CUSTOMIZE` and update the BPM values to match your personal zones.
-
-Simple estimate: Zone 2 upper ≈ 70% of max HR (max HR ≈ 220 − age).
-
-### 5. Sync your training history
-
-Pull the last 3 months so Coach Phelps can assess your current fitness before the first conversation:
-
-```bash
-python strava/fetch_strava.py --sync --since YYYY-MM-DD
-```
-
-Replace `YYYY-MM-DD` with a date ~3 months back. Activities are saved to `training/history/` (git-ignored — stays local).
-
-> **No Strava yet?** Skip this step. The coach will rely on self-report during intake instead.
-
-### 6. Start your first session
-
-**Claude Code (recommended):**
-```bash
-claude
-```
-
-**Claude.ai:**
-Upload `SOUL.md` and `training/state.md` as attachments to a new conversation.
-
-Coach Phelps detects the blank `training/state.md` and runs your intake automatically — no prompting needed.
-
-During the first session, the coach will:
-- Review your Strava history silently before saying hello (if synced)
-- Ask 7–8 intake questions conversationally
-- Confirm your profile and goals
-- Write your `training/state.md` and `training/challenge_v2.json`
-- Commit both files
-
-### 7. Generate your quest log
-
-After the first session:
-```bash
-python scripts/generate_quest_log.py
-```
-
-This produces `training/quest_log.md` — your live progress dashboard. The coach reads it at every boot.
-
-### 8. Set up your dashboard
-
-Your repo includes a web dashboard in `ui/` that deploys via Netlify. Takes about 10 minutes.
-
-**Step 1 — Create a GitHub Personal Access Token**
-
-The sync workflow needs permission to push back to your repo.
-
-1. Go to **GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens**
-2. Click **Generate new token**
-3. Set **Repository access** to your fork only
-4. Under **Repository permissions**, enable **Contents** → Read and write, and **Workflows** → Read and write
-5. Click **Generate token** and copy it — you won't see it again
-
-**Step 2 — Add the token to your repo**
-
-1. Go to your fork → **Settings → Secrets and variables → Actions**
-2. Click **New repository secret** — name: `PAT_TOKEN`, value: the token you just copied
-
-**Step 3 — Connect to Netlify**
-
-1. Go to [netlify.com](https://netlify.com), log in, click **Add new site → Import an existing project**
-2. Choose **GitHub** and select your fork
-3. Netlify auto-detects settings from `ui/netlify.toml` — confirm:
-   - **Base directory:** `ui`
-   - **Build command:** `npm install && npm run build`
-   - **Publish directory:** `dist`
-4. Click **Deploy site**
-
-**Step 4 — Add environment variables in Netlify**
-
-Go to **Site configuration → Environment variables** and add:
-
-| Key | Value |
-|---|---|
-| `GITHUB_REPO` | `your-github-username/your-repo-name` |
-| `GITHUB_WORKFLOW` | `sync.yml` |
-| `GITHUB_PAT` | the same Personal Access Token from Step 1 |
-
-Then **Deploys → Trigger deploy → Deploy site** to pick them up.
-
-**Step 5 — Confirm**
-
-Open your Netlify URL. The dashboard loads (panels will be empty until you sync Strava data — that's expected). To pull in your history, hit **Sync** in the dashboard or run the workflow manually from GitHub Actions.
+Full details, screenshots-in-words, and troubleshooting for every step above are in [SETUP.md](SETUP.md).
 
 ---
 
@@ -174,4 +62,13 @@ At the end of every session, the coach commits updates to `training/state.md`, `
 | `strava/oauth_reauth.py` | First-time auth and token refresh |
 | `strava/fetch_strava.py` | Fetch and sync activities from Strava |
 | `strava/query_history.py` | Search and filter local activity history |
+| `strava/rename_activities.py` / `rename_core.py` / `rename_single.py` | Rename Strava activities to a consistent naming pattern (dry-run by default) |
 | `scripts/generate_quest_log.py` | Regenerate `training/quest_log.md` |
+| `scripts/generate_quest_history.py` | Regenerate `training/quest_history.json` for the dashboard |
+| `scripts/run_sync_pipeline.py` | Full sync pipeline - fetch, rename, regenerate quest data (used by the GitHub Actions workflow) |
+
+Workout templates and sessions are compiled separately, by `ui/scripts/build-data.mjs` - it runs automatically every time you do `npm run dev` or `npm run build` inside `ui/`, so there's nothing to run by hand for those.
+
+## Multi-agent setup
+
+This repo is designed to work with more than one Claude agent role sharing the same codebase - Coach Phelps (the coaching persona), plus a Tech Lead, UI Expert, and Bob the Builder for engineering work on the repo itself. See `CLAUDE.md` for the routing logic and `.github/agents/` for each role's instructions. If you're only using the coaching persona, you can ignore this entirely - it only activates when a session is addressed as one of the other roles.

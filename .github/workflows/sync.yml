@@ -2,12 +2,6 @@ name: Sync
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'training/challenge_v2.json'
-      - 'sessions/**'
-      - 'templates/**'
 
 jobs:
   sync:
@@ -29,11 +23,13 @@ jobs:
         run: pip install requests
 
       - name: Run sync pipeline
-        if: github.event_name == 'workflow_dispatch'
-        run: python scripts/run_sync_pipeline.py
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+        run: python3 scripts/run_sync_pipeline.py
 
-      - name: Maintain last_week folder
-        if: github.event_name == 'workflow_dispatch'
+      - name: Populate last_week
         run: |
           mkdir -p training/last_week
           CUTOFF=$(date -d '7 days ago' +%Y-%m-%d)
@@ -45,31 +41,19 @@ jobs:
               cp "$f" training/last_week/
             fi
           done
+          echo "last_week contains $(ls training/last_week/ 2>/dev/null | wc -l) activities"
 
       - name: Commit pipeline changes
-        if: github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f ui/client/src/data/
+          git restore --staged strava/strava_tokens.json 2>/dev/null || true
           git add -A
           if git diff --cached --quiet; then
             echo "No changes"
           else
             MSG=$(python3 -c "import json; print(json.load(open('training/sync_status.json'))['commit_message'])" 2>/dev/null || echo "core: sync pipeline run [skip ci]")
             git commit -m "$MSG"
-            git push
-          fi
-
-      - name: Generate quest_log.md
-        if: github.event_name == 'push'
-        run: |
-          python scripts/generate_quest_log.py
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add training/quest_log.md
-          if git diff --cached --quiet; then
-            echo "No changes"
-          else
-            git commit -m "core: regenerate quest_log.md"
             git push
           fi

@@ -1,0 +1,237 @@
+{
+  "id": "strength_b",
+  "title": "Strength B",
+  "subtitle": "Upper body + core",
+  "workout_type": "strength",
+  "estimated_duration_mins": 55,
+  "location": "Home",
+  "equipment": [
+    "dumbbells",
+    "resistance tube",
+    "resistance band"
+  ],
+  "coaching_note": "Pay attention to how your elbows and wrists feel throughout - the conditioning work at the end is real maintenance, not just a cooldown. Face pulls and band work protect the shoulder long-term.",
+  "phases": [
+    {
+      "name": "Warm-up",
+      "duration": "5 min",
+      "default_rest_secs": 20,
+      "exercises": [
+        {
+          "num": 1,
+          "name": "Band Pull-Apart",
+          "type": "reps",
+          "reps": 15,
+          "sets": 3,
+          "rest_between_sets_secs": 20,
+          "rest_after_exercise_secs": 30,
+          "form_cue": "Arms straight. Pull band to chest, squeeze shoulder blades together at end. Control the return.",
+          "why": "Activates rear delts and rotator cuff. Counteracts the shoulder internal rotation pattern that builds up from desk work and pressing-heavy training."
+        },
+        {
+          "num": 2,
+          "name": "Shoulder Circles",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 1,
+          "both_sides": true,
+          "rest_after_exercise_secs": 20,
+          "form_cue": "Big slow circles forward and back. Let the shoulder blade move.",
+          "why": "Shoulder and thoracic mobility before pressing."
+        },
+        {
+          "num": 3,
+          "name": "Cat-Cow",
+          "type": "reps",
+          "reps": 10,
+          "sets": 1,
+          "rest_after_exercise_secs": 20,
+          "form_cue": "On all fours. Breathe in on cow (belly drops), breathe out on cat (spine rounds). Slow.",
+          "why": "Thoracic mobility. Restricted thoracic spine forces the lumbar to compensate - this helps."
+        }
+      ]
+    },
+    {
+      "name": "Upper Body",
+      "duration": "25 min",
+      "default_rest_secs": 75,
+      "coaching_note": "Pay attention to your elbows and shoulders throughout. Any sharp pain on these movements - stop, drop weight, reassess.",
+      "exercises": [
+        {
+          "num": 4,
+          "name": "DB Floor Press",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 75,
+          "rest_after_exercise_secs": 90,
+          "form_cue": "Lying on floor, arms 45 degrees from body. Press up, don't let elbows flare wide. The floor limits depth - protects the shoulder at the bottom.",
+          "why": "Chest and tricep strength without the shoulder strain of a bench. Floor limits depth, making it elbow-friendlier."
+        },
+        {
+          "num": 5,
+          "name": "DB Bent-Over Row",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 75,
+          "rest_after_exercise_secs": 90,
+          "both_sides": true,
+          "form_cue": "Hinge at hips, back flat. Pull DB to hip - not to chest. Elbow stays close to body. Squeeze the lat at the top.",
+          "why": "Back and lat strength. Pulling strength balances all the pushing. Critical for posture."
+        },
+        {
+          "num": 6,
+          "name": "Bent-Over Reverse Fly (light DB)",
+          "type": "reps",
+          "reps": 12,
+          "sets": 3,
+          "rest_between_sets_secs": 60,
+          "rest_after_exercise_secs": 75,
+          "form_cue": "Hinge forward at hips, back flat, arms hanging. Raise both arms out to the sides to shoulder height, slight bend in elbow. Squeeze shoulder blades together at the top. Use 2-3kg max.",
+          "why": "Rear delt and rotator cuff strength. Same target as face pulls, no anchor needed. Counters the internal rotation load that builds up from pressing movements and overhead sports."
+        },
+        {
+          "num": 7,
+          "name": "Lateral Raise (pilates band)",
+          "type": "reps",
+          "reps": 12,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "form_cue": "Stand on band. Arms slightly in front of body, slight bend in elbow. Raise to shoulder height only. Don't shrug.",
+          "why": "Side delt strength for shoulder stability. Using the light pilates band keeps load off the elbow."
+        },
+        {
+          "num": 8,
+          "name": "Push-Up",
+          "type": "reps",
+          "reps": 999,
+          "sets": 3,
+          "rest_between_sets_secs": 60,
+          "rest_after_exercise_secs": 60,
+          "form_cue": "Hands just outside shoulders. Body straight line. Lower chest to floor, press all the way up. Stop 2 reps before failure - don't grind.",
+          "why": "Bodyweight pressing strength. AMRAP means go until form breaks, not until you collapse."
+        }
+      ]
+    },
+    {
+      "name": "Shoulder",
+      "duration": "8 min",
+      "default_rest_secs": 30,
+      "exercises": [
+        {
+          "num": 12,
+          "name": "Y Raise (light DB)",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 45,
+          "form_cue": "Slight forward lean. Arms form a Y at 45 degrees, thumbs up. Raise to shoulder height only. Use 2-3kg max.",
+          "why": "Targets lower trapezius and posterior deltoid - prevents shoulder impingement on overhead movements."
+        },
+        {
+          "num": 13,
+          "name": "Side-Lying External Rotation (ankle weight)",
+          "type": "reps",
+          "reps": 12,
+          "sets": 3,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 45,
+          "both_sides": true,
+          "form_cue": "Lie on your side. Elbow bent 90 degrees, upper arm pinned to side. Hold ankle weight in top hand. Rotate forearm up toward ceiling, lower slowly. Keep the elbow glued.",
+          "why": "Rotator cuff strengthening - builds the stabilizers that protect the shoulder during any overhead movement. Uses ankle weight (1kg) instead of band."
+        }
+      ]
+    },
+    {
+      "name": "Core",
+      "duration": "10 min",
+      "default_rest_secs": 40,
+      "exercises": [
+        {
+          "num": 9,
+          "name": "Hollow Hold",
+          "type": "timed",
+          "duration_secs": 20,
+          "sets": 3,
+          "rest_between_sets_secs": 40,
+          "rest_after_exercise_secs": 50,
+          "form_cue": "On back. Arms overhead, legs raised. Lower back pressed to floor. If lower back arches, tuck knees in.",
+          "why": "Full anterior chain tension. Carries over to running posture."
+        },
+        {
+          "num": 10,
+          "name": "Side Plank",
+          "type": "timed",
+          "duration_secs": 20,
+          "sets": 2,
+          "rest_between_sets_secs": 30,
+          "rest_after_exercise_secs": 40,
+          "both_sides": true,
+          "form_cue": "Hip stacked. Don't let it sag. Breathe normally.",
+          "why": "Lateral core strength on each side - an area regular training often neglects."
+        },
+        {
+          "num": 11,
+          "name": "Dead Bug",
+          "type": "reps",
+          "reps": 8,
+          "sets": 2,
+          "rest_between_sets_secs": 40,
+          "rest_after_exercise_secs": 0,
+          "both_sides": true,
+          "form_cue": "Lower back stays flat. Extend opposite arm and leg slowly. Return slowly.",
+          "why": "Deep core stability to end the session."
+        }
+      ]
+    },
+    {
+      "name": "Wrist & Forearm Conditioning",
+      "duration": "8 min",
+      "default_rest_secs": 45,
+      "optional": true,
+      "coaching_note": "Even when tired, do the eccentric curls. That slow lowering is what builds tendon resilience over time.",
+      "exercises": [
+        {
+          "num": 14,
+          "name": "Wrist Flexor Stretch",
+          "type": "timed",
+          "duration_secs": 30,
+          "sets": 3,
+          "rest_between_sets_secs": 10,
+          "rest_after_exercise_secs": 30,
+          "both_sides": true,
+          "form_cue": "Arm straight, palm up. Gently pull fingers back with other hand. Feel the stretch on the inside of the forearm. Don't force it.",
+          "why": "Lengthens the wrist flexors and medial forearm tendons - keeps the forearm mobile and reduces tension around the inner elbow from gripping and pressing work."
+        },
+        {
+          "num": 15,
+          "name": "Eccentric Wrist Curl",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 60,
+          "both_sides": true,
+          "form_cue": "Forearm on thigh, palm up, 2-3kg DB. Use other hand to lift the weight up. Lower slowly with working arm only - 3 counts down. That slow lowering is the whole point.",
+          "why": "Eccentric loading is one of the best tools for building tendon resilience in the wrist flexors. The slow lowering phase is what does the work - don't rush it."
+        },
+        {
+          "num": 16,
+          "name": "Reverse Wrist Curl",
+          "type": "reps",
+          "reps": 10,
+          "sets": 3,
+          "rest_between_sets_secs": 45,
+          "rest_after_exercise_secs": 0,
+          "both_sides": true,
+          "form_cue": "Forearm on thigh, palm down, 2-3kg DB. Curl knuckles up toward you, lower slowly. Don't let the forearm lift off the thigh.",
+          "why": "Strengthens the wrist extensors to balance the flexor-focused work above. Balanced forearm strength reduces overall tendon stress."
+        }
+      ]
+    }
+  ],
+  "progression_notes": "Push-ups: when you can consistently hit 15+ reps per set, add a resistance band across your back for extra load. DB exercises: add 1kg per side every 1-2 weeks when all reps are clean."
+}
