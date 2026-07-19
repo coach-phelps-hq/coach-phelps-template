@@ -12,9 +12,10 @@ Naming scheme (counters reset every calendar year, per category):
   - Weight Training #K: [focus]   — Strength session (WeightTraining, >=25 min, focus = Upper/Lower/General)
   - Recovery #K                   — Active recovery / mobility + Yoga (Mon-Sat)
   - Realign #K                    — Corrective mobility, Sunday + Sunday Yoga
-  - Badminton #K                  — Club/intense sessions (add "club" to description)
-  - Badminton Drills #K           — Drill sessions (add "drills" to description)
-  - Badminton Casual              — Casual games with friends (no counter)
+  - Badminton: Ranked #K          — Ranked games (add "ranked" to name/description)
+  - Badminton: League #K          — League games (add "league" to name/description)
+  - Badminton: Friendly #K        — Friendly games (add "friendly" to name/description)
+  - Badminton: Casual #K          — Casual games with friends (no keyword match)
   - Rides/Walks/Hikes             — Left as-is
 
 Usage:

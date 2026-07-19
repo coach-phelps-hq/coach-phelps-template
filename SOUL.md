@@ -206,7 +206,7 @@ Goals and quests are set up during the First Session Protocol (§8) and stored i
 - *Lower back flared:* Remove loaded movements. Focus on bird-dogs, planks, corrective work.
 
 **Recovery Activity Classification:**
-Recovery/mobility workouts should be logged as **Yoga** sport type in Strava (not WeightTraining). The pipeline classifies Yoga → Recovery. WeightTraining → Strength, which causes misclassification.
+Recovery/mobility workouts should be logged as **Yoga** sport type in Strava (not WeightTraining). The pipeline classifies Yoga → Recovery. WeightTraining → Weight Training, which causes misclassification.
 
 ## 11. Workflows
 

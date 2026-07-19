@@ -119,7 +119,7 @@ export function SessionList({
   }
 
   if (sessions.length === 0) {
-    return <p className="text-sm text-muted-foreground">No club sessions yet.</p>;
+    return <p className="text-sm text-muted-foreground">No sessions yet.</p>;
   }
 
   return (

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { AnalyticsSession } from "@/pages/BadmintonMatchAnalytics";
 import { getSessionGames } from "@/pages/BadmintonMatchAnalytics";
-import type { GameMode } from "@/components/analytics/GameFilter";
+import type { GameMode } from "@/components/badminton-match-analytics/GameFilter";
 import type { ParsedGame } from "@/lib/matchParser";
 import { computeForm, FormArrow, type FormTrend } from "./shared";
 

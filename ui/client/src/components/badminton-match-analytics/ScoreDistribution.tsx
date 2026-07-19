@@ -16,7 +16,7 @@ import {
 import { useMemo } from "react";
 import type { AnalyticsSession } from "@/pages/BadmintonMatchAnalytics";
 import { getSessionGames } from "@/pages/BadmintonMatchAnalytics";
-import type { GameMode } from "@/components/analytics/GameFilter";
+import type { GameMode } from "@/components/badminton-match-analytics/GameFilter";
 
 interface Props {
   sessions: AnalyticsSession[];

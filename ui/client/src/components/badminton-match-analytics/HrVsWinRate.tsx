@@ -17,7 +17,7 @@ import {
 } from "recharts";
 import type { AnalyticsSession } from "@/pages/BadmintonMatchAnalytics";
 import { getSessionStats, getSessionGames } from "@/pages/BadmintonMatchAnalytics";
-import type { GameMode } from "@/components/analytics/GameFilter";
+import type { GameMode } from "@/components/badminton-match-analytics/GameFilter";
 
 interface Props {
   sessions: AnalyticsSession[];

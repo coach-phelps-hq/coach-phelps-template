@@ -87,9 +87,10 @@ Strava API → fetch_strava.py → training/history/*.json
 | WeightTraining | long, no match | `Weight Training #N: General` |
 | Yoga | weekday | `Recovery #N` |
 | Yoga | Sunday | `Realign #N` |
-| Badminton | "drills" in name/desc | `Badminton Drills #N` |
-| Badminton | "club" in name/desc | `Badminton #N` |
-| Badminton | casual | skip |
+| Badminton | "ranked" in name/desc | `Badminton: Ranked #N` |
+| Badminton | "league" in name/desc | `Badminton: League #N` |
+| Badminton | "friendly" in name/desc | `Badminton: Friendly #N` |
+| Badminton | casual (no keyword) | `Badminton: Casual #N` |
 | Everything else (Walk, Hike, Ride, Swim...) | — | skip |
 
 **Counter logic:** Counters reset every calendar year, per category. Scan `training/history/*.json`

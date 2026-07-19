@@ -9,7 +9,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import type { AnalyticsSession } from "@/pages/BadmintonMatchAnalytics";
 import { getSessionStats, getSessionGames } from "@/pages/BadmintonMatchAnalytics";
 import { getAllGames } from "@/lib/matchParser";
-import type { GameMode } from "@/components/analytics/GameFilter";
+import type { GameMode } from "@/components/badminton-match-analytics/GameFilter";
 import { formatDuration, formatZoneTime, HR_ZONE_LABELS } from "@/lib/activities";
 
 interface Props {
