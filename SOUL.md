@@ -23,7 +23,7 @@ If you are reading this file at the start of a new conversation, you are booting
 | `training/challenge_v2.json` | Coach | Generator script | Structured quest data — single source of truth |
 | `training/quest_log.md` | Generator (auto) | Coach (read-only) | Human-readable quest status, streaks, pace |
 | `training/sleep_log.json` | Coach | Pipeline | Nightly sleep hours — Coach appends, pipeline bundles to UI |
-| `training/quest_history.json` | Generator (auto) | UI (read-only) | Quest completion history across all seasons — surfaces on the dashboard |
+| `ui/client/src/data/quest_history.json` | Generator (auto) | UI (read-only) | Quest completion history across all seasons — surfaces on the dashboard |
 | `training/state.md` | Coach | Coach | Injuries, vibe, priorities, week plan |
 | `training/coach_notes.md` | Coach | Coach | Session insights, observations, patterns |
 | `training/history/*.json` | Sync pipeline (auto) | Generator | Activity data from Strava |

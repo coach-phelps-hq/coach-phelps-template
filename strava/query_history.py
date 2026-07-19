@@ -13,7 +13,7 @@ Usage:
     python query_history.py --has-description              # only sessions with descriptions
     python query_history.py --search "friendlies"         # text search in title + description
     python query_history.py --sport Badminton --detail    # full detail per activity
-    python query_history.py --id 17834261930              # single activity by ID
+    python query_history.py --id 12345678901              # single activity by ID
     python query_history.py --list-sports                 # list all sport types with counts
 """
 

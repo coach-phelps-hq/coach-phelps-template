@@ -111,6 +111,7 @@ Inside `challenge_v2.json`, quests come in a few practical types:
 | **Workouts** | Your six workout templates, grouped by type, with any of today's session overrides applied (see section 7). | The compiled `workouts.json` (templates + sessions) |
 | **Monthly Analytics** | A month-by-month view of training volume, this month's workout breakdown vs. last month, your sleep summary, and quest completion history. | `activities.json`, `sleep_log.json`, `quest_history.json` (a generated file, separate from the raw `challenge_v2.json`), `sync_status.json` |
 | **Run / Badminton Analytics** | Sport-specific example dashboards (pace trends, HR zones, personal bests for running; load/session tracking for badminton). Provided as reference implementations - use, adapt, or delete whichever doesn't match your sport. | `activities.json`, filtered by sport |
+| **Badminton Match Analytics** | A second badminton reference page focused on match results - win/loss record, partner/opponent stats, fatigue curve, HR vs. win rate. Parses structured match data out of Strava activity descriptions (see `BADMINTON_CATEGORIES.md`). Coexists with the main Badminton Analytics page; delete if you don't need match-level detail. | `activities.json`, filtered by badminton category |
 
 The common thread: everything you tell your coach eventually lands in one of the `training/` files, and the dashboard reads compiled versions of those files. "Thing I did" -> file the coach updates -> what shows up on the dashboard.
 
@@ -120,6 +121,6 @@ The common thread: everything you tell your coach eventually lands in one of the
 
 A quick closing checklist:
 
-- **Never hand-edit:** `training/quest_log.md`, `training/quest_history.json`, or anything inside `ui/client/src/data/` - these are all auto-generated and get overwritten on the next sync/build/session anyway.
+- **Never hand-edit:** `training/quest_log.md`, `ui/client/src/data/quest_history.json`, or anything inside `ui/client/src/data/` - these are all auto-generated and get overwritten on the next sync/build/session anyway.
 - **Normally coach-written, but fine to read:** `training/state.md`, `training/challenge_v2.json`, `training/coach_notes.md`, `training/roadmap.md`, `training/sleep_log.json`. You can open and read any of these anytime to see exactly what your coach knows. Editing them by hand won't break anything technically, but it's usually better to just tell the coach what you want changed in conversation - it'll keep everything in sync (e.g. regenerating `quest_log.md` after a `challenge_v2.json` edit) in a way a manual edit won't.
 - **Yours to edit freely:** `templates/*.json` if you want to change your base workouts (though see `.github/agents/` if you're using the multi-agent engineering setup - template changes go through Tech Lead review there), and anything in `sessions/` you want to clear out manually.

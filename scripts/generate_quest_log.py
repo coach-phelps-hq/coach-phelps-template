@@ -318,6 +318,8 @@ def compute_weekly_counts(activities: list[dict], data: dict, today: date) -> di
     counts = {label: 0 for label in weekly_targets}
 
     for label, cfg in weekly_targets.items():
+        if not isinstance(cfg, dict):
+            continue  # plain integer targets have no source config — counted manually via UI
         source = cfg.get("source", "")
         if source == "quest":
             quest_id = cfg.get("quest_id")
@@ -348,6 +350,8 @@ def compute_weekly_counts(activities: list[dict], data: dict, today: date) -> di
         name = a.get("name", "")
         sport = a.get("sport_type", "")
         for label, cfg in weekly_targets.items():
+            if not isinstance(cfg, dict):
+                continue
             source = cfg.get("source", "")
             if source == "strava_pattern":
                 pattern = cfg.get("pattern", "")

@@ -46,6 +46,8 @@ coach-phelps/
 │       ├── data/               # UI data bundle (pipeline writes, git-tracked)
 │       │   ├── activities.json
 │       │   ├── challenge_v2.json   # Mirror of training/challenge_v2.json
+│       │   ├── quest_history.json
+│       │   ├── sleep_log.json
 │       │   ├── sync_status.json
 │       │   └── workouts.json
 │       ├── components/
@@ -55,7 +57,8 @@ coach-phelps/
     ├── CONVENTIONS.md          # Commit/branch/PR rules
     └── workflows/
         ├── sync.yml            # Sync pipeline (workflow_dispatch)
-        └── apply-coach-patch.yml # Phone session commit fallback
+        ├── apply-coach-patch.yml # Phone session commit fallback
+        └── validate-data.yml   # Guards the coach's direct-to-main JSON commits
 ```
 
 ## Responsibilities

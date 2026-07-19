@@ -1,7 +1,7 @@
 # Timer State Machine — WorkoutTimer.tsx
 
 **Version:** v1.1 — Apr 4, 2026
-**Source of truth:** `client/src/pages/WorkoutTimer.tsx`
+**Source of truth:** `client/src/pages/workout-timer/`
 
 ---
 
