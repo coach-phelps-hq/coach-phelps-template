@@ -26,6 +26,8 @@ ui/
     ├── data/                  # Built output (DO NOT edit directly)
     │   ├── activities.json    # Merged from training/history/
     │   ├── challenge_v2.json  # Mirror of training/challenge_v2.json
+    │   ├── quest_history.json # Quest completion history across seasons
+    │   ├── sleep_log.json     # Mirror of training/sleep_log.json
     │   ├── sync_status.json
     │   └── workouts.json
     ├── pages/
@@ -35,6 +37,8 @@ ui/
     │   ├── MonthlyAnalytics.tsx    # Monthly view: workout/sleep/quest breakdown (/monthly)
     │   ├── BadmintonAnalytics.tsx  # Badminton training load (/badminton)
     │   ├── BadmintonMatchAnalytics.tsx # Badminton win/loss + match stats (/badminton-match-analytics)
+    │   ├── Deprecated.tsx      # Archive page for retired routes
+    │   ├── NotFound.tsx        # 404 page
     │   └── workout-timer/     # Timer state machine (see docs/timer-state-machine.md)
     ├── components/
     │   ├── CommandStrip.tsx       # Top bar: title, streaks, sync button, back button, nav icons
@@ -45,15 +49,21 @@ ui/
     │   ├── ActivityHeatmap.tsx    # Training heatmap grid
     │   ├── SideQuestTracker.tsx   # Quest progress bars
     │   ├── ActivityFeed.tsx       # Recent activities list
+    │   ├── InsightsRow.tsx / ErrorBoundary.tsx
     │   ├── WorkoutBreakdownCard.tsx / SleepSummaryCard.tsx / QuestSummaryCard.tsx / MonthCard.tsx
     │   │                          # MonthlyAnalytics building blocks
     │   ├── run-analytics/         # RunAnalytics's split components (charts, session list, form indicator)
-    │   └── badminton-analytics/   # BadmintonAnalytics's split components (TRIMP/ACWR-based training load)
+    │   ├── badminton-analytics/   # BadmintonAnalytics's split components (TRIMP/ACWR-based training load)
+    │   ├── badminton-match-analytics/ # BadmintonMatchAnalytics's split components (win/loss, partner/opponent stats)
+    │   └── ui/                    # shadcn primitives (button, dialog, tooltip, etc.)
     ├── lib/
     │   ├── activities.ts      # Activity types + name-based classification
     │   ├── challenge.ts       # Challenge/quest type definitions
     │   ├── workouts.ts        # Workout session logic
+    │   ├── matchParser.ts     # Parses win/loss match data from Strava descriptions
+    │   ├── nameAliases.ts     # Name normalization for match analytics
     │   └── utils.ts
+    ├── hooks/                 # useComposition, useMobile, usePersistFn
     └── contexts/ThemeContext.tsx
 ```
 

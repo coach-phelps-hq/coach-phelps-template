@@ -32,7 +32,7 @@ jobs:
       - name: Populate last_week
         run: |
           mkdir -p training/last_week
-          CUTOFF=$(date -d '7 days ago' +%Y-%m-%d)
+          CUTOFF=$(date -d '6 days ago' +%Y-%m-%d)
           rm -f training/last_week/*.json
           for f in training/history/*.json; do
             [ -f "$f" ] || continue

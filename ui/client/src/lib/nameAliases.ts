@@ -9,9 +9,7 @@
 
 /** Map of variant name (lowercase) → canonical display name */
 const NAME_ALIASES: Record<string, string> = {
-  joe: "Joe Chung",
-  "new richard t": "Rich Tan",
-  "richard t": "Rich Tan",
+  johndoe: "John Doe",
 };
 
 /** Unicode prefixes/suffixes to strip (e.g., eBadders crowns) */

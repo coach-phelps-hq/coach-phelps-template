@@ -17,9 +17,9 @@ Usage:
   python rename_single.py --status                       # Show all current counters
 
 Examples:
-  python rename_single.py 17857762013
-  python rename_single.py 17857762013 --apply
-  python rename_single.py 17857762013 --name "Weight Training #4: Upper" --apply
+  python rename_single.py 12345678901
+  python rename_single.py 12345678901 --apply
+  python rename_single.py 12345678901 --name "Weight Training #4: Upper" --apply
 """
 
 import argparse

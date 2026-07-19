@@ -6,9 +6,13 @@ Steps:
   2. Auto-rename new unrenamed activities via rename_single.py (new files only)
   3. Generate quest_log.md
   4. Generate quest_history.json (merged history across all seasons)
-  5. Rebuild activities.json from all history/ files and write UI data bundle
-  6. Populate training/last_week/ (activities from past 7 days)
-  7. Write sync_status.json
+  5. Write sleep_log.json into the UI data bundle
+  Write sync_status.json at the end.
+
+  activities.json, challenge_v2.json, and workouts.json are NOT written here -
+  ui/scripts/build-data.mjs owns all three and regenerates them on every
+  build/dev via the prebuild/predev npm hooks. training/last_week/ is
+  populated by sync.yml, not this script, to avoid doing it twice.
   (Commit & push is handled by sync.yml, not this script)
 
 Usage:
@@ -17,17 +21,15 @@ Usage:
 
 import json
 import os
-import shutil
 import subprocess
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 REPO_DIR = Path(__file__).resolve().parent.parent
 TRAINING_DIR = REPO_DIR / "training"
 HISTORY_DIR = TRAINING_DIR / "history"
-LAST_WEEK_DIR = TRAINING_DIR / "last_week"
 DATA_DIR = REPO_DIR / "ui" / "client" / "src" / "data"
 TOKENS_PATH = REPO_DIR / "strava" / "strava_tokens.json"
 SYNC_STATUS_PATH = TRAINING_DIR / "sync_status.json"
@@ -135,36 +137,6 @@ def step_generate_quest_history() -> None:
     log("quest_history.json generated")
 
 
-def step_populate_last_week() -> int:
-    """Copy activities from the past 7 days into training/last_week/."""
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
-    LAST_WEEK_DIR.mkdir(parents=True, exist_ok=True)
-    for f in LAST_WEEK_DIR.glob("*.json"):
-        f.unlink()
-    count = 0
-    for f in HISTORY_DIR.glob("*.json"):
-        try:
-            data = json.loads(f.read_text())
-            act_date = (data.get("start_date") or "")[:10]
-            if act_date >= cutoff:
-                shutil.copy2(f, LAST_WEEK_DIR / f.name)
-                count += 1
-        except Exception:
-            pass
-    log(f"last_week/ populated: {count} activities")
-    return count
-
-
-def build_activities_json() -> list:
-    activities = []
-    for f in HISTORY_DIR.glob("*.json"):
-        try:
-            activities.append(json.loads(f.read_text()))
-        except Exception:
-            pass
-    return sorted(activities, key=lambda a: a.get("start_date_local", ""), reverse=True)
-
-
 def write_sync_status(synced: int, renamed: int, warnings: list[str], error: Optional[str] = None) -> None:
     status = "error" if error else ("partial" if warnings else "success")
     payload = {
@@ -194,43 +166,30 @@ def main():
         if os.environ.get("CI"):
             write_tokens_from_env()
 
-        log("Step 1/6: Syncing Strava activities...")
+        log("Step 1/5: Syncing Strava activities...")
         synced, new_files = step_sync_strava()
         log(f"  {synced} new activities")
 
         if new_files:
-            log("Step 2/6: Renaming new activities...")
+            log("Step 2/5: Renaming new activities...")
             renamed, rename_warnings = step_auto_rename(new_files)
             warnings.extend(rename_warnings)
             log(f"  {renamed} renamed")
         else:
-            log("Step 2/6: No new activities - skipping rename")
+            log("Step 2/5: No new activities - skipping rename")
 
-        log("Step 3/6: Generating quest_log.md...")
+        log("Step 3/5: Generating quest_log.md...")
         step_generate_quest_log()
 
-        log("Step 4/6: Generating quest_history.json...")
+        log("Step 4/5: Generating quest_history.json...")
         step_generate_quest_history()
 
-        log("Step 5/6: Rebuilding activities.json and UI data bundle...")
-        merged = build_activities_json()
+        log("Step 5/5: Writing sleep_log.json to UI data bundle...")
         DATA_DIR.mkdir(parents=True, exist_ok=True)
-        (DATA_DIR / "activities.json").write_text(json.dumps(merged))
-        log(f"  activities.json: {len(merged)} total")
-
-        src = TRAINING_DIR / "challenge_v2.json"
-        if src.exists():
-            (DATA_DIR / "challenge_v2.json").write_text(src.read_text())
-
         sleep_src = TRAINING_DIR / "sleep_log.json"
         (DATA_DIR / "sleep_log.json").write_text(
             sleep_src.read_text() if sleep_src.exists() else "[]"
         )
-
-        (DATA_DIR / "workouts.json").write_text(json.dumps({"templates": [], "sessions": []}))
-
-        log("Step 6/6: Populating last_week/...")
-        step_populate_last_week()
 
         write_sync_status(synced, renamed, warnings)
         log("Pipeline complete.")
