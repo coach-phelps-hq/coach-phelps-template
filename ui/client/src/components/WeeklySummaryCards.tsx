@@ -219,7 +219,7 @@ function BadmintonCard({ activities, target }: { activities: Activity[]; target:
   const thisWeek = getThisWeekActivities(activities);
   const sessions = thisWeek.filter((a) => {
     const cat = getTrainingCategory(a);
-    return cat === "badminton_club" || cat === "badminton_drills" || cat === "badminton_casual";
+    return cat === "badminton_ranked" || cat === "badminton_league" || cat === "badminton_friendly" || cat === "badminton_casual";
   });
   const activeDays = new Set(sessions.map((a) => getDayOfWeek(a.start_date_local)));
   const count = sessions.length;

@@ -25,8 +25,9 @@ RENAMED_PATTERNS = [
     re.compile(r"^Foundation #\d+"),
     re.compile(r"^Weight Training #\d+"),
     re.compile(r"^Calisthenics #\d+"),
-    re.compile(r"^Badminton: Club #\d+"),
-    re.compile(r"^Badminton: Drills #\d+"),
+    re.compile(r"^Badminton: Ranked #\d+"),
+    re.compile(r"^Badminton: League #\d+"),
+    re.compile(r"^Badminton: Friendly #\d+"),
     re.compile(r"^Badminton: Casual #\d+"),
     re.compile(r"^Recovery #\d+"),
     re.compile(r"^Realign #\d+"),
@@ -39,8 +40,9 @@ COUNTER_PATTERNS = {
     "foundation": re.compile(r"^Foundation #(\d+)"),
     "weight": re.compile(r"^Weight Training #(\d+)"),
     "calisthenics": re.compile(r"^Calisthenics #(\d+)"),
-    "badminton_club": re.compile(r"^Badminton: Club #(\d+)"),
-    "drills": re.compile(r"^Badminton: Drills #(\d+)"),
+    "badminton_ranked": re.compile(r"^Badminton: Ranked #(\d+)"),
+    "badminton_league": re.compile(r"^Badminton: League #(\d+)"),
+    "badminton_friendly": re.compile(r"^Badminton: Friendly #(\d+)"),
     "badminton_casual": re.compile(r"^Badminton: Casual #(\d+)"),
     "recovery": re.compile(r"^Recovery #(\d+)"),
     "realign": re.compile(r"^Realign #(\d+)"),
@@ -66,7 +68,7 @@ def classify_activity(
 
     Categories:
       run, swim, foundation, weight, recovery, realign,
-      badminton_club, drills, badminton_casual, skip
+      badminton_ranked, badminton_league, badminton_friendly, badminton_casual, skip
     """
     sport = data.get("sport_type", data.get("type", ""))
     name = data.get("name", "")
@@ -93,10 +95,12 @@ def classify_activity(
 
     # Badminton — classify by keywords in name/description
     if sport == "Badminton":
-        if "drills" in name_lower or "drills" in desc:
-            return ("drills", None, "drills")
-        if "club" in name_lower or "club" in desc:
-            return ("badminton_club", None, "badminton_club")
+        if "ranked" in name_lower or "ranked" in desc:
+            return ("badminton_ranked", None, "badminton_ranked")
+        if "league" in name_lower or "league" in desc:
+            return ("badminton_league", None, "badminton_league")
+        if "friendly" in name_lower or "friendly" in desc:
+            return ("badminton_friendly", None, "badminton_friendly")
         return ("badminton_casual", None, "badminton_casual")
 
     # Yoga — recovery on weekdays, realign on Sunday
@@ -148,8 +152,9 @@ def generate_name(category: str, detail: Optional[str], counter: int) -> Optiona
         "recovery": lambda: f"Recovery #{counter}",
         "realign": lambda: f"Realign #{counter}",
         "calisthenics": lambda: f"Calisthenics #{counter}: {detail or 'General'}",
-        "badminton_club": lambda: f"Badminton: Club #{counter}",
-        "drills": lambda: f"Badminton: Drills #{counter}",
+        "badminton_ranked": lambda: f"Badminton: Ranked #{counter}",
+        "badminton_league": lambda: f"Badminton: League #{counter}",
+        "badminton_friendly": lambda: f"Badminton: Friendly #{counter}",
         "badminton_casual": lambda: f"Badminton: Casual #{counter}",
     }
     fn = names.get(category)

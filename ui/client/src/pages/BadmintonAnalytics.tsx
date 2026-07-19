@@ -29,8 +29,11 @@ export default function BadmintonAnalytics() {
     [sleepQuest],
   );
 
+  const BADMINTON_CATS = new Set([
+    "badminton_ranked", "badminton_league", "badminton_friendly", "badminton_casual",
+  ]);
   const sessions = useMemo(
-    () => activitiesRaw.filter((a) => getTrainingCategory(a) === "badminton_club"),
+    () => activitiesRaw.filter((a) => BADMINTON_CATS.has(getTrainingCategory(a))),
     [],
   );
 
@@ -86,7 +89,7 @@ export default function BadmintonAnalytics() {
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold tracking-tight">Badminton Analytics</h2>
-            <p className="text-xs text-muted-foreground mt-1">{sessions.length} club sessions in history</p>
+            <p className="text-xs text-muted-foreground mt-1">{sessions.length} sessions in history</p>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>

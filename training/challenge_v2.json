@@ -17,7 +17,7 @@
     "Strength Training": {
       "target": 2,
       "source": "strava_pattern",
-      "pattern": "^Strength\\s*#"
+      "pattern": "^Weight Training\\s*#"
     },
     "Sport": {
       "target": 2,
@@ -32,7 +32,7 @@
     "type": "count_target",
     "target": 20,
     "count_from": "strava",
-    "count_pattern": "^Strength\\s*#",
+    "count_pattern": "^Weight Training\\s*#",
     "notes": "Regex matched against Strava activity names from challenge start date"
   },
   "quests": [

@@ -31,9 +31,10 @@ ui/
     ├── pages/
     │   ├── Home.tsx                # Main dashboard
     │   ├── Workouts.tsx            # Workout templates
-    │   ├── RunAnalytics.tsx        # Run-specific metrics (/analytics)
+    │   ├── RunAnalytics.tsx        # Run-specific metrics (/run)
     │   ├── MonthlyAnalytics.tsx    # Monthly view: workout/sleep/quest breakdown (/monthly)
-    │   ├── BadmintonAnalytics.tsx  # Badminton club-session training load (/badminton)
+    │   ├── BadmintonAnalytics.tsx  # Badminton training load (/badminton)
+    │   ├── BadmintonMatchAnalytics.tsx # Badminton win/loss + match stats (/badminton-match-analytics)
     │   └── workout-timer/     # Timer state machine (see docs/timer-state-machine.md)
     ├── components/
     │   ├── CommandStrip.tsx       # Top bar: title, streaks, sync button, back button, nav icons

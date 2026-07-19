@@ -43,7 +43,7 @@ export default function RunAnalytics() {
     (id: number) => {
       const params = new URLSearchParams(search);
       params.set("run", String(id));
-      setLocation(`/analytics?${params.toString()}`, { replace: true });
+      setLocation(`/run?${params.toString()}`, { replace: true });
     },
     [search, setLocation],
   );

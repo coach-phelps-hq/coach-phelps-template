@@ -48,8 +48,9 @@ export type TrainingCategory =
   | "calisthenics"
   | "recovery"
   | "realign"
-  | "badminton_club"
-  | "badminton_drills"
+  | "badminton_ranked"
+  | "badminton_league"
+  | "badminton_friendly"
   | "badminton_casual"
   | "hike"
   | "walk"
@@ -75,9 +76,10 @@ export const CATEGORY_CONFIG: Record<TrainingCategory, CategoryConfig> = {
   calisthenics:     { label: "CALISTHENICS", shortLabel: "CAL",  color: "#f59e0b", group: "calisthenics" },
   recovery:         { label: "RECOVERY",     shortLabel: "REC",  color: "#7c3aed", group: "other" },
   realign:          { label: "REALIGN",      shortLabel: "RLN",  color: "#a78bfa", group: "other" },
-  badminton_club:   { label: "CLUB",         shortLabel: "CLB",  color: "#2d8a4e", group: "badminton" },
-  badminton_drills: { label: "DRILLS",       shortLabel: "DRL",  color: "#4ade80", group: "badminton" },
-  badminton_casual: { label: "CASUAL",       shortLabel: "CAS",  color: "#84cc16", group: "badminton" },
+  badminton_ranked:   { label: "RANKED",   shortLabel: "RNK", color: "#dc2626", group: "badminton" },
+  badminton_league:   { label: "LEAGUE",   shortLabel: "LGE", color: "#7c3aed", group: "badminton" },
+  badminton_friendly: { label: "FRIENDLY", shortLabel: "FRN", color: "#2563eb", group: "badminton" },
+  badminton_casual:   { label: "CASUAL",   shortLabel: "CAS", color: "#6b7280", group: "badminton" },
   hike:             { label: "HIKE",         shortLabel: "HIK",  color: "#8b6f47", group: "hike" },
   walk:             { label: "WALK",         shortLabel: "WLK",  color: "#a8a29e", group: "other" },
   cricket:          { label: "CRICKET",      shortLabel: "CRK",  color: "#2dd4bf", group: "other" },
@@ -96,7 +98,7 @@ export const GROUP_CONFIG: Record<string, { label: string; color: string; catego
   calisthenics:  { label: "CALISTHENICS", color: "#f59e0b", categories: ["calisthenics"] },
   run:          { label: "RUN",          color: "#c44020", categories: ["run"] },
   hike:         { label: "HIKE",         color: "#8b6f47", categories: ["hike"] },
-  badminton:    { label: "BADMINTON",    color: "#2d8a4e", categories: ["badminton_club", "badminton_drills", "badminton_casual"] },
+  badminton:    { label: "BADMINTON",    color: "#2d8a4e", categories: ["badminton_ranked", "badminton_league", "badminton_friendly", "badminton_casual"] },
   swim:         { label: "SWIM",         color: "#0ea5e9", categories: ["swim"] },
   weight_training: { label: "WEIGHTS",       color: "#3b4a6b", categories: ["weight_training"] },
   ride:         { label: "RIDES",        color: "#c47a20", categories: ["ride"] },
@@ -126,14 +128,11 @@ export function getTrainingCategory(activity: Activity): TrainingCategory {
   // Realign
   if (/^Realign\s*#/i.test(name)) return "realign";
 
-  // Badminton club sessions
-  if (/^Badminton: Club\s*#/i.test(name)) return "badminton_club";
-
-  // Badminton drills
-  if (/^Badminton: Drills\s*#/i.test(name)) return "badminton_drills";
-
-  // Badminton casual
-  if (/^Badminton: Casual\s*#/i.test(name)) return "badminton_casual";
+  // Badminton sub-categories
+  if (/^Badminton: Ranked\s*#/i.test(name))   return "badminton_ranked";
+  if (/^Badminton: League\s*#/i.test(name))   return "badminton_league";
+  if (/^Badminton: Friendly\s*#/i.test(name)) return "badminton_friendly";
+  if (/^Badminton: Casual\s*#/i.test(name))   return "badminton_casual";
 
   // Swim (numbered, e.g. "Swim #3")
   if (/^Swim\s*#/i.test(name)) return "swim";

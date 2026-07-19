@@ -33,7 +33,7 @@ interface DayData {
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const CATEGORY_PRIORITY = [
-  "badminton_club", "badminton_drills", "badminton_casual",
+  "badminton_ranked", "badminton_league", "badminton_friendly", "badminton_casual",
   "calisthenics",
   "run", "swim", "hike", "strength", "weight_training", "foundation", "recovery", "realign",
   "ride", "walk", "cricket", "football", "workout", "other",

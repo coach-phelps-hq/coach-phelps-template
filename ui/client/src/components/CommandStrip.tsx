@@ -4,7 +4,7 @@
  * v3: Reads all metadata from challenge_v2.json — zero hardcoded values.
  */
 import { useState } from "react";
-import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy } from "lucide-react";
+import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -187,7 +187,7 @@ export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack 
                   <Dumbbell className="w-4 h-4" />
                 </button>
               </Link>
-              <Link href="/analytics">
+              <Link href="/run">
                 <button
                   className="p-2 hover:bg-background/10 transition-colors"
                   title="Run Analytics"
@@ -201,6 +201,14 @@ export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack 
                   title="Badminton Analytics"
                 >
                   <Trophy className="w-4 h-4" />
+                </button>
+              </Link>
+              <Link href="/badminton-match-analytics">
+                <button
+                  className="p-2 hover:bg-background/10 transition-colors"
+                  title="Match Analytics"
+                >
+                  <BarChart3 className="w-4 h-4" />
                 </button>
               </Link>
               <Link href="/monthly">

@@ -37,14 +37,15 @@ const STACK_GROUPS = [
   { key: "cricket",          label: "Cricket",            color: CATEGORY_CONFIG.cricket.color },
   { key: "football",         label: "Football",           color: CATEGORY_CONFIG.football.color },
   { key: "workout",          label: "Workout",            color: CATEGORY_CONFIG.workout.color },
-  { key: "badminton_club",   label: "Badminton (Club)",   color: CATEGORY_CONFIG.badminton_club.color },
-  { key: "badminton_drills", label: "Badminton (Drills)", color: CATEGORY_CONFIG.badminton_drills.color },
-  { key: "badminton_casual", label: "Badminton (Casual)", color: CATEGORY_CONFIG.badminton_casual.color },
+  { key: "badminton_ranked",   label: "Badminton (Ranked)",   color: CATEGORY_CONFIG.badminton_ranked.color },
+  { key: "badminton_league",   label: "Badminton (League)",   color: CATEGORY_CONFIG.badminton_league.color },
+  { key: "badminton_friendly", label: "Badminton (Friendly)", color: CATEGORY_CONFIG.badminton_friendly.color },
+  { key: "badminton_casual",   label: "Badminton (Casual)",   color: CATEGORY_CONFIG.badminton_casual.color },
   { key: "other",            label: "Other",              color: CATEGORY_CONFIG.other.color },
 ];
 
 function categoryToStackGroup(cat: string): string {
-  if (cat === "badminton_club" || cat === "badminton_drills" || cat === "badminton_casual") return cat;
+  if (cat === "badminton_ranked" || cat === "badminton_league" || cat === "badminton_friendly" || cat === "badminton_casual") return cat;
   if (cat === "calisthenics") return "calisthenics";
   if (["foundation", "run", "swim", "hike", "walk", "cricket", "football", "workout"].includes(cat)) return cat;
   if (cat === "strength" || cat === "weight_training") return "strength";

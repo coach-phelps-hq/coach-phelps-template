@@ -73,9 +73,10 @@ Counters are per category, reset Jan 1 each year. Classification runs in `rename
 | WeightTraining | long, no keyword match | `Weight Training #N: General` |
 | Yoga | weekday | `Recovery #N` |
 | Yoga | Sunday | `Realign #N` |
-| Badminton | "drills" in name/desc | `Badminton Drills #N` |
-| Badminton | "club" in name/desc | `Badminton #N` |
-| Badminton | casual (no keyword) | skip |
+| Badminton | "ranked" in name/desc | `Badminton: Ranked #N` |
+| Badminton | "league" in name/desc | `Badminton: League #N` |
+| Badminton | "friendly" in name/desc | `Badminton: Friendly #N` |
+| Badminton | casual (no keyword) | `Badminton: Casual #N` |
 | Any | "cricket" in name | skip |
 | Walk, Hike, Ride, Swim, etc. | — | skip |
 
