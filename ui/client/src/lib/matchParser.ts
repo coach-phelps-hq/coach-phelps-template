@@ -261,15 +261,3 @@ export function getAllGames(match: ParsedMatch): ParsedGame[] {
 export function getRankedGames(match: ParsedMatch): ParsedGame[] {
   return match.games;
 }
-
-/**
- * Does this set of activities contain any parseable match data?
- * Used to hide the match-analytics nav entry gracefully for repos with no
- * badminton match history, rather than linking to an empty page.
- */
-export function hasMatchData(activities: Array<Activity & { ebadders?: EbaddersData }>): boolean {
-  return activities.some((a) => {
-    const parsed = parseMatch(a);
-    return parsed !== null && (parsed.games.length > 0 || parsed.friendlies.length > 0);
-  });
-}

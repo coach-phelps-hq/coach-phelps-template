@@ -186,10 +186,6 @@ These power the "Sync" button in the dashboard, which triggers the GitHub Action
 
 Open the URL Vercel gives you (something like `your-project.vercel.app`). The dashboard should load. Widgets and charts will be empty until you've synced Strava data - that's expected on a fresh setup. Click the **Sync** button in the dashboard, or manually trigger the workflow from **GitHub → your repo → Actions → Sync → Run workflow**, to pull in your data.
 
-### Optional: customize name display on the badminton match-analytics page
-
-If you use the badminton match-analytics page, opponent/partner names come from whatever your source data calls them - which can be messy (unicode decorations from eBadders, inconsistent capitalization, nicknames vs. full names). `ui/client/src/lib/nameAliases.ts` lets you normalize this: add entries to its `NAME_ALIASES` map to canonicalize any name variant to how you want it displayed. The file ships with one example entry - replace it with your own.
-
 ---
 
 ## 6. Start your first coaching session
