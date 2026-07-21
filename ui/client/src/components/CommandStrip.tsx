@@ -4,11 +4,12 @@
  * v3: Reads all metadata from challenge_v2.json — zero hardcoded values.
  */
 import { useState } from "react";
-import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy, BarChart3 } from "lucide-react";
+import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy, BarChart3, LogOut } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { computeColdShowerStreak } from "@/lib/activities";
+import { useAuth } from "@/contexts/AuthContext";
 import type { ChallengeV2 } from "@/lib/challenge";
 
 interface SyncStatus {
@@ -62,6 +63,7 @@ function buildTooltipText(s: SyncStatus): string {
 
 export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack }: Props) {
   const [syncing, setSyncing] = useState(false);
+  const auth = useAuth();
 
   const ch = challengeData.challenge;
   const currentDay = daysSince(ch.start_date);
@@ -236,6 +238,21 @@ export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack 
                   {buildTooltipText(syncStatus)}
                 </TooltipContent>
               </Tooltip>
+              {auth.status === "authenticated" && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a
+                      href="/api/auth-logout"
+                      className="p-2 hover:bg-background/10 transition-colors inline-flex"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    Sign out ({auth.login})
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           </div>
 
