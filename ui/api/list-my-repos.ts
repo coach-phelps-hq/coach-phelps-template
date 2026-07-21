@@ -12,7 +12,7 @@ import {
   parseCookies,
   SESSION_COOKIE,
   SESSION_MAX_AGE_SEC,
-} from "./_lib/session";
+} from "./_lib/session.js";
 
 interface GhRepo {
   full_name: string;

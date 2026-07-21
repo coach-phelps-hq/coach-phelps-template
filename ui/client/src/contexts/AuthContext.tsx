@@ -2,10 +2,12 @@
  * AuthContext — gates the app on /api/auth-me.
  *
  * "local" status covers plain `npm run dev`/self-hosted single-repo use, where
- * no /api routes are actually served — Vite's dev server falls back to
- * index.html (200, text/html) for any unmatched path rather than a real 404,
- * so we can't key off status code alone. Checking Content-Type instead: a
- * real deployment's auth-me always answers with application/json.
+ * there's no hosted auth layer at all. Keyed off Vite's own import.meta.env.DEV
+ * flag, not response shape - inferring "no /api layer" from a non-JSON or
+ * failed response is wrong: a genuine production error would look identical
+ * and silently unlock the dashboard instead of showing a gate. Any real
+ * fetch/parse failure on the hosted deployment falls back to "unauthenticated"
+ * (the login screen), never "local".
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
@@ -24,26 +26,19 @@ export function useAuth(): AuthState {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({ status: "loading" });
+  const [state, setState] = useState<AuthState>(
+    import.meta.env.DEV ? { status: "local" } : { status: "loading" }
+  );
 
   useEffect(() => {
+    if (import.meta.env.DEV) return; // no hosted auth layer in local dev - already set above
+
     let cancelled = false;
 
     fetch("/api/auth-me")
       .then(async (res) => {
         if (cancelled) return;
 
-        const contentType = res.headers.get("content-type") ?? "";
-        if (!contentType.includes("application/json")) {
-          // No real /api/auth-me handler behind this - local single-repo dev.
-          setState({ status: "local" });
-          return;
-        }
-
-        if (res.status === 401) {
-          setState({ status: "unauthenticated" });
-          return;
-        }
         if (!res.ok) {
           setState({ status: "unauthenticated" });
           return;
@@ -57,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {
-        if (!cancelled) setState({ status: "local" });
+        if (!cancelled) setState({ status: "unauthenticated" });
       });
 
     return () => {

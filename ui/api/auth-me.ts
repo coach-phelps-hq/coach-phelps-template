@@ -1,4 +1,4 @@
-import { decryptSession, parseCookies, SESSION_COOKIE } from "./_lib/session";
+import { decryptSession, parseCookies, SESSION_COOKIE } from "./_lib/session.js";
 
 export default {
   async fetch(req: Request): Promise<Response> {

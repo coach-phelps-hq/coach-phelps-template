@@ -1,5 +1,5 @@
-import { generateRandomString, generateCodeChallenge } from "./_lib/pkce";
-import { buildCookie, OAUTH_STATE_COOKIE } from "./_lib/session";
+import { generateRandomString, generateCodeChallenge } from "./_lib/pkce.js";
+import { buildCookie, OAUTH_STATE_COOKIE } from "./_lib/session.js";
 
 const CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID ?? "";
 const OAUTH_STATE_MAX_AGE_SEC = 600; // 10 min - just needs to survive the redirect round trip
