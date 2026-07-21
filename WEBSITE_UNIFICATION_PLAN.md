@@ -54,7 +54,7 @@ reference point. It is not a step toward standing up a separate repo; see Sectio
 
 ## 4. Hosting repo — decided: `coach-phelps-template` itself
 
-`coach-phelps-template` (`akash-suresh/coach-phelps-template`) hosts the unified site directly. No
+`coach-phelps-template` (`coach-phelps-hq/coach-phelps-template`) hosts the unified site directly. No
 separate repo is created to keep the template "pure" — the `checkpoint-before-unification` branch
 already serves that purpose as a permanent, in-repo reference to the pre-unification state. This is
 the `template_owner/template_repo` reference used in Section 6's provisioning step.
@@ -192,7 +192,7 @@ merging them itself, each personal repo's own sync pipeline publishes one pre-me
 
 ## 9. Deferred issue — filed, not built
 
-**Filed:** [#12](https://github.com/akash-suresh/coach-phelps-template/issues/12) — `[ui-expert]
+**Filed:** [#12](https://github.com/coach-phelps-hq/coach-phelps-template/issues/12) — `[ui-expert]
 Generalize badminton match-analytics data model for multi-tenant use`. Spec below is the source
 of truth for the issue body.
 
@@ -237,10 +237,10 @@ These are real gaps but don't block Milestones 1-4. Full detail lives in `SCALIN
 (everything relevant only past two users) — kept here as a pointer, not duplicated:
 
 - **Badminton match-analytics data model generalization** (`akash_won` → `player_won` etc.) —
-  Section 9, [issue #12](https://github.com/akash-suresh/coach-phelps-template/issues/12).
+  Section 9, [issue #12](https://github.com/coach-phelps-hq/coach-phelps-template/issues/12).
   Relevant now (Milestone 1), not deferred.
 - **Analytics page set configurable per user** — [issue
-  #13](https://github.com/akash-suresh/coach-phelps-template/issues/13), deferred, see
+  #13](https://github.com/coach-phelps-hq/coach-phelps-template/issues/13), deferred, see
   `SCALING_PLAN.md`.
 - **New-user `ui/` leakage via template-generate** — friend #3+ only, see `SCALING_PLAN.md`.
 - **IP boundary vs. local Claude Code, funding path for a hosted chat surface** — see

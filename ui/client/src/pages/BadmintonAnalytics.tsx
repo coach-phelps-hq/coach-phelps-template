@@ -65,11 +65,11 @@ export default function BadmintonAnalytics() {
     const todayDayOfYear = dayOfYear(today);
 
     const thisYearCount = sessions.filter((a) => {
-      const d = new Date(a.start_date);
+      const d = new Date(a.start_date_local);
       return d.getFullYear() === thisYear;
     }).length;
     const lastYearCount = sessions.filter((a) => {
-      const d = new Date(a.start_date);
+      const d = new Date(a.start_date_local);
       return d.getFullYear() === thisYear - 1 && dayOfYear(d) <= todayDayOfYear;
     }).length;
 
