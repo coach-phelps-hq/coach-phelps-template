@@ -1,4 +1,4 @@
-import { clearCookie, SESSION_COOKIE } from "./_lib/session";
+import { clearCookie, SESSION_COOKIE } from "./_lib/session.js";
 
 export default {
   async fetch(): Promise<Response> {

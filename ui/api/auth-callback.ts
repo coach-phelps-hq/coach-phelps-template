@@ -6,7 +6,7 @@ import {
   SESSION_COOKIE,
   SESSION_MAX_AGE_SEC,
   OAUTH_STATE_COOKIE,
-} from "./_lib/session";
+} from "./_lib/session.js";
 
 const CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.GITHUB_OAUTH_CLIENT_SECRET ?? "";
