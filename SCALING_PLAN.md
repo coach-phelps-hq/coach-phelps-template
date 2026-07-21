@@ -251,6 +251,16 @@ callback URLs, CI secrets, docs), and everyone's local git remotes (old-name →
 redirect for renamed orgs isn't guaranteed to last forever). **Bundle the org rename with the
 public-brand rename above** — one coordinated pass, not two separate scrambles.
 
+**Repo naming too — same bundle.** `coach-phelps-template` itself is also named after the
+"Coach Phelps" persona and should be renamed in the same coordinated pass, not separately.
+Renaming a GitHub repo mostly handles itself (GitHub redirects git/issue URLs for a while,
+Vercel's Git integration tracks the repo by internal ID so it survives a rename), but still
+needs manual follow-up: everyone's local git remotes, any hardcoded repo-name references (the
+plan docs themselves currently spell out `coach-phelps-hq/coach-phelps-template` explicitly),
+and Vercel's auto-generated `.vercel.app` domain — which is derived from the *project* name at
+creation time, not the repo name, and needs a separate rename if you want it to match. If the
+domain changes, the OAuth App's callback URL needs updating too.
+
 ## IP Boundary vs. Local Claude Code — Deferred, Genuinely Unresolved
 
 Surfaced while explaining what the post-unification workflow looks like: the whole coaching
