@@ -4,8 +4,19 @@
  *
  * With the GitHub App migration, candidates come directly from the repos the
  * user chose during install (GET /user/installations/{id}/repositories) -
- * already exactly the set they granted, no name-pattern filtering needed.
- * The training/challenge_v2.json marker check stays as a sanity check.
+ * already exactly the set they granted. The training/challenge_v2.json
+ * marker check stays as a sanity check.
+ *
+ * SECURITY: GitHub's install picker shows every repo the installing user has
+ * admin rights on - including repos they're merely a collaborator on, not
+ * just their own. Two people who are mutual collaborators on each other's
+ * personal repos can end up with the other person's repo included in their
+ * own installation (confirmed: happened in practice - a first-time install
+ * resolved straight to a collaborator's repo, no picker, no confirmation).
+ * Marker-file presence alone doesn't distinguish "your repo" from "a repo
+ * you can see" - only actual ownership does. Every candidate is filtered to
+ * `repo.owner.login === session.login` before anything else runs, on both
+ * the auto-resolution path and the explicit `?select=` path.
  *
  * GET                          → list/confirm candidates, auto-select if exactly one.
  * GET ?select=<owner>/<name>   → confirm and persist a specific pick (2+ case).
@@ -22,6 +33,7 @@ import {
 interface GhRepo {
   full_name: string;
   name: string;
+  owner: { login: string };
 }
 
 const GH_HEADERS = (token: string) => ({
@@ -36,6 +48,12 @@ async function hasMarkerFile(repoFullName: string, token: string): Promise<boole
     { headers: GH_HEADERS(token) }
   );
   return res.status === 200;
+}
+
+/** True only if the logged-in user actually owns this repo - not just has access to it. */
+function isOwnedBy(repoFullName: string, login: string): boolean {
+  const owner = repoFullName.split("/")[0];
+  return owner.toLowerCase() === login.toLowerCase();
 }
 
 function withUpdatedSession(body: unknown, sessionToken: string, status = 200): Response {
@@ -59,6 +77,9 @@ export default {
 
     // Explicit pick from a 2+ candidate list.
     if (selected) {
+      if (!isOwnedBy(selected, session.login)) {
+        return Response.json({ error: "You can only select a repo you own" }, { status: 403 });
+      }
       const ok = await hasMarkerFile(selected, session.gh_token);
       if (!ok) {
         return Response.json(
@@ -70,17 +91,21 @@ export default {
       return withUpdatedSession({ repo_full_name: selected }, newSession);
     }
 
-    // Re-confirm an already-resolved repo still exists/is accessible before trusting it.
+    // Re-confirm an already-resolved repo still exists, is accessible, AND is actually
+    // owned by this account before trusting it - defense in depth against a session that
+    // resolved incorrectly before this check existed.
     if (session.repo_full_name) {
-      const stillOk = await hasMarkerFile(session.repo_full_name, session.gh_token);
+      const stillOwned = isOwnedBy(session.repo_full_name, session.login);
+      const stillOk = stillOwned && (await hasMarkerFile(session.repo_full_name, session.gh_token));
       if (stillOk) {
         return Response.json({ repo_full_name: session.repo_full_name });
       }
-      // Falls through to re-resolve below if it 404s (deleted/renamed/access lost).
+      // Falls through to re-resolve below if not owned, or it 404s (deleted/renamed/access lost).
     }
 
-    // Exactly the repos this installation was granted - no name-pattern filtering needed,
-    // that's the whole point of installation-scoped access over blanket repo scope.
+    // Repos this installation was granted, filtered to ones this account actually owns -
+    // being included in the installation isn't enough, collaborator-accessible repos on
+    // someone else's account can show up here too (see SECURITY note above).
     const reposRes = await fetch(
       `https://api.github.com/user/installations/${session.installation_id}/repositories?per_page=100`,
       { headers: GH_HEADERS(session.gh_token) }
@@ -91,9 +116,10 @@ export default {
     }
 
     const { repositories } = (await reposRes.json()) as { repositories: GhRepo[] };
+    const ownRepos = repositories.filter((r) => r.owner.login.toLowerCase() === session.login.toLowerCase());
 
     const confirmed: string[] = [];
-    for (const repo of repositories) {
+    for (const repo of ownRepos) {
       if (await hasMarkerFile(repo.full_name, session.gh_token)) {
         confirmed.push(repo.full_name);
       }
