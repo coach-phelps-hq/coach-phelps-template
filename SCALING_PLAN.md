@@ -217,6 +217,40 @@ dashboard views are served from one shared (cheap) Vercel deploy, and the Claude
 constraint is the one piece that remains genuinely unsolved and worth being upfront about
 when inviting friend #3+.
 
+## "Coach Phelps" Naming — Must Rename Before Any Public Launch
+
+Surfaced while picking a name for the shared GitHub org. "Coach Phelps" is an unmistakable
+reference to Michael Phelps — a specific, still-active, litigious-about-his-brand public figure
+with his own commercial ventures in the same space (swim schools, a foundation, fitness/
+supplement brands). That's a real legal exposure once this stops being private:
+
+- **Right of publicity** — most US states (and many other countries) give a person legal control
+  over commercial use of their name/identity, especially where it could suggest endorsement or
+  affiliation. Applies even without using his photo — the name alone, used as a coaching
+  persona, can be enough.
+- **False endorsement (Lanham Act, in the US)** — separate federal claim if it reads like the app
+  is "coached by" or affiliated with Michael Phelps when it isn't.
+- **He actively defends his name commercially**, unlike a retired or lesser-known figure — raises
+  both the odds of it being noticed and the seriousness of a response.
+
+**Not a risk today** — private, non-commercial use between Skanda, Akash, and a couple of
+friends is essentially zero exposure; nobody polices that. **Becomes a real risk the moment
+Phase 2 (hosted, public-facing site) ships** — distributing something discoverable/shareable that
+uses a real celebrity's name as the product persona.
+
+**Action required before any public launch (not before Phase 1, not urgent yet):** rename the
+public-facing persona/brand to something original, not tied to a real person. The coaching
+concept doesn't need to change, just the name. Do this rename with plenty of runway — before
+friends #3+ have "Coach Phelps" wired into their muscle memory, not after.
+
+**GitHub org naming — interim decision, not the final brand:** the shared org is named
+`coach-phelps-hq` for now (chosen while still private, easiest available option matching the
+current internal name). GitHub orgs can be renamed later without losing the org's history/
+membership/repos, but doing so means updating: any hardcoded org-name references (OAuth App
+callback URLs, CI secrets, docs), and everyone's local git remotes (old-name → new-name; GitHub's
+redirect for renamed orgs isn't guaranteed to last forever). **Bundle the org rename with the
+public-brand rename above** — one coordinated pass, not two separate scrambles.
+
 ## IP Boundary vs. Local Claude Code — Deferred, Genuinely Unresolved
 
 Surfaced while explaining what the post-unification workflow looks like: the whole coaching
