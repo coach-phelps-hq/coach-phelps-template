@@ -5,6 +5,8 @@ not started (Milestones 1-4).
 **Source of truth for background:** `SCALING_PLAN.md` (repo root) covers the full three-repo
 fork history plus everything only relevant past two users; this doc is the real, executable plan
 for unifying Skanda and Akash onto one shared site now.
+**Per-repo execution:** what changes in each person's own repo lives in `MIGRATION_SKANDA.md`
+and `MIGRATION_AKASH.md` (repo root) — this doc covers the shared-site side of the work only.
 
 ---
 
