@@ -1,10 +1,14 @@
+import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import Workouts from "./pages/Workouts";
 import WorkoutTimer from "./pages/workout-timer";
 import RunAnalytics from "./pages/RunAnalytics";
@@ -28,13 +32,31 @@ function Router() {
   );
 }
 
+/**
+ * Gate — on the hosted multi-tenant deployment, blocks the dashboard behind
+ * GitHub sign-in and repo resolution. On local `npm run dev` (no /api routes
+ * served), AuthContext resolves to "local" immediately and this is a no-op.
+ */
+function Gate({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+
+  if (auth.status === "loading") return null;
+  if (auth.status === "unauthenticated") return <Login />;
+  if (auth.status === "onboarding") return <Onboarding />;
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <AuthProvider>
+            <Gate>
+              <Router />
+            </Gate>
+          </AuthProvider>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
