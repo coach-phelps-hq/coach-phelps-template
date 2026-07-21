@@ -16,7 +16,6 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "ignoreDeprecations": "5.0",
-    "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./client/src/*"]
