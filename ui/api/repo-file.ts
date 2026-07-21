@@ -3,12 +3,18 @@
  * via the GitHub Contents API. One call, one file, per the Repo-as-CDN model
  * (WEBSITE_UNIFICATION_PLAN.md Section 7) - not several raw files merged at
  * request time.
+ *
+ * Uses the `.raw` media type, not the default JSON+base64 wrapper - GitHub's
+ * Contents API only inlines base64 `content` for files under ~1MB, and a real
+ * activity history aggregate blows past that easily (confirmed: a real
+ * aggregate.json came back as `encoding: "none"`, empty `content`, at ~2.8MB).
+ * `.raw` returns the actual file bytes directly regardless of size.
  */
 import { decryptSession, parseCookies, SESSION_COOKIE } from "./_lib/session.js";
 
 const GH_HEADERS = (token: string) => ({
   Authorization: `Bearer ${token}`,
-  Accept: "application/vnd.github+json",
+  Accept: "application/vnd.github.raw+json",
   "X-GitHub-Api-Version": "2022-11-28",
 });
 
@@ -40,12 +46,9 @@ export default {
       return Response.json({ error: "Failed to fetch your data" }, { status: 502 });
     }
 
-    const body = await contentsRes.json();
-    // Contents API returns base64 content, newline-wrapped.
     let aggregate: unknown;
     try {
-      const content = atob((body.content as string).replace(/\n/g, ""));
-      aggregate = JSON.parse(content);
+      aggregate = await contentsRes.json();
     } catch {
       return Response.json({ error: "data/aggregate.json is not valid JSON" }, { status: 502 });
     }
