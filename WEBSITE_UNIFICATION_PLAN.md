@@ -172,7 +172,11 @@ merging them itself, each personal repo's own sync pipeline publishes one pre-me
 2. Bump `lucide-react` to `^1.23.0`; check icon imports for breaking renames (small surface once
    step 3 drops the folders using most of Akash's icons).
 3. Drop dead/superseded code: `Map.tsx`, un-genericized `components/analytics/`, `ManusDialog.tsx`.
-4. Merge Akash-only `components/ui/` shadcn primitives — additive.
+4. ~~Merge Akash-only `components/ui/` shadcn primitives — additive.~~ **Investigated,
+   skipped.** 24 of the 26 files that exist only in Akash's copy are unused anywhere in his real
+   app, and their npm dependencies were never added to his `package.json` — leftover shadcn
+   scaffold, not live code. The remaining 2 are only imported by two other files in that same
+   unused set. Nothing here was worth porting.
 5. Confirm `/badminton-match-analytics` nav linkage (port the nav *link* if Akash's points elsewhere;
    the route itself already exists). Both existing page implementations merge as-is — no visual/UX
    reconciliation now, confirmed with Akash ("leave both pages however it is, tackle later");
