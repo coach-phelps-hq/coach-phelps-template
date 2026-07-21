@@ -6,7 +6,7 @@
  * 2. eBadders structured data (fallback)
  *
  * Score convention: scores are always winner-loser in ranked (ebadders) descriptions,
- * and Sky's-score-first in friendly descriptions. We use the W/L result to determine
+ * and player's-score-first in friendly descriptions. We use the W/L result to determine
  * myScore vs oppScore universally: W → myScore = max, L → myScore = min.
  */
 
@@ -18,7 +18,7 @@ import { normalizeName } from "./nameAliases";
 export interface ParsedGame {
   result: "W" | "L";
   score: string;           // "21-18"
-  myScore: number;         // Sky's score
+  myScore: number;         // player's score
   oppScore: number;        // Opponent's score
   margin: number;          // positive for wins, negative for losses
   partner: string;
@@ -163,7 +163,7 @@ export function parseDescription(description: string | null): ParsedMatch | null
 // ─── eBadders Fallback Parser ───────────────────────────────────────────────
 
 interface EbaddersMatch {
-  akash_won: boolean;
+  player_won: boolean;
   score: string;
   partner: string[];
   vs: string[];
@@ -184,7 +184,7 @@ export function parseEbadders(ebadders: EbaddersData): ParsedMatch | null {
   let gameNumber = 1;
 
   for (const match of ebadders.matches) {
-    const result: "W" | "L" = match.akash_won ? "W" : "L";
+    const result: "W" | "L" = match.player_won ? "W" : "L";
     const scoreParts = match.score.split(/[–-]/).map((s) => parseInt(s.trim(), 10));
     if (scoreParts.length !== 2 || isNaN(scoreParts[0]) || isNaN(scoreParts[1])) continue;
 
@@ -260,4 +260,16 @@ export function getAllGames(match: ParsedMatch): ParsedGame[] {
 /** Get only ranked games (excludes friendlies section) */
 export function getRankedGames(match: ParsedMatch): ParsedGame[] {
   return match.games;
+}
+
+/**
+ * Does this set of activities contain any parseable match data?
+ * Used to hide the match-analytics nav entry gracefully for repos with no
+ * badminton match history, rather than linking to an empty page.
+ */
+export function hasMatchData(activities: Array<Activity & { ebadders?: EbaddersData }>): boolean {
+  return activities.some((a) => {
+    const parsed = parseMatch(a);
+    return parsed !== null && (parsed.games.length > 0 || parsed.friendlies.length > 0);
+  });
 }

@@ -8,8 +8,13 @@ import { ArrowLeft, RefreshCw, Dumbbell, CalendarDays, SportShoe, Trophy, BarCha
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { computeColdShowerStreak } from "@/lib/activities";
+import { computeColdShowerStreak, type Activity } from "@/lib/activities";
+import { hasMatchData } from "@/lib/matchParser";
 import type { ChallengeV2 } from "@/lib/challenge";
+import activitiesData from "@/data/activities.json";
+
+const activities = activitiesData as (Activity & { ebadders?: any })[];
+const showMatchAnalyticsNav = hasMatchData(activities);
 
 interface SyncStatus {
   timestamp: string | null;
@@ -203,14 +208,16 @@ export function CommandStrip({ challengeData, sleepStreak, syncStatus, showBack 
                   <Trophy className="w-4 h-4" />
                 </button>
               </Link>
-              <Link href="/badminton-match-analytics">
-                <button
-                  className="p-2 hover:bg-background/10 transition-colors"
-                  title="Match Analytics"
-                >
-                  <BarChart3 className="w-4 h-4" />
-                </button>
-              </Link>
+              {showMatchAnalyticsNav && (
+                <Link href="/badminton-match-analytics">
+                  <button
+                    className="p-2 hover:bg-background/10 transition-colors"
+                    title="Match Analytics"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                  </button>
+                </Link>
+              )}
               <Link href="/monthly">
                 <button
                   className="p-2 hover:bg-background/10 transition-colors"
