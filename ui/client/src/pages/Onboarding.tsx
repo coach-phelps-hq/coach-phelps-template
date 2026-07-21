@@ -60,8 +60,9 @@ export default function Onboarding() {
           <>
             <h2 className="text-xl font-bold uppercase tracking-widest">No repo found</h2>
             <p className="text-sm text-muted-foreground">
-              We couldn't find a repo in your GitHub account with a SOUL.md and
-              training/challenge_v2.json. Set one up first, then sign in again.
+              None of the repos you granted access to have a SOUL.md and
+              training/challenge_v2.json. Check the GitHub App's install settings to make
+              sure you selected the right repo, or set one up first and sign in again.
             </p>
           </>
         )}

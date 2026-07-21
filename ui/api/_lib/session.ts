@@ -18,6 +18,7 @@ export interface SessionPayload {
   github_user_id: number;
   login: string;
   gh_token: string;
+  installation_id: number;
   repo_full_name?: string;
 }
 

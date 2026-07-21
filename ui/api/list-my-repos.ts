@@ -2,6 +2,11 @@
  * list-my-repos.ts — repo resolution: find the signed-in user's coach-phelps
  * repo and remember it in their session.
  *
+ * With the GitHub App migration, candidates come directly from the repos the
+ * user chose during install (GET /user/installations/{id}/repositories) -
+ * already exactly the set they granted, no name-pattern filtering needed.
+ * The training/challenge_v2.json marker check stays as a sanity check.
+ *
  * GET                          → list/confirm candidates, auto-select if exactly one.
  * GET ?select=<owner>/<name>   → confirm and persist a specific pick (2+ case).
  */
@@ -74,20 +79,21 @@ export default {
       // Falls through to re-resolve below if it 404s (deleted/renamed/access lost).
     }
 
+    // Exactly the repos this installation was granted - no name-pattern filtering needed,
+    // that's the whole point of installation-scoped access over blanket repo scope.
     const reposRes = await fetch(
-      "https://api.github.com/user/repos?per_page=100&affiliation=owner,collaborator",
+      `https://api.github.com/user/installations/${session.installation_id}/repositories?per_page=100`,
       { headers: GH_HEADERS(session.gh_token) }
     );
 
     if (!reposRes.ok) {
-      return Response.json({ error: "Failed to list your GitHub repos" }, { status: 502 });
+      return Response.json({ error: "Failed to list repos granted to this installation" }, { status: 502 });
     }
 
-    const repos = (await reposRes.json()) as GhRepo[];
-    const candidates = repos.filter((r) => r.name.toLowerCase().includes("coach-phelps"));
+    const { repositories } = (await reposRes.json()) as { repositories: GhRepo[] };
 
     const confirmed: string[] = [];
-    for (const repo of candidates) {
+    for (const repo of repositories) {
       if (await hasMarkerFile(repo.full_name, session.gh_token)) {
         confirmed.push(repo.full_name);
       }

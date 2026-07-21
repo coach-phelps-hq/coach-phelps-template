@@ -59,36 +59,40 @@ separate repo is created to keep the template "pure" — the `checkpoint-before-
 already serves that purpose as a permanent, in-repo reference to the pre-unification state. This is
 the `template_owner/template_repo` reference used in Section 6's provisioning step.
 
-## 5. Auth architecture — decided: raw GitHub OAuth App
+## 5. Auth architecture — decided: GitHub App (migrated from a classic OAuth App)
 
-| | Raw GitHub OAuth App (chosen) | Supabase Auth (alternative, not chosen) |
-|---|---|---|
-| What it is | Register a GitHub OAuth App; write 4 Vercel Edge functions (`auth-login.ts`, `auth-callback.ts`, `auth-me.ts`, `auth-logout.ts`) handling the redirect/callback/session cookie ourselves. ~150-200 lines, one new dependency (`jose` for JWT signing, Edge-compatible). | Create a Supabase project, enable its GitHub provider (same underlying GitHub OAuth App, Supabase just owns the callback/session plumbing), use `@supabase/supabase-js` client-side. |
-| Scaling to 50-100+ users | Fine either way — GitHub API rate limits are per-user-token (5000 req/hr each), not shared, so more users doesn't create a shared bottleneck. Login flow cost doesn't grow with user count. | Same — scaling isn't the differentiator here. |
-| Real tradeoff | We own CSRF-state validation, cookie signing, and token handling correctness ourselves. Low stakes at 2 users; at 100 real GitHub accounts, a mistake here has real blast radius, and there's no vendor security team behind it. | Offloads that correctness to an audited, widely-used flow. Adds a third-party account/service dependency, which cuts against this project's "your data, your repo, no central dependency" philosophy — worth it mainly if Section 6 also needs Supabase for storage. |
-| Decision | **Chosen.** Zero new service dependency, fits the project's existing ethos, and the team is willing to spend the extra implementation time to get it right. If confidence in the self-rolled implementation is ever in doubt, swapping to Supabase Auth later is a contained change (same GitHub OAuth App, same session concept — isolated to `ui/api/auth-*.ts` and the session-lookup call sites). | Fallback option if the raw flow proves too costly to maintain correctly, or if Section 6 lands on Supabase for storage anyway. |
+**Originally built as a classic GitHub OAuth App (issue #16), then migrated to a GitHub App
+(issue #25).** The classic OAuth App's `repo` scope grants access to a user's *entire* account —
+every repo, public and private — with no way for the user to grant access to just their coach
+repo. That's fine at two trusted users who built the app themselves, but doesn't hold up once
+friends are expected to authorize it (`SCALING_PLAN.md` Phase 2's actual audience): asking a
+non-technical friend to grant "see everything in my GitHub account" to see their coach dashboard
+is a bigger ask than it needs to be, and doesn't match the project's "your data, your repo"
+philosophy. A **GitHub App** is the integration type that supports installing on specific repos
+only, with a real repo picker during install — genuinely more correct, not just more cautious,
+and it's GitHub's own recommended direction for repo-access integrations over classic OAuth Apps.
 
-**OAuth App ownership — decided and confirmed with Akash:** registered under a new shared GitHub
-org, with both Skanda and Akash as org owners.
-
-**OAuth scope — decided: `repo` only, no `workflow` scope in this pass.** Matches Akash's
-design (issue #137): read-only against the Contents/repo API is enough for sign-in, repo
-resolution, and data fetch. Writing to Actions workflows under a user's own token (needed to
-drop the shared bot token entirely) is explicitly deferred — see Section 8.7 below.
+**GitHub App permissions:** Repository permissions → Contents: Read-only (covers sign-in, repo
+resolution, and the live-data-fetch work in #17). No Organization or Account permissions needed.
+No Actions permission — sync dispatch stays on the shared bot token (Section 8.7), not moved to
+per-user tokens. "Request user authorization (OAuth) during installation" enabled, so install +
+login happen as one flow. Webhook not active - not needed.
 
 Concrete flow:
-1. Register a GitHub OAuth App under the shared org. Scope: `repo` (covers both private-repo
-   read and identifying the user; no separate `read:user` needed for a classic OAuth App).
-2. `ui/api/auth-login.ts` — redirects to GitHub's authorize URL with a CSRF `state` nonce **and
-   PKCE** (code challenge/verifier) — hardening adopted from Akash's design, not just `state`
-   alone.
-3. `ui/api/auth-callback.ts` — validates `state` and the PKCE verifier, exchanges `code` for a
-   token, fetches `GET /user`, sets an HttpOnly/Secure/SameSite=Lax session cookie: a signed JWT
-   (`SESSION_SECRET` env var) containing `{github_user_id, login, repo_full_name, iat, exp}`. The
-   raw GitHub token lives only inside this short-lived (~8h) encrypted JWT — never persisted to
-   storage, never sent to the client in readable form. `repo_full_name` is populated once
-   Section 6's resolution flow runs, and re-populated on next login if resolution changes
-   (see Section 6 — this replaces the earlier Vercel KV plan with no persistent store at all).
+1. `ui/api/auth-login.ts` — redirects to the App's install-and-authorize flow
+   (`https://github.com/apps/<slug>/installations/new`) with a CSRF `state` nonce and PKCE
+   (code challenge/verifier).
+2. User picks which repo(s) to install the App on, then GitHub carries them through OAuth
+   consent and redirects to the callback with `code`, `state`, and `installation_id`.
+3. `ui/api/auth-callback.ts` — validates `state` (and the PKCE verifier, best-effort — GitHub's
+   PKCE support is documented primarily for the direct authorize entry point, not fully
+   confirmed for the install-first path; verify during real end-to-end testing), exchanges
+   `code` for a user-to-server token, fetches `GET /user`, sets an HttpOnly/Secure/SameSite=Lax
+   session cookie: an encrypted JWE (`SESSION_SECRET` env var) containing
+   `{github_user_id, login, gh_token, installation_id, repo_full_name?}`. The raw GitHub token
+   lives only inside this short-lived (~8h) encrypted session — never persisted to storage,
+   never sent to the client in readable form. `repo_full_name` is populated once Section 6's
+   resolution flow runs (no persistent store — same reasoning as before, still applies).
 4. `ui/api/auth-me.ts` — reads the session cookie, returns `{github_user_id, login, repo_full_name}`
    or 401. SPA calls this on load to decide: login screen / onboarding / dashboard.
 5. `ui/api/auth-logout.ts` — clears the cookie.
@@ -109,21 +113,25 @@ Vercel KV lookup table isn't needed at two users. (Answers the "why is KV requir
 it isn't. See the deferred-issue note in Section 5 for what a future KV table would actually buy:
 instant session revocation and an admin user list, neither urgent now.)
 
-On first login with no `repo_full_name` in the session:
-1. **List candidates** — `GET /user/repos` via the user's token (covers private repos under
-   `repo` scope), filtered to names containing `coach-phelps`.
+On first login with no `repo_full_name` in the session (updated for the GitHub App migration,
+issue #25 — no name-pattern filtering anymore, candidates come directly from what the user
+granted at install time):
+1. **List candidates** — `GET /user/installations/{installation_id}/repositories` via the
+   user's token. Already exactly the repo(s) this installation was granted — the whole point of
+   the GitHub App migration over the classic OAuth App's blanket `repo` scope.
 2. **Confirm each is real** — cheap marker check per candidate: does it contain
-   `training/challenge_v2.json` (Contents API GET)? Guards against an unrelated repo that happens
-   to match the name pattern.
+   `training/challenge_v2.json` (Contents API GET)? Guards against granting the App to the wrong
+   repo by mistake.
 3. **Branch on confirmed count:**
-   - **0** → "no coach repo found" empty state, with a placeholder for the future "Create my
+   - **0** → "no coach repo found" empty state, pointing the user at the GitHub App's install
+     settings to check they granted the right repo, with a placeholder for the future "Create my
      coach" template-generate flow (see below — deferred, not built now).
    - **1** → select it automatically.
    - **2+** → a picker UI; user chooses.
 4. **Persist the choice** — write the selected `repo_full_name` into the session JWT (re-issued
    with the updated claim). On subsequent requests within the session, skip re-resolution
    entirely. The stored `full_name` is the durable identity (survives the user later renaming
-   their repo) — the name-pattern search is only the first-run heuristic.
+   their repo).
 5. **Re-resolve on failure** — if the stored repo 404s (deleted, renamed, access revoked), clear
    the claim and re-run resolution from step 1.
 
