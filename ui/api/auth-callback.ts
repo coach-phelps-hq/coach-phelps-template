@@ -21,11 +21,6 @@ export default {
     const url = new URL(req.url);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
-    // Present when GitHub redirects from the install flow; not guaranteed on the plain
-    // /login/oauth/authorize entry point auth-login.ts uses (that's the actual sign-in
-    // endpoint - see auth-login.ts for why). Falls back to looking the installation up
-    // via the API below if absent, rather than hard-requiring it here.
-    const installationIdParam = url.searchParams.get("installation_id");
 
     if (!code || !state) {
       return Response.json({ error: "Missing code or state" }, { status: 400 });
@@ -88,27 +83,44 @@ export default {
 
     const user = await userRes.json();
 
-    let installationId: number | null = installationIdParam ? Number(installationIdParam) : null;
-    if (!installationId) {
-      const installationsRes = await fetch("https://api.github.com/user/installations", {
-        headers: {
-          Authorization: `Bearer ${ghToken}`,
-          Accept: "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      });
-      if (installationsRes.ok) {
-        const { installations } = (await installationsRes.json()) as {
-          installations: Array<{ id: number; app_slug: string }>;
-        };
-        const match = installations.find((i) => i.app_slug === APP_SLUG);
-        installationId = match?.id ?? null;
-      }
+    // Resolve installation_id via GET /user/installations, verified against BOTH app_slug
+    // and account.login. app_slug alone isn't enough: this endpoint returns every
+    // installation the calling user has *any visibility into*, which GitHub grants based on
+    // repo access - not just installations the user personally created. A collaborator on
+    // someone else's repo that already has the App installed will see that installation too.
+    // Confirmed in practice: without the account.login check, a collaborator's session
+    // resolved to the repo owner's installation, not their own (a real cross-account data
+    // exposure - see coach-phelps-hq/coach-phelps-template#30). account.login is the account
+    // the App is actually installed *on*, which is what "is this actually my installation"
+    // has to mean.
+    const installationsRes = await fetch("https://api.github.com/user/installations", {
+      headers: {
+        Authorization: `Bearer ${ghToken}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+
+    let installationId: number | null = null;
+    if (installationsRes.ok) {
+      const { installations } = (await installationsRes.json()) as {
+        installations: Array<{ id: number; app_slug: string; account: { login: string } }>;
+      };
+      const match = installations.find(
+        (i) =>
+          i.app_slug === APP_SLUG &&
+          i.account.login.toLowerCase() === (user.login as string).toLowerCase()
+      );
+      installationId = match?.id ?? null;
     }
 
     if (!installationId) {
+      const installUrl = `https://github.com/apps/${APP_SLUG}/installations/new`;
       return Response.json(
-        { error: "Couldn't find a Coach Phelps installation on your account - install the app first" },
+        {
+          error: "You haven't installed Coach Phelps on your own GitHub account yet.",
+          install_url: installUrl,
+        },
         { status: 400 }
       );
     }
