@@ -10,6 +10,7 @@ import {
 
 const CLIENT_ID = process.env.GITHUB_APP_CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.GITHUB_APP_CLIENT_SECRET ?? "";
+const APP_SLUG = process.env.GITHUB_APP_SLUG ?? "coach-phelps";
 
 export default {
   async fetch(req: Request): Promise<Response> {
@@ -20,19 +21,14 @@ export default {
     const url = new URL(req.url);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
-    // Present because auth-login.ts goes through the App's install-and-authorize flow
-    // (/apps/<slug>/installations/new), not a bare authorize call - GitHub appends this
-    // once the user finishes installing. Absent only if something in that flow was skipped.
-    const installationId = url.searchParams.get("installation_id");
+    // Present when GitHub redirects from the install flow; not guaranteed on the plain
+    // /login/oauth/authorize entry point auth-login.ts uses (that's the actual sign-in
+    // endpoint - see auth-login.ts for why). Falls back to looking the installation up
+    // via the API below if absent, rather than hard-requiring it here.
+    const installationIdParam = url.searchParams.get("installation_id");
 
     if (!code || !state) {
       return Response.json({ error: "Missing code or state" }, { status: 400 });
-    }
-    if (!installationId) {
-      return Response.json(
-        { error: "Missing installation_id - did the GitHub App install step complete?" },
-        { status: 400 }
-      );
     }
 
     const cookies = parseCookies(req);
@@ -56,12 +52,9 @@ export default {
 
     // Token exchange endpoint/shape is unchanged from the classic OAuth App flow - GitHub
     // Apps' user-to-server tokens use the same endpoint, just keyed by the App's client
-    // credentials. NOTE: GitHub's docs primarily document PKCE for the direct
-    // /login/oauth/authorize entry point; whether code_verifier survives the
-    // install-first (/apps/<slug>/installations/new) path used in auth-login.ts is not
-    // fully confirmed - verify this exchange actually succeeds during real end-to-end
-    // testing. If GitHub rejects it, drop code_verifier here and code_challenge in
-    // auth-login.ts (state alone still covers CSRF).
+    // credentials. PKCE is well-supported here since auth-login.ts now goes through the
+    // direct /login/oauth/authorize entry point (not the install-first path, which had
+    // this unconfirmed).
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -95,11 +88,36 @@ export default {
 
     const user = await userRes.json();
 
+    let installationId: number | null = installationIdParam ? Number(installationIdParam) : null;
+    if (!installationId) {
+      const installationsRes = await fetch("https://api.github.com/user/installations", {
+        headers: {
+          Authorization: `Bearer ${ghToken}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      });
+      if (installationsRes.ok) {
+        const { installations } = (await installationsRes.json()) as {
+          installations: Array<{ id: number; app_slug: string }>;
+        };
+        const match = installations.find((i) => i.app_slug === APP_SLUG);
+        installationId = match?.id ?? null;
+      }
+    }
+
+    if (!installationId) {
+      return Response.json(
+        { error: "Couldn't find a Coach Phelps installation on your account - install the app first" },
+        { status: 400 }
+      );
+    }
+
     const session = await encryptSession({
       github_user_id: user.id,
       login: user.login,
       gh_token: ghToken,
-      installation_id: Number(installationId),
+      installation_id: installationId,
     });
 
     const headers = new Headers();
