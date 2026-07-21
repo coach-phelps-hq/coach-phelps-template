@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface RepoResult {
   candidates?: string[];
@@ -48,42 +47,44 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
-        <CardContent className="pt-8 pb-8 text-center space-y-4">
-          {loading && <p className="text-muted-foreground text-sm">Looking for your coach repo…</p>}
+      <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-4">
+        {loading && (
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Looking for your coach repo…
+          </p>
+        )}
 
-          {!loading && error && <p className="text-destructive text-sm">{error}</p>}
+        {!loading && error && <p className="text-sm text-destructive">{error}</p>}
 
-          {!loading && !error && candidates.length === 0 && (
-            <>
-              <h2 className="text-xl font-semibold">No coach-phelps repo found</h2>
-              <p className="text-muted-foreground text-sm">
-                We couldn't find a repo in your GitHub account with a SOUL.md and
-                training/challenge_v2.json. Set one up first, then sign in again.
-              </p>
-            </>
-          )}
+        {!loading && !error && candidates.length === 0 && (
+          <>
+            <h2 className="text-xl font-bold uppercase tracking-widest">No repo found</h2>
+            <p className="text-sm text-muted-foreground">
+              We couldn't find a repo in your GitHub account with a SOUL.md and
+              training/challenge_v2.json. Set one up first, then sign in again.
+            </p>
+          </>
+        )}
 
-          {!loading && !error && candidates.length > 0 && (
-            <>
-              <h2 className="text-xl font-semibold">Which repo is yours?</h2>
-              <div className="space-y-2">
-                {candidates.map((c) => (
-                  <Button
-                    key={c}
-                    variant="outline"
-                    disabled={selecting}
-                    onClick={() => selectRepo(c)}
-                    className="w-full justify-start"
-                  >
-                    {c}
-                  </Button>
-                ))}
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+        {!loading && !error && candidates.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold uppercase tracking-widest">Which repo is yours?</h2>
+            <div className="space-y-2">
+              {candidates.map((c) => (
+                <Button
+                  key={c}
+                  variant="outline"
+                  disabled={selecting}
+                  onClick={() => selectRepo(c)}
+                  className="w-full justify-start rounded-none border-2 border-foreground font-mono text-xs"
+                >
+                  {c}
+                </Button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
