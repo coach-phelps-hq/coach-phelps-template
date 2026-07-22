@@ -76,11 +76,20 @@ philosophy. A **GitHub App** is the integration type that supports installing on
 only, with a real repo picker during install — genuinely more correct, not just more cautious,
 and it's GitHub's own recommended direction for repo-access integrations over classic OAuth Apps.
 
-**GitHub App permissions:** Repository permissions → Contents: Read-only (covers sign-in, repo
-resolution, and the live-data-fetch work in #17). No Organization or Account permissions needed.
-No Actions permission — sync dispatch stays on the shared bot token (Section 8.7), not moved to
-per-user tokens. "Request user authorization (OAuth) during installation" enabled, so install +
-login happen as one flow. Webhook not active - not needed.
+**GitHub App permissions (current, as of the trigger-sync per-user-token migration):**
+Repository permissions → **Contents: Read and write** (originally Read-only, covering sign-in,
+repo resolution, and live-data-fetch from #17; upgraded to read-write for a future
+AI-writes-to-repo feature — see `SCALING_PLAN.md`), **Actions: Read and write** (added for
+workflow dispatch, see the Section 8.7 status note below — this replaced the original shared
+bot-token design). No Organization or Account permissions needed. "Request user authorization
+(OAuth) during installation" enabled, so install + login happen as one flow. Webhook not active
+- not needed.
+
+**Two more permissions identified but deliberately not added yet**, tracked in
+`SCALING_PLAN.md` so a future permission change can bundle them instead of separate re-consent
+rounds: **Secrets** (repository secrets, read/write — needed only if the guided sync-source
+onboarding idea in `SCALING_PLAN.md` Phase 2 ever gets built) and **Administration** (needed
+only for the deferred `provision-repo.ts` template-generate flow, Section 6 below).
 
 Concrete flow:
 1. `ui/api/auth-login.ts` — redirects to the App's install-and-authorize flow
@@ -120,6 +129,21 @@ screen itself around what these bugs revealed: a single "Sign in" button couldn'
 express "log in" vs. "install on a new/additional repo," and every error path used to return raw
 JSON to a full-page browser redirect (unstyled, no recovery action) — now two explicit buttons
 ("Log in" / "Sign up") and a styled `AuthError` page for every failure case.
+
+**Status update — sync dispatch moved off the shared bot token, resolving the Section 8.7
+deferred item.** Testing Milestone 4's `trigger-sync.ts` rewrite (`#35`) surfaced the real
+reason the original "keep using the shared bot token" shortcut couldn't be the final design:
+the token's owner has to be a manual collaborator on every repo it dispatches on, which worked
+for Akash only because he'd already been added as a collaborator — that doesn't extend to any
+future friend without an admin manually adding them each time, undercutting "your data, your
+repo" and requiring per-user setup work the rest of the login system was built to avoid.
+Audited every `ui/api/*.ts` endpoint and confirmed `trigger-sync.ts` was the *only* one using a
+shared credential instead of the session's own `gh_token` — `list-my-repos.ts` and
+`repo-file.ts` already did this correctly. Fixed by dispatching with `session.gh_token` (the
+signed-in user's own token, already scoped to exactly what they installed the App on) instead
+of a `GITHUB_PAT` env var, which required adding the App's `Actions: Read and write` permission
+(alongside the `Contents` upgrade above). This is exactly the "writes under user token, drop the
+shared PAT" migration Section 8.7 originally deferred — now done, not deferred.
 
 ## 6. Provisioning / repo resolution flow
 
@@ -221,13 +245,15 @@ merging them itself, each personal repo's own sync pipeline publishes one pre-me
    reconciliation now, confirmed with Akash ("leave both pages however it is, tackle later");
    tracked as a separate low-priority issue, not blocking.
 6. Keep template's `build-data.mjs` (superset).
-7. `trigger-sync.ts` gets rewritten as part of Sections 5-7's work — resolve target repo from
-   session, not a static env var, but **keep using the existing shared bot token** to dispatch
-   the workflow (not the logged-in user's own OAuth token). Reconciled with Akash's design: his
-   OAuth App only requests `repo` scope, not `workflow` scope, and he explicitly defers "writes
-   under user token, drop the shared PAT" to later. This plan matches that — no new OAuth scope
-   needed, deployment retirement (step 8) doesn't have to wait on that deferred write-token
-   migration. Akash's Netlify version is superseded, not ported.
+7. **Done** (`#35` for the session-based repo resolution, follow-up for the token itself — see
+   Section 5's status note). `trigger-sync.ts` resolves target repo from session, not a static
+   env var, **and dispatches with the signed-in user's own token** (`session.gh_token`), not a
+   shared bot account's PAT. The original plan here deferred that last part ("keep using the
+   existing shared bot token... he explicitly defers 'writes under user token, drop the shared
+   PAT' to later") — turned out not deferrable once tested against Akash's account: a shared
+   PAT only works for repos its owner is a manual collaborator on, which doesn't scale to any
+   future friend without per-user admin setup. Needed the App's `Actions: Read and write`
+   permission (Section 5). Akash's Netlify version is superseded, not ported.
 8. Decommission **both** standalone deployments once the shared site is confirmed working
    end-to-end for both accounts: Akash's Netlify site, and Skanda's separate `coach-phelps`
    Vercel deployment. Neither of you needs your own deployment once the one shared deployment
@@ -269,7 +295,7 @@ File in whichever repo Section 4 lands on.
 | 1 | Codebase merge (Section 8) | UI Expert, `ui/` only | — | **Done** (#14). `npm run build` succeeds, all routes reachable, `npm run dev` still works unauthenticated |
 | 2 | Auth + provisioning (Sections 5-6) | Tech Lead / worker with `ui/api/` access | Sequenced after 1 | **Done** (#16, migrated to a GitHub App per #25). Fresh GitHub account can log in, choose new/existing, reach dashboard shell |
 | 3 | Live data fetching (Section 7) | Tech Lead/worker + UI Expert coordination | 1, 2 | **Done**, verified against real synced data from both accounts (#17, Contents API gotcha fixed; `akash-suresh/coach-phelps#149`/`#151`/`#153` brought his account to parity and fixed his sync pipeline - his iOS app's push now auto-triggers a full sync with zero manual step, verified live). Dashboard crash on his genuinely different `challenge_v2.json` schema fixed in `coach-phelps-hq/coach-phelps-template#34` - see that PR and `MIGRATION_AKASH.md` for the schema-reconciliation approach (derive, don't force his real data into Skanda's shape). "Two real accounts, no bleed" exit criterion met. |
-| 4 | `trigger-sync.ts` rewrite + retirement of both standalone deployments (Section 8.7-8.8) | Tech Lead/worker | 2, 3 | **Code done** (`coach-phelps-hq/coach-phelps-template#35`) - resolves target repo from session instead of a static env var. **Not yet merged or live-verified** - needs both accounts to actually click Sync post-merge and confirm each dispatches their own repo's workflow (the PAT's cross-repo access was never independently confirmed). Deployment decommissioning (Netlify + Skanda's separate Vercel project) not started, sequenced after that verification. |
+| 4 | `trigger-sync.ts` rewrite + retirement of both standalone deployments (Section 8.7-8.8) | Tech Lead/worker | 2, 3 | **Code done**, real design not a shortcut: `#35` resolved target repo from session, then a further fix moved dispatch off a shared bot-account PAT onto each user's own token (`session.gh_token`) once testing on Akash's account showed the PAT approach needed him to be a manual collaborator on his repo - doesn't scale to a new friend without per-user admin setup. Needed the GitHub App's `Actions: Read and write` permission, added. **Pending live verification** - both accounts need to accept the App's pending permission-update prompt, then confirm Sync works for both, critically including Akash's **without Skanda being a collaborator on his repo** (the actual proof the new design doesn't have the old dependency). Deployment decommissioning (Netlify + Skanda's separate Vercel project) not started, sequenced after that verification. |
 
 Milestones 1 and 2 can run in parallel. Section 4 is resolved (see above), so Milestone 2 has no
 remaining blocker before building `provision-repo.ts`'s template reference.
@@ -296,9 +322,12 @@ These are real gaps but don't block Milestones 1-4. Full detail lives in `SCALIN
 - Milestone 2: **done.** Real GitHub login, both onboarding branches, end to end — both accounts.
 - Milestone 3: **done.** Two real GitHub accounts, confirmed no data bleed, both accounts'
   dashboards render real synced data correctly.
-- Milestone 4: **pending.** #35 merged, then: log in as Skanda, click Sync, confirm
-  `skanda-2003/coach-phelps`'s Actions tab shows a new run. Log in as Akash, click Sync, confirm
-  it's `akash-suresh/coach-phelps`'s Actions tab that gets the run, not Skanda's (the actual bug
-  being fixed) — if this fails with a 403/404, the shared bot token (`GITHUB_PAT`) needs
-  collaborator access granted on Akash's repo, separate from the code change. Only after both
-  confirmed: proceed to decommissioning both standalone deployments.
+- Milestone 4: **pending.** Both accounts first need to accept the GitHub App's pending
+  Actions-permission update at `https://github.com/settings/installations`. Then: log in as
+  Skanda, click Sync, confirm `skanda-2003/coach-phelps`'s Actions tab shows a new run. Log in
+  as Akash, click Sync, confirm it's `akash-suresh/coach-phelps`'s Actions tab that gets the
+  run — **critically, this needs to work with Skanda's account having no special access to
+  Akash's repo at all**, since dispatch now uses Akash's own token, not Skanda's. That's the
+  actual proof the redesign doesn't have the old shared-PAT dependency anymore, not just that
+  the button works. Only after both confirmed: proceed to decommissioning both standalone
+  deployments.

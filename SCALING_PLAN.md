@@ -10,6 +10,21 @@ repos into a clean public starter (keep `SOUL.md`, `templates/`, `scripts/`,
 their own sync credentials, then installs Coach Phelps on via "Sign up with GitHub." See
 [issue #32](https://github.com/coach-phelps-hq/coach-phelps-template/issues/32).
 
+**Two GitHub App permissions identified but deliberately not requested yet** — noted here so a
+future permission change can bundle them into one re-consent round for existing installations
+instead of asking Skanda and Akash to click through GitHub's approval prompt separately each
+time a new feature needs a new scope:
+- **Secrets** (repository secrets, read/write) — needed only if the guided sync-source
+  onboarding idea below (Phase 2, "site writes sync credentials into a new user's repo secrets
+  during setup") ever gets built.
+- **Administration** — needed only for the deferred new-user template-generate flow
+  (`WEBSITE_UNIFICATION_PLAN.md` Section 6, `provision-repo.ts`), which needs to create a new
+  repo on the user's behalf.
+
+Current permissions, for reference: Contents (Read and write) and Actions (Read and write) — see
+`WEBSITE_UNIFICATION_PLAN.md` Section 5 for what each is actually used for and when it was
+added.
+
 **Open questions from the login-flow hardening (PR #33), not yet decided or built:**
 
 - **Multi-repo owners get re-prompted to pick every ~8h, not just on logout.** Sessions are
