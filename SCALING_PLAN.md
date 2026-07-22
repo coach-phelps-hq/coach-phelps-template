@@ -10,6 +10,27 @@ repos into a clean public starter (keep `SOUL.md`, `templates/`, `scripts/`,
 their own sync credentials, then installs Coach Phelps on via "Sign up with GitHub." See
 [issue #32](https://github.com/coach-phelps-hq/coach-phelps-template/issues/32).
 
+**Open questions from the login-flow hardening (PR #33), not yet decided or built:**
+
+- **Multi-repo owners get re-prompted to pick every ~8h, not just on logout.** Sessions are
+  stateless (encrypted cookie, no server-side storage) and expire after 8h
+  (`SESSION_MAX_AGE_SEC` in `ui/api/_lib/session.ts`) regardless of whether the user actually
+  logs out. Anyone who owns two valid coach-phelps repos re-derives from scratch each time a
+  session starts, so the picker reappears every ~8h even if nothing changed. Possible fix: a
+  longer-lived, separate "last picked repo" cookie that pre-selects (or skips) the picker,
+  without weakening the 8h session-security window itself. Not built — flagged only.
+
+- **Should collaborator access ever grant dashboard viewing, as an explicit feature?** Right
+  now, being a GitHub collaborator on someone else's coach-phelps repo grants nothing — the
+  App has to be installed on *your own* account, and even installation repo lists are filtered
+  to repos you own (`ui/api/list-my-repos.ts`'s `isOwnedBy()` check). This was a deliberate
+  fix for a real cross-account data leak (see PR #30/#31), not an oversight. The question of
+  whether to *intentionally* support "share my dashboard with someone else" as a real feature
+  is open. Recommendation if it's ever built: it should be an **explicit opt-in the repo owner
+  grants** (e.g. "share my dashboard with these GitHub logins"), not inherited from repo
+  collaboration — being added as a collaborator for code reasons doesn't imply consent to
+  share personal training/sleep/coaching data. Not built — flagged only.
+
 **Status:** Website unification itself (Skanda + Akash, real shared site) is underway — see
 `WEBSITE_UNIFICATION_PLAN.md` for that executable plan. This doc is the parking lot for
 everything that only matters once there's a friend #3: fork history/background, provisioning
