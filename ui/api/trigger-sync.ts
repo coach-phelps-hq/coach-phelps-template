@@ -18,11 +18,6 @@ export default {
       return Response.json({ error: "Method not allowed" }, { status: 405 });
     }
 
-    const token = process.env.GITHUB_PAT;
-    if (!token) {
-      return Response.json({ error: "GITHUB_PAT not configured" }, { status: 500 });
-    }
-
     const cookies = parseCookies(req);
     const raw = cookies[SESSION_COOKIE];
     if (!raw) return Response.json({ error: "Not authenticated" }, { status: 401 });
@@ -34,6 +29,14 @@ export default {
     if (!repo) {
       return Response.json({ error: "No repo resolved for this account yet" }, { status: 400 });
     }
+
+    // The signed-in user's own token, not a shared bot account's PAT - it's already scoped
+    // to exactly what *this* user installed the GitHub App on, same pattern every other
+    // endpoint here uses (list-my-repos.ts, repo-file.ts). A shared PAT would only ever
+    // work for repos its owner happened to be a manual collaborator on - fine for two known
+    // accounts, doesn't scale to any future user without an admin action per person. Needs
+    // the App's Actions: Read and write permission (added alongside Contents earlier).
+    const token = session.gh_token;
 
     const now = Date.now();
     const lastDispatchTime = lastDispatchByRepo.get(repo) ?? 0;
