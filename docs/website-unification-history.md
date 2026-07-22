@@ -7,8 +7,10 @@ this in six months — or so Akash, who wasn't in the room for most of this work
 understand what changed and why, not just that it changed.
 
 For what's still open or deliberately deferred until there's a friend #3, see `SCALING_PLAN.md`.
-For the exact steps each person's own repo went through, see `MIGRATION_SKANDA.md` and
-`MIGRATION_AKASH.md`.
+The one thing still left to do in each personal repo — removing the now-redundant standalone
+`ui/` and deployment — is tracked as an issue in each repo directly (not a doc, since it's a
+single to-do, not an ongoing plan): [skanda-2003/coach-phelps#94](https://github.com/skanda-2003/coach-phelps/issues/94),
+[akash-suresh/coach-phelps#158](https://github.com/akash-suresh/coach-phelps/issues/158).
 
 ## Why this happened
 

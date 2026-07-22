@@ -69,10 +69,6 @@ still missing: a documented "choose your sync source" step in `SETUP.md` for a n
 question of whether Akash's iOS app stays iOS-only or Android/other-platform sync becomes a
 future ask. Not urgent — only matters once past friend #2-3.
 
-**`akash_won` field rename** — cosmetic tech debt in Akash's own scripts
-(`matchParser.ts`/`parse_match_description.py`/etc.), not blocking anything. Tracked in detail in
-`MIGRATION_AKASH.md`.
-
 ## "Coach Phelps" Naming — Must Rename Before Any Public Launch
 
 Surfaced while picking a name for the shared GitHub org. "Coach Phelps" is an unmistakable
