@@ -1,11 +1,12 @@
 # Website Unification
 
-**Status:** Milestones -1 through 3 done and verified with real data from both accounts.
-Milestone 4 (multi-tenant `trigger-sync.ts`) is code-complete
-(`coach-phelps-hq/coach-phelps-template#35`), pending a live test with both accounts logged in
-before merge — see the milestones table below. Login/auth also went through a real hardening
-pass beyond the original Milestone 2 scope after two live bugs surfaced (a reinstall loop, a
-cross-account data-resolution bug) — see Section 5's status note.
+**Status:** Milestones -1 through 4 all done and verified live with both real accounts,
+including sync dispatch (`#35`, `#36`) — each account's own token, not a shared bot PAT, proven
+by Akash's sync working from the unified site with zero special access from Skanda's account on
+his repo. The only remaining item is Milestone 4b: decommissioning both standalone deployments.
+Login/auth also went through a real hardening pass beyond the original Milestone 2 scope after
+two live bugs surfaced (a reinstall loop, a cross-account data-resolution bug) — see Section 5's
+status note.
 **Source of truth for background:** `SCALING_PLAN.md` (repo root) covers the full three-repo
 fork history plus everything only relevant past two users; this doc is the real, executable plan
 for unifying Skanda and Akash onto one shared site now.
@@ -295,7 +296,8 @@ File in whichever repo Section 4 lands on.
 | 1 | Codebase merge (Section 8) | UI Expert, `ui/` only | — | **Done** (#14). `npm run build` succeeds, all routes reachable, `npm run dev` still works unauthenticated |
 | 2 | Auth + provisioning (Sections 5-6) | Tech Lead / worker with `ui/api/` access | Sequenced after 1 | **Done** (#16, migrated to a GitHub App per #25). Fresh GitHub account can log in, choose new/existing, reach dashboard shell |
 | 3 | Live data fetching (Section 7) | Tech Lead/worker + UI Expert coordination | 1, 2 | **Done**, verified against real synced data from both accounts (#17, Contents API gotcha fixed; `akash-suresh/coach-phelps#149`/`#151`/`#153` brought his account to parity and fixed his sync pipeline - his iOS app's push now auto-triggers a full sync with zero manual step, verified live). Dashboard crash on his genuinely different `challenge_v2.json` schema fixed in `coach-phelps-hq/coach-phelps-template#34` - see that PR and `MIGRATION_AKASH.md` for the schema-reconciliation approach (derive, don't force his real data into Skanda's shape). "Two real accounts, no bleed" exit criterion met. |
-| 4 | `trigger-sync.ts` rewrite + retirement of both standalone deployments (Section 8.7-8.8) | Tech Lead/worker | 2, 3 | **Code done**, real design not a shortcut: `#35` resolved target repo from session, then a further fix moved dispatch off a shared bot-account PAT onto each user's own token (`session.gh_token`) once testing on Akash's account showed the PAT approach needed him to be a manual collaborator on his repo - doesn't scale to a new friend without per-user admin setup. Needed the GitHub App's `Actions: Read and write` permission, added. **Pending live verification** - both accounts need to accept the App's pending permission-update prompt, then confirm Sync works for both, critically including Akash's **without Skanda being a collaborator on his repo** (the actual proof the new design doesn't have the old dependency). Deployment decommissioning (Netlify + Skanda's separate Vercel project) not started, sequenced after that verification. |
+| 4 | `trigger-sync.ts` rewrite (Section 8.7) | Tech Lead/worker | 2, 3 | **Done, verified live for both accounts** (`#35`, `#36`). Resolves target repo from session and dispatches with each user's own token (`session.gh_token`), not a shared bot PAT - needed the GitHub App's `Actions: Read and write` permission, both accounts accepted the pending permission update. Confirmed against real runs: Skanda's dispatch (`skanda-2003/coach-phelps` run `29924626481`) and Akash's dispatch (`akash-suresh/coach-phelps` run `29939670735`, triggered from the unified site with zero special access from Skanda's account on his repo - the actual proof this scales past two known accounts) both completed successfully, `data/aggregate.json` regenerated correctly in Akash's case. Cleanup, not blocking: `GITHUB_PAT` env var is now fully unused on Vercel, can be removed. |
+| 4b | Retirement of both standalone deployments (Section 8.8) | Tech Lead/worker | 4 | **Not started** - now the last open item in this doc. Sequenced after Milestone 4's live verification, which is now done. |
 
 Milestones 1 and 2 can run in parallel. Section 4 is resolved (see above), so Milestone 2 has no
 remaining blocker before building `provision-repo.ts`'s template reference.
@@ -322,12 +324,12 @@ These are real gaps but don't block Milestones 1-4. Full detail lives in `SCALIN
 - Milestone 2: **done.** Real GitHub login, both onboarding branches, end to end — both accounts.
 - Milestone 3: **done.** Two real GitHub accounts, confirmed no data bleed, both accounts'
   dashboards render real synced data correctly.
-- Milestone 4: **pending.** Both accounts first need to accept the GitHub App's pending
-  Actions-permission update at `https://github.com/settings/installations`. Then: log in as
-  Skanda, click Sync, confirm `skanda-2003/coach-phelps`'s Actions tab shows a new run. Log in
-  as Akash, click Sync, confirm it's `akash-suresh/coach-phelps`'s Actions tab that gets the
-  run — **critically, this needs to work with Skanda's account having no special access to
-  Akash's repo at all**, since dispatch now uses Akash's own token, not Skanda's. That's the
-  actual proof the redesign doesn't have the old shared-PAT dependency anymore, not just that
-  the button works. Only after both confirmed: proceed to decommissioning both standalone
-  deployments.
+- Milestone 4: **done.** Both accounts accepted the GitHub App's Actions-permission update, then
+  each triggered Sync from the unified site: Skanda's dispatched `skanda-2003/coach-phelps`'s
+  workflow, Akash's dispatched `akash-suresh/coach-phelps`'s workflow — confirmed via real
+  Actions run IDs, not just "no error shown." Akash's run completed successfully end to end
+  (Strava step fails cleanly and is skipped, as intended since he's off Strava for good;
+  `data/aggregate.json` regenerated and committed correctly) **with zero special access from
+  Skanda's account on his repo** — the actual proof the redesign doesn't have the old
+  shared-PAT dependency, not just that the button works. Milestone 4b (decommissioning both
+  standalone deployments) is next, now unblocked.
