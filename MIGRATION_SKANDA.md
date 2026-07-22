@@ -5,56 +5,34 @@ together. This doc lives in `coach-phelps-template` (the repo the shared site de
 describes what happens in Skanda's own repo, `skanda-2003/coach-phelps`, to make the shared
 site work for him.
 
-## Steps
+## Done
 
-1. **Wait for template-side prerequisites** — issue #14 (ui merge), issue #16 (auth +
-   onboarding), issue #17 (live data fetch) all landed and working in `coach-phelps-template`
-   before anything here happens.
+- Onboarding discoverability, login, and repo resolution — generic, no repo-specific code
+  needed; `coach-phelps` already had `SOUL.md`/`training/challenge_v2.json` at the expected
+  paths.
+- `data/aggregate.json` publish step added to `sync.yml`, reusing `build-data.mjs`'s merge
+  logic, idempotent commit.
+- Sync dispatch from the shared site verified live, using Skanda's own token (not a shared bot
+  account) against a real GitHub Actions run.
 
-2. **Confirm onboarding discoverability** — `coach-phelps` already has `SOUL.md` and
-   `training/challenge_v2.json` at the expected paths, so `list-my-repos.ts`'s heuristic (issue
-   #16) will pick it up automatically. Nothing to change.
+## Still open — the one real remaining item
 
-3. **Log into the shared site** with the GitHub account that owns `coach-phelps`, choose it via
-   the existing-repo onboarding branch, confirm the dashboard renders real data via the live
-   fetch path (issue #17).
+**Remove `ui/` from `coach-phelps`, and decommission Skanda's personal Vercel deployment.**
+Sequenced together, and sequenced last — no action until the shared site is confirmed fully
+replacing this repo's own deployment, which it now is. Remove `ui/client`, `ui/api`,
+`vercel.json`, `package.json`/`package-lock.json`, `ui/scripts`, `tsconfig.json`,
+`vite.config.ts`, `ui/dist` once decommissioning the Vercel project. Optional, low-priority
+alongside this: update `SETUP.md`/`README.md` references from "deploy to your own Vercel" to
+"log into the shared site."
 
-4. **Add the `data/aggregate.json` publish step to `sync.yml`.** Reconciled with Akash's design
-   (issue #138): `sync.yml` gains a small, mechanical step that reuses `build-data.mjs`'s merge
-   logic (refactored to also support this output path) to produce and commit
-   `data/aggregate.json` at the repo root — `activities`, `challenge_v2`, `current_week`,
-   `workouts`, `sync_status`, plus `schema_version` + `generated_at`. Idempotent — no-op commit
-   when nothing changed, mirroring `apply-coach-patch.yml`'s existing guard pattern. This
-   corrects an earlier version of this doc that claimed `sync.yml` stays fully unchanged — it
-   doesn't, but the change is small and contained.
-
-5. **Verify sync works through the shared site** — **done, verified live**
-   (`coach-phelps-hq/coach-phelps-template#35`, `#36`): `trigger-sync.ts` resolves the target
-   repo from the session and dispatches using the signed-in user's own token, not a shared bot
-   account — see `docs/website-unification-history.md` for why that design changed partway
-   through. Confirmed against a real GitHub Actions run on `skanda-2003/coach-phelps`.
-
-6. **[Decided] Remove `ui/` from `coach-phelps`, sequenced last.** Confirmed with Akash — once
-   the shared site is stable, a personal deployment is redundant. Remove `ui/client`, `ui/api`,
-   `vercel.json`, `package.json`/`package-lock.json`, `ui/scripts`, `tsconfig.json`,
-   `vite.config.ts`, `ui/dist`. No action needed on this step until the shared site (Milestones
-   1-4) is confirmed working end to end — don't touch `ui/` in this repo before then.
-
-7. **Decommission Skanda's personal Vercel project** for `coach-phelps` (account-level action, not
-   a file change) — only after steps 3-5 confirm the shared site fully replaces it.
-
-8. **Leave untouched:** `SOUL.md`, `training/`, `sessions/`, `templates/`, `scripts/`, `strava/`,
-   `.github/workflows/`, `.github/agents/`, `docs/`, `CLAUDE.md`, and Skanda's personal
-   history/notes docs (`STRAVA_SYNC_STATUS.md`, `SOUL_PLAN.md`, `SOUL_HISTORY.md`,
-   `rename_review.md`). None of this is affected by the unification work.
-
-9. **Optional doc cleanup (low priority):** once the shared site is confirmed stable, update
-   `SETUP.md`/`README.md` references from "deploy to your own Vercel" to "log into the shared
-   site."
+**Leave untouched:** `SOUL.md`, `training/`, `sessions/`, `templates/`, `scripts/`, `strava/`,
+`.github/workflows/`, `.github/agents/`, `docs/`, `CLAUDE.md`, and Skanda's personal
+history/notes docs (`STRAVA_SYNC_STATUS.md`, `SOUL_PLAN.md`, `SOUL_HISTORY.md`,
+`rename_review.md`). None of this is affected by the unification work.
 
 ## What does NOT need to be added
 
-No new files are needed in `coach-phelps` for GitHub auth. The OAuth App and session handling
+No new files are needed in `coach-phelps` for GitHub auth. The GitHub App and session handling
 live in the shared site (`coach-phelps-template`) only — no persistent storage layer needed
-either (Section 6's resolution is session-carried, not a KV lookup). This repo just needs to
-stay discoverable (step 2) and dispatchable (step 5) — both already true today.
+either (repo resolution is session-carried, not a KV lookup). This repo just needs to stay
+discoverable and dispatchable — both already true today.
