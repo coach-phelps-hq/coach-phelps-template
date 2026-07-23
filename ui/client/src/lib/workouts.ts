@@ -2,6 +2,7 @@
  * Athlete OS — Workout data types and utilities
  * Types for workout templates, sessions, and timer logic.
  */
+import { toLocalDateStr } from "@/lib/challenge";
 
 export type WorkoutType = "foundation" | "strength" | "recovery" | "realign" | "calisthenics";
 export type ExerciseType = "timed" | "reps";
@@ -79,7 +80,7 @@ export function getWorkoutForToday(
   templates: Workout[],
   sessions: Workout[],
 ): Workout | null {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateStr(new Date());
 
   // Check for today's session first
   const session = sessions.find(

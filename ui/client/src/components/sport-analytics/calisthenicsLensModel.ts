@@ -2,7 +2,7 @@
  * calisthenicsLensModel.ts — Skill LENS data for calisthenics analytics.
  * Figures come from logged Calisthenics activities + challenge milestones only.
  */
-import { type Activity, getTrainingCategory } from "@/lib/activities";
+import { type Activity, getTrainingCategory, parseLocal } from "@/lib/activities";
 import type { ChallengeV2, Milestone } from "@/lib/challenge";
 import {
   computeMilestoneProgress,
@@ -573,7 +573,7 @@ export function buildCalisthenicsActivityHeatmap(
 
   for (const activity of activities) {
     if (getTrainingCategory(activity) !== "calisthenics") continue;
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     const timestamp = date.getTime();
     const key = localDateKey(date);
     streakDateKeys.push(key);

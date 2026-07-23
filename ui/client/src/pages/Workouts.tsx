@@ -2,6 +2,7 @@ import { CSSProperties, useMemo } from "react";
 import { Link } from "wouter";
 import { RepoDataGate } from "@/components/RepoDataGate";
 import { useRepoData, type RepoData } from "@/hooks/useRepoData";
+import { toLocalDateStr } from "@/lib/challenge";
 import {
   Workout,
   WorkoutType,
@@ -84,7 +85,7 @@ function WorkoutsContent({ data }: { data: RepoData }) {
   const workoutsData = data.workouts as WorkoutsData;
 
   const groups = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = toLocalDateStr(new Date());
     const cards = workoutsData.templates.map((template) => {
       const todaySession = workoutsData.sessions.find(
         (s) => s.id === template.id && s.session_date === today,

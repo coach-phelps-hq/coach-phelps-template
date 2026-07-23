@@ -3,6 +3,7 @@ import {
   type Activity,
   getThisWeekActivities,
   getTrainingCategory,
+  parseLocal,
   parseWinLoss,
 } from "@/lib/activities";
 import type { ActivityGlyphKind } from "./ActivityGlyph";
@@ -171,7 +172,7 @@ function activitiesForWeek(activities: Activity[], weekStart: Date): Activity[] 
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 7);
   return activities.filter((activity) => {
-    const activityDate = new Date(activity.start_date_local);
+    const activityDate = parseLocal(activity.start_date_local);
     return activityDate >= weekStart && activityDate < weekEnd;
   });
 }

@@ -4,7 +4,7 @@
  * No fabricated numbers: widgets with insufficient sample size report an
  * empty/opt-in state rather than guessing.
  */
-import { type Activity, getTrainingCategory } from "@/lib/activities";
+import { type Activity, getTrainingCategory, parseLocal } from "@/lib/activities";
 import type { EffortSnapshot } from "./badmintonLensModel";
 
 export type RunningScope = "8w" | "52w";
@@ -106,7 +106,7 @@ function buildSessions(activities: Activity[]): RunSession[] {
     if (elapsed <= 0) continue;
     result.push({
       activity,
-      timestamp: new Date(activity.start_date_local).getTime(),
+      timestamp: parseLocal(activity.start_date_local).getTime(),
       dateKey: activity.start_date_local.slice(0, 10),
       distanceKm,
       paceSecPerKm: elapsed / distanceKm,
@@ -594,7 +594,7 @@ export function buildRunningActivityHeatmap(
 
   for (const activity of activities) {
     if (getTrainingCategory(activity) !== "run") continue;
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     const timestamp = date.getTime();
     const key = localDateKey(date);
     streakDateKeys.push(key);
