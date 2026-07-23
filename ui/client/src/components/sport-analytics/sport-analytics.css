@@ -1,0 +1,2110 @@
+/**
+ * sport-analytics.css — Badminton Play LENS + SPINE.
+ * Extends the --wi-* tokens defined in warm-instrument.css; no new palette.
+ */
+
+.sa-lens {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.sa-caption {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-empty-note {
+  margin: 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.5;
+}
+
+/* Matches .wi-card-label exactly — this is the one micro-label size used
+   everywhere in the system; don't introduce another. */
+.sa-card-label {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  color: var(--wi-ink-faint);
+  text-transform: uppercase;
+}
+
+.sa-card-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sa-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 22px;
+  border: 1px solid #e2dcd0;
+  border-radius: 20px;
+  background: var(--wi-surface);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sa-card:hover,
+  .sa-winrate-hero:hover,
+  .sa-running-volume-hero:hover {
+    z-index: 2;
+    box-shadow: 0 12px 28px rgba(49, 35, 25, 0.13);
+    transform: translateY(-3px);
+  }
+}
+
+/* ─── Lens header ─────────────────────────────────────────────────────── */
+
+.sa-lens-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sa-lens-header__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sa-lens-header__title h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.sa-lens-header__meta {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--wi-ink-faint);
+}
+
+.sa-sport-chip {
+  padding: 4px 9px;
+  border-radius: 6px;
+  color: var(--wi-surface);
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.sa-sport-chip.is-badminton { background: var(--wi-badminton); }
+.sa-sport-chip.is-calisthenics { background: var(--wi-calisthenics); }
+.sa-sport-chip.is-run,
+.sa-sport-chip.is-cycling { background: var(--wi-cycling); }
+
+.sa-toggle {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #d8d1c2;
+  border-radius: 10px;
+  flex: none;
+}
+
+.sa-toggle button {
+  padding: 6px 12px;
+  border: none;
+  background: var(--wi-surface);
+  color: var(--wi-ink-faint);
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sa-toggle button.is-active {
+  background: var(--wi-ink);
+  color: var(--wi-surface);
+}
+
+.sa-toggle button:not(.is-active):hover,
+.sa-toggle button:not(.is-active):focus-visible {
+  color: var(--wi-ink);
+  outline: none;
+}
+
+.sa-toggle button:focus-visible {
+  outline: 2px solid var(--wi-rust);
+  outline-offset: -2px;
+}
+
+.sa-toggle--ghost {
+  border-color: rgba(251, 248, 241, 0.3);
+  border-radius: 7px;
+}
+
+.sa-toggle--ghost button {
+  padding: 4px 10px;
+  background: transparent;
+  color: rgba(251, 248, 241, 0.7);
+  font-size: 9px;
+}
+
+.sa-toggle--ghost button.is-active {
+  background: var(--wi-surface);
+  color: var(--wi-rust);
+}
+
+.sa-toggle--ghost button:not(.is-active):hover,
+.sa-toggle--ghost button:not(.is-active):focus-visible {
+  color: var(--wi-surface);
+}
+
+.sa-toggle--ghost button:focus-visible {
+  outline: 2px solid rgba(251, 248, 241, 0.6);
+  outline-offset: -2px;
+}
+
+/* ─── Win Rate hero — the XL anchor, same scale as the Engine hero ──────── */
+
+.sa-winrate-hero {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 34px 38px;
+  overflow: hidden;
+  border: 1px solid rgba(101, 43, 32, 0.7);
+  border-radius: 28px;
+  color: var(--wi-surface);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.06), transparent 45%), var(--wi-rust);
+  box-shadow: var(--wi-engine-shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.sa-winrate-hero .sa-empty-note { color: rgba(251, 248, 241, 0.85); }
+
+/* Higher specificity than the shared `.wi-engine-trend polyline` rule so the
+   thin per-session line doesn't inherit the bold rolling-line treatment. */
+.wi-engine-trend path.sa-winrate-hero__line-session,
+.wi-engine-trend polyline.sa-winrate-hero__line-session {
+  stroke: rgba(251, 248, 241, 0.4);
+  stroke-width: 1.5;
+}
+
+/* Bigger main trend graph than Home's Engine hero (Sky: "main graph needs to
+   be bigger") — desktop only; phone keeps warm-instrument.css's own 720px
+   compaction of .wi-engine-trend (76px) rather than competing with it. */
+@media (min-width: 721px) {
+  .sa-winrate-hero__trend {
+    height: 230px;
+  }
+}
+
+.sa-winrate-hero .wi-engine-gauge__fifty {
+  stroke: rgba(251, 248, 241, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+/* ─── Win Rate hero — year paging ─────────────────────────────────────── */
+
+.sa-winrate-hero__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sa-winrate-hero__pager {
+  display: flex;
+  gap: 4px;
+}
+
+.sa-winrate-hero__pager button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(251, 248, 241, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(251, 248, 241, 0.85);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sa-winrate-hero__pager button:hover:not(:disabled) {
+  background: rgba(251, 248, 241, 0.14);
+}
+
+.sa-winrate-hero__pager button:disabled {
+  color: rgba(251, 248, 241, 0.35);
+  border-color: rgba(251, 248, 241, 0.15);
+  cursor: default;
+}
+
+.sa-winrate-hero__pager button:focus-visible {
+  outline: 2px solid rgba(251, 248, 241, 0.6);
+  outline-offset: 1px;
+}
+
+/* ─── Rows / generic layout ───────────────────────────────────────────── */
+
+.sa-row {
+  display: grid;
+  gap: 14px;
+}
+
+.sa-row--session-shape,
+.sa-row--h2h {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.sa-row--effort {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 900px) {
+  .sa-row--session-shape,
+  .sa-row--h2h {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Session shape ───────────────────────────────────────────────────── */
+
+.sa-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sa-legend i {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+}
+
+.sa-legend i.is-muted { background: #c9c3b4; }
+.sa-legend i.is-ink { background: var(--wi-ink); }
+
+.sa-session-shape__plot {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 8px;
+  align-items: stretch;
+}
+
+.sa-session-shape__read {
+  margin: -2px 0 2px;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--wi-ink-muted);
+}
+
+.sa-session-shape__plot-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sa-session-shape__y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--wi-ink-faint);
+  text-align: right;
+}
+
+.sa-session-shape__y-axis .is-fifty {
+  color: var(--wi-ink-muted);
+}
+
+.sa-session-shape__chart-area {
+  position: relative;
+  height: 168px;
+  cursor: crosshair;
+}
+
+.sa-session-shape__chart-area svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sa-session-shape__chip {
+  position: absolute;
+  top: -2px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 4px 8px;
+  border: 1px solid rgba(84, 76, 65, 0.2);
+  border-radius: 5px;
+  background: rgba(251, 248, 241, 0.98);
+  box-shadow: 0 5px 12px rgba(49, 35, 25, 0.14);
+  color: var(--wi-rust);
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.sa-session-shape__x-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  min-height: 12px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-session-shape__x-labels span {
+  flex: 1;
+  visibility: hidden;
+  text-align: center;
+}
+
+.sa-session-shape__x-labels span.is-visible {
+  visibility: visible;
+}
+
+.sa-session-shape__volume {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 28px;
+  padding: 0 1px;
+}
+
+.sa-session-shape__volume span {
+  flex: 1;
+  min-height: 3px;
+  border-radius: 2px 2px 0 0;
+  background: rgba(201, 195, 180, 0.55);
+  transition: background 120ms ease;
+}
+
+.sa-session-shape__volume span.is-active {
+  background: var(--wi-rust);
+}
+
+.sa-session-shape__area-all {
+  fill: rgba(201, 195, 180, 0.16);
+}
+
+.sa-session-shape__area-recent {
+  fill: rgba(49, 35, 25, 0.08);
+}
+
+.sa-dashed-line {
+  stroke: #d8d1c2;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.sa-session-shape__line-all {
+  fill: none;
+  stroke: #c9c3b4;
+  stroke-width: 2;
+}
+
+.sa-session-shape__line-recent {
+  fill: none;
+  stroke: var(--wi-ink);
+  stroke-width: 2.5;
+}
+
+.sa-session-shape__guide {
+  stroke: var(--wi-ink-faint);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.sa-session-shape__dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sa-session-shape__dot-all {
+  background: #c9c3b4;
+  border: 1.5px solid var(--wi-surface);
+  box-shadow: 0 0 0 1px #c9c3b4;
+}
+
+.sa-session-shape__dot-recent {
+  background: var(--wi-ink);
+  border: 1.5px solid var(--wi-surface);
+  box-shadow: 0 0 0 1px var(--wi-ink);
+}
+
+/* ─── Best month ──────────────────────────────────────────────────────── */
+
+.sa-best-month {
+  justify-content: center;
+}
+
+.sa-best-month strong {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  font-size: 30px;
+}
+
+.sa-best-month__meta {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--wi-ink-muted);
+}
+
+.sa-best-month em {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.35;
+}
+
+/* ─── Head-to-head ────────────────────────────────────────────────────── */
+
+.sa-h2h__head,
+.sa-h2h__row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1.4fr;
+  align-items: center;
+  gap: 0;
+}
+
+.sa-h2h__head {
+  padding: 0 2px 5px;
+  border-bottom: 1px solid #efe9dc;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-h2h__row {
+  padding: 8px 2px;
+  border-bottom: 1px solid #efe9dc;
+}
+
+.sa-h2h__name {
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 14.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sa-h2h__record {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: var(--wi-ink-muted);
+}
+
+.sa-h2h__record.is-up,
+.sa-h2h__direction.is-up { color: var(--wi-badminton); font-weight: 700; }
+
+.sa-h2h__record.is-down,
+.sa-h2h__direction.is-down { color: var(--wi-ink-muted); font-weight: 700; }
+
+.sa-h2h__record.is-flat,
+.sa-h2h__direction.is-flat { color: var(--wi-ink-faint); }
+
+.sa-h2h__direction {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 12.5px;
+}
+
+/* Element-qualified so this beats .wi-shell button's `font: inherit` reset
+   (that selector's specificity is class+element; a bare .sa-h2h__toggle
+   class alone loses to it regardless of source order). */
+button.sa-h2h__toggle {
+  padding: 8px 0 2px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: center;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--wi-rust);
+}
+
+.sa-h2h__toggle:hover {
+  color: var(--wi-rust-dark);
+}
+
+.sa-h2h__toggle:focus-visible {
+  outline: 2px solid var(--wi-rust);
+  outline-offset: 2px;
+}
+
+/* ─── Am I improving ──────────────────────────────────────────────────── */
+
+.sa-improving__head,
+.sa-improving__row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.sa-improving__head {
+  padding: 0 2px 5px;
+  border-bottom: 1px solid #efe9dc;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-improving__row {
+  padding: 8px 2px;
+  border-bottom: 1px solid #efe9dc;
+  font-family: "Space Mono", monospace;
+}
+
+.sa-improving__metric {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-improving__all,
+.sa-improving__recent {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wi-ink);
+}
+
+.sa-improving__recent.is-up { color: var(--wi-badminton); }
+.sa-improving__recent.is-down { color: var(--wi-ink-muted); }
+
+/* ─── Effort ──────────────────────────────────────────────────────────── */
+
+.sa-effort__bar {
+  display: flex;
+  height: 10px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.sa-effort__bar span {
+  background: var(--zone-color);
+}
+
+.sa-effort__legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.sa-effort__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sa-effort__zone-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-muted);
+  white-space: nowrap;
+}
+
+.sa-effort__zone-label i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.sa-effort__zone-pct {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--wi-ink);
+  white-space: nowrap;
+}
+
+/* ─── Spine ───────────────────────────────────────────────────────────── */
+
+.sa-spine {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--wi-line-dashed);
+}
+
+.sa-spine__label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-spine__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .sa-spine__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Badminton activity heatmap (spine) ──────────────────────────────── */
+
+.sa-badminton-heatmap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 18px 22px 16px;
+  border: 1px solid #e2dcd0;
+  border-radius: 20px;
+  background: var(--wi-surface);
+}
+
+.sa-badminton-heatmap__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sa-badminton-heatmap__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sa-badminton-heatmap__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-badminton-heatmap__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sa-badminton-heatmap__legend i,
+.sa-badminton-heatmap__grid i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+.sa-badminton-heatmap__legend i.is-ranked,
+.sa-badminton-heatmap__grid i.is-ranked { background: #315a4a; }
+
+.sa-badminton-heatmap__legend i.is-league,
+.sa-badminton-heatmap__grid i.is-league { background: #a8702c; }
+
+.sa-badminton-heatmap__legend i.is-friendly,
+.sa-badminton-heatmap__grid i.is-friendly { background: #adc2b7; }
+
+.sa-badminton-heatmap__legend i.is-casual,
+.sa-badminton-heatmap__grid i.is-casual { background: #c9c3b4; }
+
+.sa-badminton-heatmap__grid i.is-empty {
+  background: #f0ece3;
+}
+
+.sa-badminton-heatmap__paging {
+  display: flex;
+  gap: 4px;
+}
+
+.sa-badminton-heatmap__paging button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d8d1c2;
+  border-radius: 6px;
+  background: var(--wi-surface);
+  color: var(--wi-ink-muted);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sa-badminton-heatmap__paging button:hover:not(:disabled) {
+  color: var(--wi-ink);
+  border-color: var(--wi-ink-faint);
+}
+
+.sa-badminton-heatmap__paging button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sa-badminton-heatmap__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.sa-badminton-heatmap__months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.sa-badminton-heatmap__month > strong {
+  display: block;
+  margin-bottom: 6px;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-badminton-heatmap__days,
+.sa-badminton-heatmap__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.sa-badminton-heatmap__days {
+  margin-bottom: 3px;
+  font-family: "Space Mono", monospace;
+  font-size: 7px;
+  color: var(--wi-ink-faint);
+  text-align: center;
+}
+
+.sa-badminton-heatmap__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 108px;
+  padding-top: 2px;
+}
+
+.sa-badminton-heatmap__stats-kicker {
+  margin-bottom: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-badminton-heatmap__stats strong {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--wi-ink);
+}
+
+.sa-badminton-heatmap__stats span {
+  display: block;
+  margin-top: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+@media (max-width: 900px) {
+  .sa-badminton-heatmap__body {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-badminton-heatmap__months {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sa-badminton-heatmap__stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
+/* ─── Phone (matches the wi-shell 720px breakpoint) ──────────────────────
+   Glance-only: hero, head-to-head, am-i-improving. Session Shape, Best
+   Month and Effort are hidden via wi-desktop-only on the page itself. */
+
+@media (max-width: 720px) {
+  .sa-lens {
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .sa-lens-header__title h2 {
+    font-size: 17px;
+  }
+
+  /* .wi-engine-card__* and .wi-engine-trend/.wi-engine-gauge already carry
+     their own 720px overrides from warm-instrument.css (number → 46px,
+     gauge hidden, trend compacted) since the hero reuses those classes
+     directly — only the outer shell needs its own match here. */
+  .sa-winrate-hero {
+    min-height: 0;
+    padding: 20px;
+    border-radius: 26px;
+    box-shadow: 0 12px 24px rgba(101, 43, 32, 0.18);
+  }
+
+  .sa-card {
+    padding: 14px 16px;
+  }
+
+  .sa-h2h__head,
+  .sa-h2h__row {
+    grid-template-columns: 1.4fr 1fr 1.2fr;
+  }
+
+  .sa-h2h__head > *:nth-child(2),
+  .sa-h2h__row > *:nth-child(2) {
+    display: none;
+  }
+
+  /* Element-qualified so this beats .wi-shell button's `font: inherit` reset
+   (that selector's specificity is class+element; a bare .sa-h2h__toggle
+   class alone loses to it regardless of source order). */
+button.sa-h2h__toggle {
+    display: none;
+  }
+
+  .sa-improving__all,
+  .sa-improving__recent {
+    font-size: 12px;
+  }
+}
+
+/* ─── Running LENS ─────────────────────────────────────────────────────── */
+
+.sa-running-volume-hero {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 34px 38px;
+  overflow: hidden;
+  border: 1px solid rgba(138, 96, 40, 0.65);
+  border-radius: 28px;
+  color: var(--wi-surface);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), transparent 45%), var(--wi-cycling);
+  box-shadow: 0 18px 36px rgba(168, 112, 44, 0.22);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.sa-running-volume-hero .sa-empty-note {
+  color: rgba(251, 248, 241, 0.85);
+}
+
+.sa-running-volume-hero__band-label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.sa-running-volume-hero__readout {
+  display: grid;
+  grid-template-columns: minmax(150px, auto) minmax(0, 1fr);
+  gap: 26px;
+  align-items: end;
+}
+
+.sa-running-volume-hero__number strong {
+  font-size: 56px;
+}
+
+.sa-running-volume-hero__number strong::after {
+  content: " KM";
+  font-size: 16px;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+.sa-running-volume-hero__charts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sa-running-gauge rect {
+  fill: rgba(251, 248, 241, 0.22);
+}
+
+.sa-running-gauge path,
+.sa-running-gauge .wi-engine-gauge__marker {
+  fill: var(--wi-surface);
+  stroke: var(--wi-surface);
+}
+
+.sa-running-volume__bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 78px;
+  cursor: crosshair;
+}
+
+.sa-running-volume__band-region {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 4px;
+  background: rgba(251, 248, 241, 0.12);
+  pointer-events: none;
+}
+
+.sa-running-volume__bar {
+  flex: 1;
+  min-height: 8px;
+  border-radius: 4px 4px 0 0;
+  background: rgba(251, 248, 241, 0.55);
+  transition: background 120ms ease;
+}
+
+.sa-running-volume__bar.is-current,
+.sa-running-volume__bar.is-active {
+  background: var(--wi-surface);
+}
+
+.sa-running-volume__chip {
+  position: absolute;
+  top: -2px;
+  z-index: 2;
+  padding: 4px 8px;
+  border: 1px solid rgba(251, 248, 241, 0.25);
+  border-radius: 5px;
+  background: rgba(43, 45, 41, 0.92);
+  color: var(--wi-surface);
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.sa-running-volume-hero__axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.sa-running-volume-hero__footnote {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(251, 248, 241, 0.2);
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.sa-row--running-benchmark {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sa-row--running-trend {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.sa-running-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sa-running-benchmark__delta {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--wi-surface);
+  background: var(--wi-badminton);
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+
+.sa-running-benchmark__delta.is-down {
+  background: var(--wi-ink-muted);
+}
+
+.sa-running-benchmark__body {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.sa-running-benchmark__readout {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+}
+
+.sa-running-benchmark__readout strong {
+  font-family: "Space Mono", monospace;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.sa-running-benchmark__readout span {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--wi-ink-faint);
+  margin-top: 2px;
+}
+
+.sa-running-benchmark__trend {
+  flex: 1;
+  height: 52px;
+  display: block;
+}
+
+.sa-running-benchmark__trend path {
+  fill: none;
+  stroke: var(--wi-cycling);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sa-running-benchmark__note {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.35;
+}
+
+.sa-running-pbs__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #efe9dc;
+}
+
+.sa-running-pbs__distance {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.sa-running-pbs__value {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: var(--wi-ink-muted);
+}
+
+.sa-running-pbs__value.is-pr {
+  font-weight: 700;
+  color: var(--wi-rust);
+}
+
+.sa-running-pbs__milestone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 9px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: rgba(168, 112, 44, 0.1);
+  border: 1px dashed rgba(168, 112, 44, 0.5);
+}
+
+.sa-running-pbs__milestone span:first-child {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--wi-cycling);
+}
+
+.sa-running-pbs__milestone span:last-child {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--wi-cycling);
+}
+
+.sa-running-pace-trend__chart {
+  display: block;
+  width: 100%;
+  height: 130px;
+}
+
+.sa-running-pace-trend__chart rect {
+  fill: #f7f3ea;
+}
+
+.sa-running-pace-trend__line-session {
+  fill: none;
+  stroke: #d3b184;
+  stroke-width: 1.5;
+}
+
+.sa-running-pace-trend__chart path:not(.sa-running-pace-trend__line-session) {
+  fill: none;
+  stroke: var(--wi-cycling);
+  stroke-width: 2.5;
+}
+
+.sa-running-pace-trend__chart text {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  fill: var(--wi-ink-faint);
+}
+
+.sa-running-pace-trend__method {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-running-coach-read {
+  background: var(--wi-coach-tint, #f3eee3);
+  border-color: transparent;
+}
+
+.sa-running-coach-read p {
+  margin: 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.5;
+}
+
+/* ─── Running activity heatmap (spine) ─────────────────────────────────── */
+
+.sa-running-heatmap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 18px 22px 16px;
+  border: 1px solid #e2dcd0;
+  border-radius: 20px;
+  background: var(--wi-surface);
+}
+
+.sa-running-heatmap__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sa-running-heatmap__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sa-running-heatmap__legend {
+  display: flex;
+  gap: 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-running-heatmap__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sa-running-heatmap__legend i,
+.sa-running-heatmap__grid i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+.sa-running-heatmap__legend i.is-run,
+.sa-running-heatmap__grid i.is-run {
+  background: var(--wi-cycling);
+}
+
+.sa-running-heatmap__grid i.is-empty {
+  background: #f0ece3;
+}
+
+.sa-running-heatmap__paging {
+  display: flex;
+  gap: 4px;
+}
+
+.sa-running-heatmap__paging button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d8d1c2;
+  border-radius: 6px;
+  background: var(--wi-surface);
+  color: var(--wi-ink-muted);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sa-running-heatmap__paging button:hover:not(:disabled) {
+  color: var(--wi-ink);
+  border-color: var(--wi-ink-faint);
+}
+
+.sa-running-heatmap__paging button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sa-running-heatmap__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.sa-running-heatmap__months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.sa-running-heatmap__month > strong {
+  display: block;
+  margin-bottom: 6px;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-running-heatmap__days,
+.sa-running-heatmap__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.sa-running-heatmap__days {
+  margin-bottom: 3px;
+  font-family: "Space Mono", monospace;
+  font-size: 7px;
+  color: var(--wi-ink-faint);
+  text-align: center;
+}
+
+.sa-running-heatmap__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 108px;
+  padding-top: 2px;
+}
+
+.sa-running-heatmap__stats-kicker {
+  margin-bottom: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-running-heatmap__stats strong {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--wi-ink);
+}
+
+.sa-running-heatmap__stats span {
+  display: block;
+  margin-top: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+@media (max-width: 900px) {
+  .sa-row--running-benchmark,
+  .sa-row--running-trend {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-running-volume-hero__readout {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-running-heatmap__body {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-running-heatmap__months {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sa-running-heatmap__stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sa-running-volume-hero {
+    min-height: 0;
+    padding: 20px;
+    border-radius: 26px;
+    box-shadow: 0 12px 24px rgba(168, 112, 44, 0.18);
+  }
+
+  .sa-running-volume-hero__number strong {
+    font-size: 46px;
+  }
+
+  .sa-running-volume__bars {
+    height: 56px;
+  }
+}
+
+/* ─── Calisthenics Skill LENS ─────────────────────────────────────────────── */
+
+.sa-calisthenics-block-meta {
+  margin-left: auto;
+}
+
+.sa-cal-skill-tracks {
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.sa-cal-skill-tracks__method {
+  margin: 0;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-skill-track {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #efe9dc;
+}
+
+.sa-cal-skill-track:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sa-cal-skill-track__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sa-cal-skill-track__title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sa-cal-skill-track__title strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wi-ink);
+}
+
+.sa-cal-skill-track__title span {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-skill-track__note {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: #6b6d64;
+}
+
+.sa-cal-skill-track__ladder {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+
+.sa-cal-skill-track__segment {
+  display: flex;
+  align-items: flex-start;
+}
+
+.sa-cal-skill-step-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 118px;
+  flex: none;
+}
+
+.sa-cal-skill-step {
+  width: 100%;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Space Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: default;
+  border: none;
+}
+
+.sa-cal-skill-step.is-done {
+  background: var(--wi-calisthenics);
+  color: var(--wi-surface);
+}
+
+.sa-cal-skill-step.is-current {
+  background: var(--wi-rust);
+  color: var(--wi-surface);
+}
+
+.sa-cal-skill-step.is-future {
+  background: var(--wi-surface);
+  color: var(--wi-rust);
+  border: 1px dashed #cf8f78;
+}
+
+.sa-cal-skill-step.is-future.is-muted {
+  color: var(--wi-ink-faint);
+  border-color: #d8d1c2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sa-cal-skill-step.is-future:hover {
+    border-color: #cf8f78;
+  }
+}
+
+.sa-cal-skill-step__sub {
+  font-family: "Space Mono", monospace;
+  font-size: 8.5px;
+  color: var(--wi-ink-faint);
+  text-align: center;
+  min-height: 12px;
+}
+
+.sa-cal-skill-track__link {
+  width: 22px;
+  height: 2px;
+  margin-top: 16px;
+  background: #e0d9c9;
+  flex: none;
+}
+
+.sa-cal-skill-track__link.is-done {
+  background: #c9c3b4;
+}
+
+.sa-cal-skill-track__projection {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 8px;
+  min-width: 140px;
+}
+
+.sa-cal-skill-track__proj-label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--wi-rust);
+}
+
+.sa-cal-skill-track__proj-sub {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  color: var(--wi-ink-faint);
+  line-height: 1.35;
+}
+
+.sa-cal-skill-track--compact {
+  gap: 6px;
+  padding-bottom: 10px;
+}
+
+.sa-cal-skill-track__compact-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sa-cal-skill-track__compact-head strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sa-cal-skill-track__compact-proj {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--wi-rust);
+  text-align: right;
+}
+
+.sa-cal-skill-track__compact-bars {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sa-cal-skill-track__compact-bars > span {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--wi-desk, #e8e2d7);
+}
+
+.sa-cal-skill-track__compact-bars > span.is-done {
+  background: var(--wi-calisthenics);
+}
+
+.sa-cal-skill-track__compact-bars > span.is-current {
+  background: var(--wi-rust);
+}
+
+.sa-cal-skill-track__compact-bars > span.is-future.is-muted {
+  background: var(--wi-desk, #e8e2d7);
+}
+
+.sa-cal-skill-track__compact-caption {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  color: var(--wi-ink-faint);
+  line-height: 1.35;
+}
+
+.sa-cal-skill-tracks__mobile .sa-cal-skill-track:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sa-row--calisthenics-lens {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+}
+
+.sa-calisthenics-lens__left,
+.sa-calisthenics-lens__right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sa-cal-improving__kicker {
+  font-family: "Space Mono", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-improving__row {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sa-cal-improving__row-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sa-cal-improving__row-head > span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sa-cal-improving__row-head > span:last-child {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-improving__row-head b {
+  color: var(--wi-rust);
+}
+
+.sa-cal-improving__bar {
+  height: 7px;
+  border-radius: 99px;
+  background: #efe9dc;
+  overflow: hidden;
+}
+
+.sa-cal-improving__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--wi-calisthenics);
+}
+
+.sa-cal-improving__coach {
+  margin: 4px 0 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.4;
+}
+
+.sa-cal-e1rm__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sa-cal-e1rm__tested {
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: var(--wi-rust);
+  color: var(--wi-surface);
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.sa-cal-e1rm__body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sa-cal-e1rm__readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+
+.sa-cal-e1rm__label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-e1rm__readout strong {
+  font-family: "Space Mono", monospace;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--wi-rust);
+  line-height: 1;
+}
+
+.sa-cal-e1rm__readout strong span {
+  font-size: 13px;
+}
+
+.sa-cal-e1rm__delta {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  color: var(--wi-badminton);
+}
+
+.sa-cal-e1rm__chart {
+  flex: 1;
+  min-width: 0;
+  display: block;
+}
+
+.sa-cal-e1rm__chart path {
+  fill: none;
+  stroke: var(--wi-rust);
+  stroke-width: 2.5;
+}
+
+.sa-cal-e1rm__chart circle {
+  fill: var(--wi-surface);
+  stroke: var(--wi-rust);
+  stroke-width: 2;
+}
+
+.sa-cal-e1rm__chart circle.is-pr {
+  fill: var(--wi-rust);
+  stroke: none;
+}
+
+.sa-cal-e1rm__pr-label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--wi-rust);
+}
+
+.sa-cal-e1rm__note {
+  margin: 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--wi-ink-muted);
+  line-height: 1.4;
+}
+
+.sa-cal-e1rm__note b {
+  font-style: normal;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--wi-rust);
+}
+
+.sa-cal-consistency__streak {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wi-rust);
+}
+
+.sa-cal-consistency__grid {
+  display: flex;
+  gap: 5px;
+}
+
+.sa-cal-consistency__grid > span {
+  flex: 1;
+  height: 30px;
+  border-radius: 6px;
+}
+
+.sa-cal-consistency__grid > span.is-hit {
+  background: var(--wi-calisthenics);
+}
+
+.sa-cal-consistency__grid > span.is-miss {
+  background: #efe9dc;
+}
+
+.sa-cal-consistency__axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Space Mono", monospace;
+  font-size: 8.5px;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-consistency__coach {
+  margin: 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--wi-ink-muted);
+  line-height: 1.45;
+}
+
+.sa-cal-coach-read {
+  background: var(--wi-coach-tint, #f3eee3);
+  border-color: transparent;
+}
+
+.sa-cal-coach-read p {
+  margin: 0;
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: #4a4c45;
+  line-height: 1.45;
+}
+
+.sa-cal-heatmap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 18px 22px 16px;
+  border: 1px solid #e2dcd0;
+  border-radius: 20px;
+  background: var(--wi-surface);
+}
+
+.sa-cal-heatmap__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sa-cal-heatmap__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sa-cal-heatmap__legend {
+  display: flex;
+  gap: 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-heatmap__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sa-cal-heatmap__legend i,
+.sa-cal-heatmap__grid i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+.sa-cal-heatmap__legend i.is-calisthenics,
+.sa-cal-heatmap__grid i.is-calisthenics {
+  background: var(--wi-calisthenics);
+}
+
+.sa-cal-heatmap__grid i.is-empty {
+  background: #f0ece3;
+}
+
+.sa-cal-heatmap__paging {
+  display: flex;
+  gap: 4px;
+}
+
+.sa-cal-heatmap__paging button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d8d1c2;
+  border-radius: 6px;
+  background: var(--wi-surface);
+  color: var(--wi-ink-muted);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sa-cal-heatmap__paging button:hover:not(:disabled) {
+  color: var(--wi-ink);
+  border-color: var(--wi-ink-faint);
+}
+
+.sa-cal-heatmap__paging button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sa-cal-heatmap__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.sa-cal-heatmap__months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.sa-cal-heatmap__month > strong {
+  display: block;
+  margin-bottom: 6px;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-heatmap__days,
+.sa-cal-heatmap__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.sa-cal-heatmap__days {
+  margin-bottom: 3px;
+  font-family: "Space Mono", monospace;
+  font-size: 7px;
+  color: var(--wi-ink-faint);
+  text-align: center;
+}
+
+.sa-cal-heatmap__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 108px;
+  padding-top: 2px;
+}
+
+.sa-cal-heatmap__stats-kicker {
+  margin-bottom: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--wi-ink-faint);
+}
+
+.sa-cal-heatmap__stats strong {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--wi-ink);
+}
+
+.sa-cal-heatmap__stats span {
+  display: block;
+  margin-top: 2px;
+  font-family: "Space Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--wi-ink-faint);
+}
+
+@media (max-width: 900px) {
+  .sa-row--calisthenics-lens {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-cal-heatmap__body {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-cal-heatmap__months {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sa-cal-heatmap__stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sa-cal-skill-tracks {
+    padding: 16px 18px;
+  }
+
+  .sa-cal-skill-tracks .sa-card-label {
+    font-size: 8.5px;
+  }
+
+  .sa-cal-consistency__grid > span {
+    height: 24px;
+  }
+
+  .sa-calisthenics-block-meta {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Kept last — wins cascade tie-break for reduced-motion overrides. */
+@media (prefers-reduced-motion: reduce) {
+  .sa-card,
+  .sa-winrate-hero,
+  .sa-running-volume-hero {
+    transition: none;
+  }
+}

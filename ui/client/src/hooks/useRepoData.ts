@@ -19,6 +19,7 @@ import syncStatusData from "@/data/sync_status.json";
 import workoutsData from "@/data/workouts.json";
 import sleepLogRaw from "@/data/sleep_log.json";
 import questHistoryRaw from "@/data/quest_history.json";
+import currentWeekRaw from "@/data/current_week.json";
 
 export interface RepoData {
   activities: unknown[];
@@ -27,6 +28,9 @@ export interface RepoData {
   sync_status: unknown;
   sleep_log: unknown[];
   quest_history: unknown;
+  // Optional - not every repo's build pipeline populates a coach-authored current-week
+  // plan. Absent for a repo with no training/current_week.json.
+  current_week?: unknown;
   schema_version?: number;
 }
 
@@ -37,6 +41,7 @@ const LOCAL_DATA: RepoData = {
   sync_status: syncStatusData,
   sleep_log: sleepLogRaw as unknown[],
   quest_history: questHistoryRaw,
+  current_week: currentWeekRaw,
 };
 
 // Bump when the aggregate shape changes in a way old dashboards can't render

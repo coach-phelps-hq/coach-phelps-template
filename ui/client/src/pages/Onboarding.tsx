@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import "@/components/home-warm/warm-instrument.css";
+import "@/components/login/login.css";
 
 interface RepoResult {
   candidates?: string[];
@@ -62,55 +63,55 @@ export default function Onboarding({ switchMode = false }: { switchMode?: boolea
   const emptyCopy = reason ? EMPTY_STATE_COPY[reason] : null;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-      <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-4">
-        {loading && (
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            Looking for your coach repo…
-          </p>
-        )}
+    <div className="wi-shell">
+      <div className="auth-card-shell">
+        <div className="auth-card">
+          {loading && <p className="auth-card__eyebrow">Looking for your coach repo…</p>}
 
-        {!loading && error && <p className="text-sm text-destructive">{error}</p>}
+          {!loading && error && <p className="auth-card__body auth-card__body--error">{error}</p>}
 
-        {!loading && !error && candidates.length === 0 && (
-          <>
-            <h2 className="text-xl font-bold uppercase tracking-widest">
-              {switchMode ? "Nothing else to switch to" : emptyCopy?.heading ?? "No repo found"}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {switchMode
-                ? "This is the only coach-phelps repo granted to your account."
-                : emptyCopy?.body ??
-                  "None of the repos you granted access to have a SOUL.md and training/challenge_v2.json."}
-            </p>
-            {switchMode && (
-              <Button asChild variant="outline" className="w-full">
-                <a href="/">Back to dashboard</a>
-              </Button>
-            )}
-          </>
-        )}
+          {!loading && !error && candidates.length === 0 && (
+            <>
+              <h2 className="auth-card__heading">
+                {switchMode ? "Nothing else to switch to" : emptyCopy?.heading ?? "No repo found"}
+              </h2>
+              <p className="auth-card__body">
+                {switchMode
+                  ? "This is the only coach-phelps repo granted to your account."
+                  : emptyCopy?.body ??
+                    "None of the repos you granted access to have a SOUL.md and training/challenge_v2.json."}
+              </p>
+              {switchMode && (
+                <div className="auth-card__buttons">
+                  <a href="/" className="auth-card__button">
+                    Back to dashboard
+                  </a>
+                </div>
+              )}
+            </>
+          )}
 
-        {!loading && !error && candidates.length > 0 && (
-          <>
-            <h2 className="text-xl font-bold uppercase tracking-widest">
-              {switchMode ? "Switch to which repo?" : "Which repo is yours?"}
-            </h2>
-            <div className="space-y-2">
-              {candidates.map((c) => (
-                <Button
-                  key={c}
-                  variant="outline"
-                  disabled={selecting}
-                  onClick={() => selectRepo(c)}
-                  className="w-full justify-start rounded-none border-2 border-foreground font-mono text-xs"
-                >
-                  {c}
-                </Button>
-              ))}
-            </div>
-          </>
-        )}
+          {!loading && !error && candidates.length > 0 && (
+            <>
+              <h2 className="auth-card__heading">
+                {switchMode ? "Switch to which repo?" : "Which repo is yours?"}
+              </h2>
+              <div className="auth-card__buttons">
+                {candidates.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    disabled={selecting}
+                    onClick={() => selectRepo(c)}
+                    className="auth-card__button auth-card__button--repo"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,97 +1,72 @@
-/**
- * Athlete OS — Workout Picker
- * Lists available workouts grouped by type. Shows today's session if available,
- * otherwise falls back to base template. Tap a card to start the timer.
- */
-import { useMemo } from "react";
+import { CSSProperties, useMemo } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Clock, MapPin, Dumbbell, ChevronRight } from "lucide-react";
+import { RepoDataGate } from "@/components/RepoDataGate";
+import { useRepoData, type RepoData } from "@/hooks/useRepoData";
 import {
   Workout,
-  WorkoutsData,
   WorkoutType,
-  WORKOUT_TYPE_CONFIG,
-  getWorkoutForToday,
-  getLatestSession,
+  WorkoutsData,
   countExercises,
   countSets,
 } from "@/lib/workouts";
-import { RepoDataGate } from "@/components/RepoDataGate";
-import { useRepoData, type RepoData } from "@/hooks/useRepoData";
+import {
+  SportBadge,
+  TimerTopBar,
+  accentFor,
+  deriveBlockTags,
+} from "@/components/workout-timer-warm/WorkoutTimerWidgets";
+
+const TYPE_ORDER: WorkoutType[] = ["foundation", "strength", "calisthenics", "recovery", "realign"];
+const TYPE_LABEL: Record<WorkoutType, string> = {
+  foundation: "FOUNDATION",
+  strength: "STRENGTH",
+  calisthenics: "CALISTHENICS",
+  recovery: "RECOVERY",
+  realign: "REALIGN",
+};
 
 function WorkoutCard({ workout, hasSession }: { workout: Workout; hasSession: boolean }) {
-  const config = WORKOUT_TYPE_CONFIG[workout.workout_type];
-  const exercises = countExercises(workout);
-  const sets = countSets(workout);
+  const accent = accentFor(workout.workout_type);
+  const { tags, overflow } = deriveBlockTags(workout);
 
   return (
-    <Link href={`/workouts/${workout.id}`}>
-      <div className="border-2 border-foreground bg-card hover:bg-secondary transition-colors cursor-pointer group">
-        {/* Category bar */}
-        <div className="h-1" style={{ backgroundColor: config.color }} />
-
-        <div className="p-4 sm:p-5">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span
-                  className="text-[10px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.5"
-                  style={{ backgroundColor: config.color, color: "#fff" }}
-                >
-                  {config.label}
-                </span>
-                {hasSession && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.5 bg-primary text-primary-foreground">
-                    TODAY
-                  </span>
-                )}
-              </div>
-              <h3 className="text-lg font-bold tracking-tight">{workout.title}</h3>
-              <p className="text-sm text-muted-foreground">{workout.subtitle}</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0 mt-1" />
-          </div>
-
-          {/* Coaching note */}
-          {workout.coaching_note && (
-            <p className="mt-3 text-xs text-muted-foreground border-l-2 pl-3 italic" style={{ borderColor: config.color }}>
-              {workout.coaching_note}
-            </p>
-          )}
-
-          {/* Meta row */}
-          <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />
-              <span className="font-mono">{workout.estimated_duration_mins}m</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Dumbbell className="w-3.5 h-3.5" />
-              <span className="font-mono">{exercises} exercises</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="font-mono">{sets} sets</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{workout.location}</span>
-            </span>
-          </div>
-
-          {/* Phases preview */}
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {workout.phases.map((phase) => (
-              <span
-                key={phase.name}
-                className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border border-foreground/20 text-muted-foreground"
-              >
-                {phase.name}
-              </span>
-            ))}
-          </div>
+    <Link
+      href={`/workouts/${workout.id}`}
+      className="wtx-list-card"
+      style={{ "--card-accent": accent } as CSSProperties}
+    >
+      <div className="wtx-list-card__top">
+        <div className="wtx-list-card__top-left">
+          <SportBadge label={TYPE_LABEL[workout.workout_type]} accent={accent} />
+          {hasSession ? <span className="wtx-list-card__today">TODAY</span> : null}
         </div>
+        <span className="wtx-list-card__arrow">→</span>
       </div>
+      <div>
+        <div className="wtx-list-card__title">{workout.title}</div>
+        <div className="wtx-list-card__subtitle">{workout.subtitle}</div>
+      </div>
+      {workout.coaching_note ? (
+        <p className="wtx-list-card__note" style={{ "--card-accent": accent } as CSSProperties}>
+          {workout.coaching_note}
+        </p>
+      ) : null}
+      <div className="wtx-list-card__stats">
+        <span>{workout.estimated_duration_mins}M</span>
+        <span>{countExercises(workout)} EXERCISES</span>
+        <span>{countSets(workout)} SETS</span>
+        <span>{workout.location.toUpperCase()}</span>
+      </div>
+      {tags.length ? (
+        <div className="wtx-list-card__tags">
+          {tags.map((tag) => (
+            <span className="wtx-list-card__tag" key={tag}>
+              {tag.toUpperCase()}
+            </span>
+          ))}
+          {overflow > 0 ? <span className="wtx-list-card__tag">+{overflow}</span> : null}
+        </div>
+      ) : null}
     </Link>
   );
 }
@@ -100,99 +75,63 @@ export default function Workouts() {
   const { data, loading, error, schemaUnsupported } = useRepoData();
   return (
     <RepoDataGate loading={loading} error={error} schemaUnsupported={schemaUnsupported}>
-      {data && <WorkoutsContent repoData={data} />}
+      {data && <WorkoutsContent data={data} />}
     </RepoDataGate>
   );
 }
 
-function WorkoutsContent({ repoData }: { repoData: RepoData }) {
-  const data = repoData.workouts as WorkoutsData;
-  const today = new Date().toISOString().slice(0, 10);
+function WorkoutsContent({ data }: { data: RepoData }) {
+  const workoutsData = data.workouts as WorkoutsData;
 
-  // Build the display list: for each template, check if there's a session for today
-  const workoutCards = useMemo(() => {
-    return data.templates.map((template) => {
-      const todaySession = data.sessions.find(
+  const groups = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const cards = workoutsData.templates.map((template) => {
+      const todaySession = workoutsData.sessions.find(
         (s) => s.id === template.id && s.session_date === today,
       );
-      return {
-        workout: todaySession ?? template,
-        hasSession: !!todaySession,
-      };
+      return { workout: todaySession ?? template, hasSession: !!todaySession };
     });
-  }, [today]);
-
-  // Group by workout_type
-  const grouped = useMemo(() => {
-    const groups: Record<string, typeof workoutCards> = {};
-    for (const card of workoutCards) {
+    const byType: Record<string, typeof cards> = {};
+    cards.forEach((card) => {
       const type = card.workout.workout_type;
-      if (!groups[type]) groups[type] = [];
-      groups[type].push(card);
-    }
-    return groups;
-  }, [workoutCards]);
+      (byType[type] ??= []).push(card);
+    });
+    return TYPE_ORDER.filter((type) => byType[type]?.length).map((type) => ({
+      type,
+      cards: byType[type],
+    }));
+  }, [workoutsData]);
 
-  const typeOrder: WorkoutType[] = ["foundation", "calisthenics", "strength", "recovery", "realign"];
+  const hasTodaySession = groups.some((group) => group.cards.some((card) => card.hasSession));
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-foreground text-background">
-        <div className="container py-3">
-          <div className="flex items-center gap-3">
-            <Link href="/">
-              <button className="p-2 hover:bg-background/10 transition-colors">
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-            </Link>
-            <h1 className="text-base font-bold tracking-tight uppercase">
-              Workouts
-            </h1>
-          </div>
-        </div>
-      </header>
-
-      <div className="border-b-2 border-foreground" />
-
-      {/* Content */}
-      <div className="container py-6">
-        {/* Today's sessions callout */}
-        {workoutCards.some((c) => c.hasSession) && (
-          <div className="mb-6 border-2 border-primary bg-primary/5 p-4">
-            <p className="text-sm font-bold uppercase tracking-wider" style={{ color: "oklch(0.60 0.22 30)" }}>
-              Coach has customized workouts for today
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
+    <div className="wi-shell">
+      <div className="wi-board" style={{ maxWidth: 1180 }}>
+        <TimerTopBar backHref="/" title="Workouts" />
+        {hasTodaySession ? (
+          <div className="wtx-list-banner">
+            <div className="wtx-list-banner__title">Coach has customized workouts for today</div>
+            <div className="wtx-list-banner__body">
               Session-specific modifications are applied. Look for the TODAY badge.
-            </p>
+            </div>
           </div>
-        )}
-
-        {/* Grouped workout cards */}
-        <div className="space-y-8">
-          {typeOrder.map((type) => {
-            const cards = grouped[type];
-            if (!cards || cards.length === 0) return null;
-            const config = WORKOUT_TYPE_CONFIG[type];
-
-            return (
-              <div key={type}>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                  {config.label}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {cards.map((card) => (
-                    <WorkoutCard
-                      key={card.workout.id}
-                      workout={card.workout}
-                      hasSession={card.hasSession}
-                    />
-                  ))}
-                </div>
+        ) : null}
+        <div className="wtx-list-groups">
+          {groups.map((group) => (
+            <div key={group.type}>
+              <div className="wtx-list-group__label">{TYPE_LABEL[group.type]}</div>
+              <div className="wtx-list-grid">
+                {group.cards.map((card) => (
+                  <WorkoutCard key={card.workout.id} workout={card.workout} hasSession={card.hasSession} />
+                ))}
+                {group.cards.length % 2 === 1 ? (
+                  <div className="wtx-list-empty-slot">
+                    + MORE {TYPE_LABEL[group.type]} SESSIONS
+                  </div>
+                ) : null}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </div>

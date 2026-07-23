@@ -153,8 +153,8 @@ export function getTrainingCategory(activity: Activity): TrainingCategory {
 
   // WeightTraining without renamed name — use duration heuristic
   if (activity.sport_type === "WeightTraining") {
-    if (activity.elapsed_time < 1500) return "foundation"; // <25 min
-    return "weight_training"; // >=25 min
+    if (activity.elapsed_time < 1800) return "foundation"; // <30 min
+    return "weight_training"; // >=30 min
   }
 
   return "other";
@@ -168,6 +168,12 @@ export function getCategoryConfig(activity: Activity): CategoryConfig {
 
 const CORE_SPORTS = ["Badminton", "WeightTraining", "Ride", "Run", "Workout", "Swim", "Walk"] as const;
 
+// Some accounts' sync sources log a "Foundation" sport type directly rather than
+// "WeightTraining" — treat it as WeightTraining for grouping purposes.
+const SPORT_TYPE_ALIASES: Record<string, string> = {
+  Foundation: "WeightTraining",
+};
+
 export const SPORT_CONFIG: Record<string, { label: string; color: string; cssClass: string }> = {
   Badminton: { label: "BADMINTON", color: "#2d8a4e", cssClass: "sport-bar-badminton" },
   WeightTraining: { label: "WEIGHTS", color: "#3b4a6b", cssClass: "sport-bar-weights" },
@@ -180,7 +186,8 @@ export const SPORT_CONFIG: Record<string, { label: string; color: string; cssCla
 };
 
 export function getSportGroup(sportType: string): string {
-  return (CORE_SPORTS as readonly string[]).includes(sportType) ? sportType : "Others";
+  const resolved = SPORT_TYPE_ALIASES[sportType] ?? sportType;
+  return (CORE_SPORTS as readonly string[]).includes(resolved) ? resolved : "Others";
 }
 
 export function getSportConfig(sportType: string) {
@@ -275,11 +282,11 @@ export function formatZoneTime(seconds: number): string {
 }
 
 export const HR_ZONE_LABELS = [
-  { key: "Zone 1", label: "Z1", range: "<120", color: "#bfdbfe" },
-  { key: "Zone 2", label: "Z2", range: "120-140", color: "#22c55e" },
-  { key: "Zone 3", label: "Z3", range: "141-160", color: "#eab308" },
-  { key: "Zone 4", label: "Z4", range: "161-180", color: "#f97316" },
-  { key: "Zone 5", label: "Z5", range: "181+", color: "#ef4444" },
+  { key: "Zone 1", label: "Z1", range: "<131", color: "#bfdbfe" },
+  { key: "Zone 2", label: "Z2", range: "132-145", color: "#22c55e" },
+  { key: "Zone 3", label: "Z3", range: "146-158", color: "#eab308" },
+  { key: "Zone 4", label: "Z4", range: "159-172", color: "#f97316" },
+  { key: "Zone 5", label: "Z5", range: "173+", color: "#ef4444" },
 ];
 
 // ─── Aggregation ────────────────────────────────────────────────────────────

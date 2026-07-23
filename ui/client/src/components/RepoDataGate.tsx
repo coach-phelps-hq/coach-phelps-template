@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import "@/components/home-warm/warm-instrument.css";
+import "@/components/login/login.css";
 
 interface Props {
   loading: boolean;
@@ -11,23 +13,25 @@ interface Props {
 export function RepoDataGate({ loading, error, schemaUnsupported, children }: Props) {
   if (loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-          Loading your data…
-        </p>
+      <div className="wi-shell">
+        <div className="auth-card-shell">
+          <p className="auth-card__eyebrow">Loading your data…</p>
+        </div>
       </div>
     );
   }
 
   if (schemaUnsupported) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-        <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-2">
-          <h2 className="text-xl font-bold uppercase tracking-widest">Repo needs updating</h2>
-          <p className="text-sm text-muted-foreground">
-            Your repo's data format is newer than what this dashboard supports. Pull the
-            latest template changes and sync again.
-          </p>
+      <div className="wi-shell">
+        <div className="auth-card-shell">
+          <div className="auth-card">
+            <h2 className="auth-card__heading">Repo needs updating</h2>
+            <p className="auth-card__body">
+              Your repo's data format is newer than what this dashboard supports. Pull the
+              latest template changes and sync again.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -35,10 +39,12 @@ export function RepoDataGate({ loading, error, schemaUnsupported, children }: Pr
 
   if (error) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-        <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-2">
-          <h2 className="text-xl font-bold uppercase tracking-widest">Couldn't load your data</h2>
-          <p className="text-sm text-muted-foreground">{error}</p>
+      <div className="wi-shell">
+        <div className="auth-card-shell">
+          <div className="auth-card">
+            <h2 className="auth-card__heading">Couldn't load your data</h2>
+            <p className="auth-card__body auth-card__body--error">{error}</p>
+          </div>
         </div>
       </div>
     );

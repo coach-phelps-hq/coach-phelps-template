@@ -1,0 +1,576 @@
+import type { Activity, TrainingCategory } from "@/lib/activities";
+import { getTrainingCategory, totalCalories } from "@/lib/activities";
+import type { ChallengeV2, Quest } from "@/lib/challenge";
+import { getActivityZoneLoad } from "@/components/home-warm/warmHomeModel";
+import type { WarmSportId } from "@/components/home-warm/WarmInstrumentWidgets";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const SPORT_ROWS: Array<{
+  id: WarmSportId;
+  label: string;
+  color: string;
+  match: (category: TrainingCategory) => boolean;
+}> = [
+  {
+    id: "badminton",
+    label: "BADMINTON",
+    color: "var(--wi-badminton)",
+    match: (category) => category.startsWith("badminton"),
+  },
+  {
+    id: "foundation",
+    label: "FOUNDATION",
+    color: "var(--wi-foundation)",
+    match: (category) =>
+      category === "foundation" || category === "recovery" || category === "realign",
+  },
+  {
+    id: "cycling",
+    label: "RIDE",
+    color: "var(--wi-cycling)",
+    match: (category) => category === "ride",
+  },
+  {
+    id: "calisthenics",
+    label: "CALISTHENICS",
+    color: "var(--wi-calisthenics)",
+    match: (category) => category === "calisthenics",
+  },
+  {
+    id: "other",
+    label: "OTHER",
+    color: "#9a9b90",
+    match: (category) =>
+      category === "other" || category === "run",
+  },
+];
+
+const QUEST_COLORS: Record<string, string> = {
+  visualization: "#7c6f9e",
+  reading: "#a8702c",
+  foundation: "#6d7d4e",
+  cold_shower: "#4b5578",
+  protein: "#7f3728",
+};
+
+export interface MonthOverviewCell {
+  month: number;
+  label: string;
+  fullName: string;
+  activeDays: number;
+  hours: number;
+}
+
+export interface MonthlyEngineWeek {
+  label: string;
+  load: number;
+  isPartial: boolean;
+}
+
+export interface MonthlyEngineModel {
+  monthLabel: string;
+  avgWeeklyLoad: number | null;
+  signal: "IN BAND" | "ABOVE BAND" | "BELOW BAND" | null;
+  verdict: string;
+  bandLow: number | null;
+  bandHigh: number | null;
+  scaleLow: number;
+  scaleHigh: number;
+  weeks: MonthlyEngineWeek[];
+  method: string;
+  hasData: boolean;
+}
+
+export interface SportBreakdownRow {
+  id: WarmSportId;
+  label: string;
+  sessions: number;
+  hours: number;
+  share: number;
+  color: string;
+}
+
+export interface WorkoutBreakdownModel {
+  sessions: number;
+  hours: number;
+  calories: number;
+  consistencyPercent: number | null;
+  activeDays: number;
+  elapsedDays: number;
+  vsPrevious: { sessionsDelta: number; hoursDelta: number } | null;
+  sports: SportBreakdownRow[];
+  hasData: boolean;
+}
+
+export interface SideQuestMonthRow {
+  id: string;
+  name: string;
+  done: number;
+  miss: number;
+  excused: number;
+  rate: number | null;
+  rateDeltaVsPrevious: number | null;
+  color: string;
+}
+
+export interface SideQuestsModel {
+  quests: SideQuestMonthRow[];
+  coachRead: string;
+  footnote: string;
+}
+
+export interface MonthlyVo2Model {
+  status: "available" | "unavailable";
+  monthLabel: string;
+  value: number | null;
+  delta: number | null;
+  percentileLabel?: string;
+  trend: Array<{ label: string; value: number }>;
+  read: string;
+}
+
+export interface MonthlySleepModel {
+  monthLabel: string;
+  hasData: false;
+}
+
+export interface MonthlyAnalyticsModel {
+  year: number;
+  month: number;
+  monthLabel: string;
+  monthFullName: string;
+  isCurrentMonth: boolean;
+  summaryLine: string;
+  noteLine: string;
+  yearOptions: number[];
+  monthOverview: MonthOverviewCell[];
+  engine: MonthlyEngineModel;
+  vo2: MonthlyVo2Model;
+  sleep: MonthlySleepModel;
+  breakdown: WorkoutBreakdownModel;
+  sideQuests: SideQuestsModel;
+}
+
+function localDateKey(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function getMonday(date: Date): Date {
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(date.getFullYear(), date.getMonth(), diff);
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+function isoWeek(date: Date): number {
+  const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  return Math.ceil((((utc.getTime() - yearStart.getTime()) / DAY_MS) + 1) / 7);
+}
+
+function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[middle - 1] + sorted[middle]) / 2
+    : sorted[middle];
+}
+
+function monthBounds(year: number, month: number): { start: Date; end: Date; elapsedDays: number } {
+  const start = new Date(year, month, 1);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(year, month + 1, 0);
+  end.setHours(23, 59, 59, 999);
+  const now = new Date();
+  const isCurrentMonth =
+    now.getFullYear() === year && now.getMonth() === month;
+  const elapsedDays = isCurrentMonth ? now.getDate() : end.getDate();
+  return { start, end, elapsedDays };
+}
+
+function activitiesInMonth(activities: Activity[], year: number, month: number): Activity[] {
+  const { start, end } = monthBounds(year, month);
+  return activities.filter((activity) => {
+    const date = new Date(activity.start_date_local);
+    return date >= start && date <= end;
+  });
+}
+
+function activeDayKeys(activities: Activity[]): Set<string> {
+  const keys = new Set<string>();
+  for (const activity of activities) {
+    keys.add(localDateKey(new Date(activity.start_date_local)));
+  }
+  return keys;
+}
+
+function weekLoad(activities: Activity[]): number {
+  return Math.round(
+    activities
+      .map(getActivityZoneLoad)
+      .filter((load): load is number => load !== null)
+      .reduce((sum, load) => sum + load, 0),
+  );
+}
+
+function activitiesForWeek(activities: Activity[], weekStart: Date): Activity[] {
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  return activities.filter((activity) => {
+    const date = new Date(activity.start_date_local);
+    return date >= weekStart && date < weekEnd;
+  });
+}
+
+function buildRhythmBand(activities: Activity[], anchor: Date): { low: number | null; high: number | null } {
+  const anchorMonday = getMonday(anchor);
+  const loads: number[] = [];
+  for (let index = 0; index < 8; index += 1) {
+    const weekStart = new Date(anchorMonday);
+    weekStart.setDate(weekStart.getDate() - (7 - index) * 7);
+    const load = weekLoad(activitiesForWeek(activities, weekStart));
+    if (load > 0) loads.push(load);
+  }
+  const rhythm = median(loads);
+  if (rhythm === null) return { low: null, high: null };
+  return {
+    low: Math.round(rhythm * 0.8),
+    high: Math.round(rhythm * 1.2),
+  };
+}
+
+function buildMonthlyEngine(
+  activities: Activity[],
+  year: number,
+  month: number,
+): MonthlyEngineModel {
+  const monthName = new Date(year, month, 1).toLocaleDateString("en-GB", { month: "long" }).toUpperCase();
+  const { end } = monthBounds(year, month);
+  const monthActivities = activitiesInMonth(activities, year, month);
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month + 1, 0);
+
+  const weekStarts = new Map<string, Date>();
+  for (let day = monthStart.getDate(); day <= monthEnd.getDate(); day += 1) {
+    const date = new Date(year, month, day);
+    const monday = getMonday(date);
+    weekStarts.set(localDateKey(monday), monday);
+  }
+
+  const weeks: MonthlyEngineWeek[] = Array.from(weekStarts.values())
+    .sort((left, right) => left.getTime() - right.getTime())
+    .map((weekStart) => {
+      const weekActivities = activitiesForWeek(activities, weekStart);
+      const observed = weekActivities.filter((activity) => getActivityZoneLoad(activity) !== null);
+      return {
+        label: `WK${isoWeek(weekStart)}`,
+        load: weekLoad(weekActivities),
+        isPartial: observed.length < weekActivities.length,
+      };
+    });
+
+  const weekLoads = weeks.map((week) => week.load).filter((load) => load > 0);
+  const avgWeeklyLoad =
+    weekLoads.length > 0
+      ? Math.round(weekLoads.reduce((sum, load) => sum + load, 0) / weekLoads.length)
+      : null;
+
+  const { low: bandLow, high: bandHigh } = buildRhythmBand(activities, end);
+  let signal: MonthlyEngineModel["signal"] = null;
+  if (avgWeeklyLoad !== null && bandLow !== null && bandHigh !== null) {
+    if (avgWeeklyLoad > bandHigh) signal = "ABOVE BAND";
+    else if (avgWeeklyLoad < bandLow) signal = "BELOW BAND";
+    else signal = "IN BAND";
+  }
+
+  const minimumSignal = Math.min(avgWeeklyLoad ?? 0, bandLow ?? avgWeeklyLoad ?? 0);
+  const maximumSignal = Math.max(avgWeeklyLoad ?? 0, bandHigh ?? 0, 1);
+  const scaleLow = Math.max(0, Math.floor((minimumSignal * 0.7) / 50) * 50);
+  const scaleHigh = Math.max(scaleLow + 100, Math.ceil((maximumSignal * 1.2) / 50) * 50);
+
+  let verdict = "No load streams this month — connect heart-rate data before Coach reads the band.";
+  if (avgWeeklyLoad !== null && signal === "IN BAND") {
+    verdict = "The engine stayed inside its own rhythm — steady work, no drama.";
+  } else if (signal === "ABOVE BAND") {
+    verdict = "Running hot this month — absorb before the next push.";
+  } else if (signal === "BELOW BAND") {
+    verdict = "A lighter month — room to build when life allows.";
+  }
+
+  const hasHrData = monthActivities.some((activity) => getActivityZoneLoad(activity) !== null);
+
+  return {
+    monthLabel: monthName,
+    avgWeeklyLoad,
+    signal,
+    verdict,
+    bandLow,
+    bandHigh,
+    scaleLow,
+    scaleHigh,
+    weeks,
+    method: "LOAD = Σ(MIN × ZONE WEIGHT) · BAND = 8-WK RHYTHM ±20%",
+    hasData: hasHrData,
+  };
+}
+
+function buildSportBreakdown(monthActivities: Activity[]): SportBreakdownRow[] {
+  const totals = SPORT_ROWS.map((row) => {
+    const matched = monthActivities.filter((activity) =>
+      row.match(getTrainingCategory(activity)),
+    );
+    const hours = matched.reduce((sum, activity) => sum + (activity.elapsed_time ?? 0) / 3600, 0);
+    return {
+      ...row,
+      sessions: matched.length,
+      hours,
+    };
+  }).filter((row) => row.sessions > 0);
+
+  const totalHours = totals.reduce((sum, row) => sum + row.hours, 0) || 1;
+  return totals.map((row) => ({
+    id: row.id,
+    label: row.label,
+    sessions: row.sessions,
+    hours: row.hours,
+    share: row.hours / totalHours,
+    color: row.color,
+  }));
+}
+
+function buildWorkoutBreakdown(
+  activities: Activity[],
+  year: number,
+  month: number,
+): WorkoutBreakdownModel {
+  const monthActivities = activitiesInMonth(activities, year, month);
+  const { elapsedDays } = monthBounds(year, month);
+  const activeDays = activeDayKeys(monthActivities).size;
+  const hours = monthActivities.reduce((sum, activity) => sum + (activity.elapsed_time ?? 0) / 3600, 0);
+  const calories = totalCalories(monthActivities);
+
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear = month === 0 ? year - 1 : year;
+  const prevActivities = activitiesInMonth(activities, prevYear, prevMonth);
+  const prevSessions = prevActivities.length;
+  const prevHours = prevActivities.reduce(
+    (sum, activity) => sum + (activity.elapsed_time ?? 0) / 3600,
+    0,
+  );
+
+  const consistencyPercent =
+    elapsedDays > 0 ? Math.round((activeDays / elapsedDays) * 100) : null;
+
+  return {
+    sessions: monthActivities.length,
+    hours,
+    calories,
+    consistencyPercent,
+    activeDays,
+    elapsedDays,
+    vsPrevious:
+      prevActivities.length > 0 || monthActivities.length > 0
+        ? {
+            sessionsDelta: monthActivities.length - prevSessions,
+            hoursDelta: hours - prevHours,
+          }
+        : null,
+    sports: buildSportBreakdown(monthActivities),
+    hasData: monthActivities.length > 0,
+  };
+}
+
+function datesInMonth(year: number, month: number): string[] {
+  const { start, end } = monthBounds(year, month);
+  const dates: string[] = [];
+  const cursor = new Date(start);
+  while (cursor <= end) {
+    dates.push(localDateKey(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}
+
+function questEligibleDates(quest: Quest, year: number, month: number): string[] {
+  const monthDates = datesInMonth(year, month);
+  const questStart = quest.start_date;
+  const questEnd = quest.end_date ?? "9999-12-31";
+  return monthDates.filter((date) => date >= questStart && date <= questEnd);
+}
+
+function questMonthStats(quest: Quest, year: number, month: number) {
+  const eligible = questEligibleDates(quest, year, month);
+  const completed = new Set(quest.completed_dates ?? []);
+  const missed = new Set(quest.missed_dates ?? []);
+  const excused = new Set(quest.excused_dates ?? []);
+
+  if (quest.type === "daily_streak" && quest.polarity === "default_not_done") {
+    const done = eligible.filter((date) => completed.has(date)).length;
+    const exc = eligible.filter((date) => excused.has(date)).length;
+    const miss = Math.max(0, eligible.length - done - exc);
+    return { done, miss, excused: exc };
+  }
+
+  if (quest.type === "daily_streak" && quest.polarity === "default_done") {
+    const miss = eligible.filter((date) => missed.has(date)).length;
+    const exc = eligible.filter((date) => excused.has(date)).length;
+    const done = Math.max(0, eligible.length - miss - exc);
+    return { done, miss, excused: exc };
+  }
+
+  return { done: quest.current ?? 0, miss: 0, excused: 0 };
+}
+
+function questRate(stats: { done: number; miss: number }): number | null {
+  const denominator = stats.done + stats.miss;
+  if (denominator <= 0) return null;
+  return Math.round((stats.done / denominator) * 100);
+}
+
+function buildSideQuests(
+  challenge: ChallengeV2,
+  year: number,
+  month: number,
+): SideQuestsModel {
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear = month === 0 ? year - 1 : year;
+
+  const quests: SideQuestMonthRow[] = challenge.quests.map((quest) => {
+    const stats = questMonthStats(quest, year, month);
+    const prevStats = questMonthStats(quest, prevYear, prevMonth);
+    const rate = questRate(stats);
+    const prevRate = questRate(prevStats);
+    return {
+      id: quest.id,
+      name: quest.name,
+      done: stats.done,
+      miss: stats.miss,
+      excused: stats.excused,
+      rate,
+      rateDeltaVsPrevious:
+        rate !== null && prevRate !== null ? rate - prevRate : null,
+      color: QUEST_COLORS[quest.id] ?? "#7c6f9e",
+    };
+  });
+
+  const activeQuest = quests.find((quest) => quest.done + quest.miss > 0) ?? quests[0];
+  let coachRead = "Side quests only count when you log them — no invented progress.";
+  if (activeQuest && activeQuest.rate !== null) {
+    if (activeQuest.rate >= 70) {
+      coachRead = `${activeQuest.name} held this month — keep the floor, not the ceiling.`;
+    } else if (activeQuest.rate <= 20 && activeQuest.miss > 0) {
+      coachRead = `${activeQuest.done} kept promise${activeQuest.done === 1 ? "" : "s"} out of ${activeQuest.done + activeQuest.miss}. The ${activeQuest.name.toLowerCase()} habit slipped — worth a smaller floor next month.`;
+    } else if (activeQuest.done + activeQuest.miss > 0) {
+      coachRead = `${activeQuest.name} landed ${activeQuest.rate}% this month — honest, not heroic.`;
+    }
+  }
+
+  return {
+    quests,
+    coachRead,
+    footnote: "RATE = DONE ÷ (DONE + MISS). EXCUSED DAYS EXCLUDED. DELTA vs LAST MONTH.",
+  };
+}
+
+function buildMonthOverview(activities: Activity[], year: number, now: Date): MonthOverviewCell[] {
+  const lastMonth = year === now.getFullYear() ? now.getMonth() : 11;
+  return Array.from({ length: lastMonth + 1 }, (_, month) => {
+    const monthActivities = activitiesInMonth(activities, year, month);
+    const hours = monthActivities.reduce(
+      (sum, activity) => sum + (activity.elapsed_time ?? 0) / 3600,
+      0,
+    );
+    const date = new Date(year, month, 1);
+    return {
+      month,
+      label: date.toLocaleDateString("en-GB", { month: "short" }).toUpperCase(),
+      fullName: date.toLocaleDateString("en-GB", { month: "long" }),
+      activeDays: activeDayKeys(monthActivities).size,
+      hours,
+    };
+  });
+}
+
+function availableYears(activities: Activity[], now: Date): number[] {
+  const years = new Set<number>([now.getFullYear()]);
+  for (const activity of activities) {
+    years.add(new Date(activity.start_date_local).getFullYear());
+  }
+  return Array.from(years).sort((left, right) => right - left).slice(0, 3);
+}
+
+function formatHours(hours: number): string {
+  return hours.toFixed(1);
+}
+
+export function buildMonthlyAnalyticsModel(
+  activities: Activity[],
+  challenge: ChallengeV2,
+  scope: { year: number; month: number },
+): MonthlyAnalyticsModel {
+  const now = new Date();
+  const { year, month } = scope;
+  const monthDate = new Date(year, month, 1);
+  const monthFullName = monthDate.toLocaleDateString("en-GB", { month: "long" });
+  const monthLabel = monthFullName.toUpperCase();
+  const isCurrentMonth = now.getFullYear() === year && now.getMonth() === month;
+  const breakdown = buildWorkoutBreakdown(activities, year, month);
+
+  const summaryLine = [
+    `${breakdown.sessions} SESSIONS`,
+    `${formatHours(breakdown.hours)}H`,
+    `${breakdown.activeDays} ACTIVE DAYS`,
+  ].join(" · ");
+
+  const noteLine = isCurrentMonth
+    ? "Your current month."
+    : `Reflecting ${monthLabel} ${year}.`;
+
+  return {
+    year,
+    month,
+    monthLabel,
+    monthFullName,
+    isCurrentMonth,
+    summaryLine,
+    noteLine,
+    yearOptions: availableYears(activities, now),
+    monthOverview: buildMonthOverview(activities, year, now),
+    engine: buildMonthlyEngine(activities, year, month),
+    vo2: {
+      status: "unavailable",
+      monthLabel: `END OF ${monthLabel}`,
+      value: null,
+      delta: null,
+      trend: [],
+      read: "Connect a real Apple Health VO₂ series before Coach reads the trend.",
+    },
+    sleep: {
+      monthLabel: `${monthLabel} ${year}`,
+      hasData: false,
+    },
+    breakdown,
+    sideQuests: buildSideQuests(challenge, year, month),
+  };
+}
+
+export function clampMonthlyScope(
+  scope: { year: number; month: number },
+  activities: Activity[],
+): { year: number; month: number } {
+  const now = new Date();
+  const years = availableYears(activities, now);
+  const year = years.includes(scope.year) ? scope.year : years[0] ?? now.getFullYear();
+  const maxMonth = year === now.getFullYear() ? now.getMonth() : 11;
+  const month = Math.max(0, Math.min(scope.month, maxMonth));
+  return { year, month };
+}

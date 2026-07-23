@@ -39,3 +39,5 @@
 - [ ] **Travel/bodyweight mode** — Coach detects travel context and switches to a bodyweight-only plan. Return protocol to ramp back up. Define in SOUL.md.
 
 - [ ] **Readiness score** — daily 1-100 score derived from sleep, soreness, PRE, and streak data. Helps Coach calibrate session intensity without asking every time.
+
+- [ ] **Real opponent-name aliases (`ui/client/src/lib/nameAliases.ts`)** — Akash's personal repo has real badminton opponent-name mappings (e.g. "joe" → "Joe Chung", "richard t" → "Rich Tan"); the shared site currently only has a placeholder entry. Discuss with Akash whether/how to bring his real aliases in — deliberately left untouched during the UI v2 migration since it's his data, not something to port without him.

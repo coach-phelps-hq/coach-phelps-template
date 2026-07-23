@@ -1,22 +1,34 @@
-import { Button } from "@/components/ui/button";
+import { LoginPage } from "@/components/login/LoginPage";
+import { adaptCurrentWeek } from "@/components/home-warm/currentWeekAdapter";
+import activitiesData from "@/data/activities.json";
+import challengeDataRaw from "@/data/challenge_v2.json";
+import syncStatusData from "@/data/sync_status.json";
+import currentWeekRaw from "@/data/current_week.json";
+import type { Activity } from "@/lib/activities";
+import type { ChallengeV2 } from "@/lib/challenge";
+import type { SyncStatusPayload } from "@/components/home-warm/warmHomeModel";
+import { parseCurrentWeek } from "@/lib/currentWeek";
+
+// There's no session yet at this point (this page is shown before sign-in), so this can
+// never be the viewing user's own live data - the hero is decorative chrome on a pre-auth
+// screen, not a real dashboard, so bundled fixture data is intentional here.
+const activities = activitiesData as Activity[];
+const challengeData = challengeDataRaw as unknown as ChallengeV2;
+const syncStatus = syncStatusData as SyncStatusPayload;
+
+const currentWeekRt = parseCurrentWeek(currentWeekRaw);
+const currentWeek =
+  currentWeekRt.availability.available && currentWeekRt.data
+    ? adaptCurrentWeek(currentWeekRt.data, currentWeekRt.availability, activities)
+    : undefined;
 
 export default function Login() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-      <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-4">
-        <h1 className="text-xl font-bold uppercase tracking-widest">Coach Phelps</h1>
-        <p className="text-sm text-muted-foreground">
-          Already set up? Log in. First time, or adding another repo? Sign up.
-        </p>
-        <div className="space-y-2">
-          <Button asChild className="w-full">
-            <a href="/api/auth-login">Log in with GitHub</a>
-          </Button>
-          <Button asChild variant="outline" className="w-full">
-            <a href="/api/auth-install">Sign up with GitHub</a>
-          </Button>
-        </div>
-      </div>
-    </div>
+    <LoginPage
+      activities={activities}
+      challengeData={challengeData}
+      currentWeek={currentWeek}
+      syncStatus={syncStatus}
+    />
   );
 }

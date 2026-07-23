@@ -1,35 +1,42 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Activity, groupByMonth, totalTime, parseLocal, computeSleepStreak, daysElapsedInMonth, daysInMonth, isCurrentMonth } from "@/lib/activities";
-import type { ChallengeV2 } from "@/lib/challenge";
-import { CommandStrip } from "@/components/CommandStrip";
-import { MonthCard } from "@/components/MonthCard";
-import { WorkoutBreakdownCard } from "@/components/WorkoutBreakdownCard";
-import { SleepSummaryCard } from "@/components/SleepSummaryCard";
-import { QuestSummaryCard } from "@/components/QuestSummaryCard";
+import { useMemo, useState } from "react";
 import { RepoDataGate } from "@/components/RepoDataGate";
 import { useRepoData, type RepoData } from "@/hooks/useRepoData";
+import { InstrumentHeader } from "@/components/home-warm/WarmInstrumentWidgets";
+import { buildWarmHomeModel, type SyncStatusPayload } from "@/components/home-warm/warmHomeModel";
+import { buildLiveWeekContract } from "@/components/home-warm/liveWeekContract";
+import type { Activity } from "@/lib/activities";
+import type { ChallengeV2 } from "@/lib/challenge";
+import {
+  buildMonthlyAnalyticsModel,
+  clampMonthlyScope,
+} from "@/components/monthly-analytics/monthlyAnalyticsModel";
+import {
+  MonthOverviewGrid,
+  MonthStepper,
+  MonthlyAnalyticsBody,
+  MonthlyAnalyticsHeader,
+} from "@/components/monthly-analytics/MonthlyAnalyticsWidgets";
+import "@/components/home-warm/warm-instrument.css";
+import "@/components/monthly-analytics/monthly-analytics.css";
 
-interface SleepEntry {
-  date: string;
-  hours: number;
-  resting_hr: number | null;
-  notes: string;
-}
-interface QuestEntry { date: string; status: "done" | "missed" | "excused" }
-interface QuestHistory {
-  generated_at: string;
-  quests: Record<string, { name: string; entries: QuestEntry[] }>;
-}
-
-const MONTH_NAMES = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
-];
-
-function getAvailableYears(activities: Activity[]): number[] {
-  const years = new Set(activities.map((a) => parseLocal(a.start_date_local).getFullYear()));
-  return Array.from(years).sort((a, b) => b - a);
+function buildPhaseLabel(activities: Activity[], challenge: ChallengeV2, syncStatus: SyncStatusPayload): string {
+  const contract = buildLiveWeekContract(activities, challenge);
+  const model = buildWarmHomeModel(activities, challenge, syncStatus, contract);
+  // Akash's season/phase/block model has a current_block with real dates; Skanda's classic
+  // challenge model has no phase concept at all - fall back to the challenge's own dates.
+  const blockStart = challenge.phase?.current_block.start_date ?? challenge.challenge?.start_date;
+  const blockEnd = challenge.phase?.current_block.end_date ?? challenge.challenge?.end_date;
+  const start = blockStart ? new Date(`${blockStart}T00:00:00`) : new Date();
+  const end = blockEnd ? new Date(`${blockEnd}T00:00:00`) : new Date();
+  const totalWeeks = Math.max(
+    1,
+    Math.ceil((end.getTime() - start.getTime() + 86_400_000) / (7 * 86_400_000)),
+  );
+  const currentWeek = Math.min(
+    totalWeeks,
+    Math.max(1, Math.floor((Date.now() - start.getTime()) / (7 * 86_400_000)) + 1),
+  );
+  return `${model.phaseName.toUpperCase()} · ${model.blockName.toUpperCase()} · WK ${currentWeek}/${totalWeeks}`;
 }
 
 export default function MonthlyAnalytics() {
@@ -43,181 +50,81 @@ export default function MonthlyAnalytics() {
 
 function MonthlyAnalyticsContent({ data }: { data: RepoData }) {
   const activities = data.activities as Activity[];
-  const sleepLog = data.sleep_log as unknown as SleepEntry[];
-  const questHistory = data.quest_history as unknown as QuestHistory;
   const challengeData = data.challenge_v2 as unknown as ChallengeV2;
-  const syncStatusData = data.sync_status as any;
-  const sleepQuest = challengeData.quests.find((q) => q.id === "sleep");
-  const sleepStreak = computeSleepStreak(sleepQuest?.completed_dates ?? []);
+  const syncStatusData = data.sync_status as SyncStatusPayload;
+
   const now = new Date();
-  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+  const [scope, setScope] = useState(() =>
+    clampMonthlyScope({ year: now.getFullYear(), month: now.getMonth() }, activities),
+  );
 
-  const years = useMemo(() => getAvailableYears(activities), []);
-  const byMonth = useMemo(() => groupByMonth(activities), []);
+  const model = useMemo(
+    () => buildMonthlyAnalyticsModel(activities, challengeData, scope),
+    [activities, challengeData, scope],
+  );
 
-  // Year strip data — 12 months for selected year
-  const yearStripData = useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => {
-      const month = i + 1;
-      const key = `${selectedYear}-${String(month).padStart(2, "0")}`;
-      const acts = byMonth.get(key) ?? [];
-      const activeDays = new Set(
-        acts.map((a) => parseLocal(a.start_date_local).getDate())
-      ).size;
-      const totalHours = totalTime(acts) / 3600;
-      return { month, activeDays, totalHours: Math.round(totalHours * 10) / 10, hasData: acts.length > 0 };
-    });
-  }, [selectedYear, byMonth]);
+  const phaseLabel = buildPhaseLabel(activities, challengeData, syncStatusData);
+  const monthIndex = model.monthOverview.findIndex((cell) => cell.month === scope.month);
+  const canGoPrev = monthIndex > 0;
+  const canGoNext = monthIndex >= 0 && monthIndex < model.monthOverview.length - 1;
 
-  // Month detail activities
-  const monthKey = `${selectedYear}-${String(selectedMonth).padStart(2, "0")}`;
-  const monthActivities = byMonth.get(monthKey) ?? [];
+  function selectMonth(month: number) {
+    setScope((current) => clampMonthlyScope({ ...current, month }, activities));
+  }
 
-  // Previous month for deltas
-  const prevYear = selectedMonth === 1 ? selectedYear - 1 : selectedYear;
-  const prevMonthNum = selectedMonth === 1 ? 12 : selectedMonth - 1;
-  const prevMonthKey = `${prevYear}-${String(prevMonthNum).padStart(2, "0")}`;
-  const prevMonthActivities = byMonth.get(prevMonthKey) ?? [];
-  const prevSleepLog = sleepLog.filter((e) => e.date.startsWith(prevMonthKey));
+  function selectYear(year: number) {
+    setScope((current) => clampMonthlyScope({ year, month: current.month }, activities));
+  }
 
-  // For the current, in-progress month, only compare against the same day-of-month
-  // range of the previous month so a partial month isn't diffed against a full one.
-  // If the previous month is shorter, cap at its last day.
-  const prevMonthActivitiesForDelta = isCurrentMonth(selectedYear, selectedMonth)
-    ? prevMonthActivities.filter((a) => {
-        const day = parseLocal(a.start_date_local).getDate();
-        return day <= Math.min(now.getDate(), daysInMonth(prevYear, prevMonthNum));
-      })
-    : prevMonthActivities;
+  function goPrevMonth() {
+    if (!canGoPrev) return;
+    selectMonth(model.monthOverview[monthIndex - 1].month);
+  }
 
-  // Navigation
-  const prevMonth = useCallback(() => {
-    if (selectedMonth === 1) {
-      setSelectedYear(selectedYear - 1);
-      setSelectedMonth(12);
-    } else {
-      setSelectedMonth(selectedMonth - 1);
-    }
-  }, [selectedMonth, selectedYear]);
-
-  const nextMonth = useCallback(() => {
-    const today = new Date();
-    const isCurrentMonth = selectedYear === today.getFullYear() && selectedMonth === today.getMonth() + 1;
-    if (isCurrentMonth) return;
-    if (selectedMonth === 12) {
-      setSelectedYear(selectedYear + 1);
-      setSelectedMonth(1);
-    } else {
-      setSelectedMonth(selectedMonth + 1);
-    }
-  }, [selectedMonth, selectedYear]);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") prevMonth();
-      if (e.key === "ArrowRight") nextMonth();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [prevMonth, nextMonth]);
+  function goNextMonth() {
+    if (!canGoNext) return;
+    selectMonth(model.monthOverview[monthIndex + 1].month);
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <CommandStrip challengeData={challengeData} sleepStreak={sleepStreak} syncStatus={syncStatusData} showBack />
-      <div className="border-b-2 border-foreground" />
+    <div className="wi-shell">
+      <div className="wi-board">
+        <InstrumentHeader
+          phaseLabel={phaseLabel}
+          mobilePhaseLabel={`BUILD · ${model.monthLabel}`}
+          syncHealthy={syncStatusData.status === "success" || syncStatusData.status === "none"}
+          syncLabel={syncStatusData.status}
+          workoutsHref="/workouts"
+          analyticsHref="/analytics/monthly"
+          currentRoute="/analytics/monthly"
+        />
 
-      <div className="container py-6 px-4 md:px-6 space-y-6">
-        <div className="mb-2">
-          <h2 className="text-xl font-bold tracking-tight">Monthly Analytics</h2>
-          <p className="text-xs text-muted-foreground mt-1">Training, sleep & side quests by month</p>
-        </div>
-
-        {/* Year selector */}
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Year</span>
-          <div className="flex gap-1">
-            {years.map((y) => (
-              <button
-                key={y}
-                onClick={() => setSelectedYear(y)}
-                className={`px-3 py-1 text-xs font-mono font-bold border-2 transition-colors ${
-                  y === selectedYear
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-foreground/30 hover:border-foreground"
-                }`}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Year strip — 12 month cards */}
-        <div className="grid grid-cols-6 md:grid-cols-12 gap-1.5">
-          {yearStripData.map(({ month, activeDays, totalHours, hasData }) => (
-            <MonthCard
-              key={month}
-              month={month}
-              year={selectedYear}
-              activeDays={activeDays}
-              totalHours={totalHours}
-              hasData={hasData}
-              isSelected={month === selectedMonth}
-              onClick={() => setSelectedMonth(month)}
-            />
-          ))}
-        </div>
-
-        {/* Month detail header */}
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="button"
-            onClick={prevMonth}
-            className="p-1 border-2 border-foreground hover:bg-foreground hover:text-background transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <h2 className="text-lg font-bold uppercase tracking-tight">
-            {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
-          </h2>
-          <button
-            type="button"
-            onClick={nextMonth}
-            className="p-1 border-2 border-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            disabled={selectedYear === now.getFullYear() && selectedMonth === now.getMonth() + 1}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-          {monthActivities.length > 0 && (
-            <span className="text-[10px] font-mono text-muted-foreground ml-1">
-              {monthActivities.length} sessions · {daysElapsedInMonth(selectedYear, selectedMonth)} days
-            </span>
-          )}
-        </div>
-
-        {/* Workout left, sleep + quests stacked right */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
-          <WorkoutBreakdownCard
-            activities={monthActivities}
-            prevActivities={prevMonthActivitiesForDelta}
-            year={selectedYear}
-            month={selectedMonth}
+        <main className="ma-page">
+          <MonthlyAnalyticsHeader
+            year={scope.year}
+            yearOptions={model.yearOptions}
+            onYearChange={selectYear}
           />
-          <div className="flex flex-col gap-4 h-full">
-            <SleepSummaryCard
-              sleepLog={sleepLog}
-              prevSleepLog={prevSleepLog}
-              year={selectedYear}
-              month={selectedMonth}
-            />
-            <QuestSummaryCard
-              questHistory={questHistory}
-              year={selectedYear}
-              month={selectedMonth}
-            />
-          </div>
-        </div>
+
+          <MonthOverviewGrid
+            months={model.monthOverview}
+            selectedMonth={scope.month}
+            onSelectMonth={selectMonth}
+          />
+
+          <MonthStepper
+            monthLabel={model.monthLabel}
+            year={scope.year}
+            summaryLine={model.summaryLine}
+            noteLine={model.noteLine}
+            canGoPrev={canGoPrev}
+            canGoNext={canGoNext}
+            onPrev={goPrevMonth}
+            onNext={goNextMonth}
+          />
+
+          <MonthlyAnalyticsBody model={model} />
+        </main>
       </div>
     </div>
   );

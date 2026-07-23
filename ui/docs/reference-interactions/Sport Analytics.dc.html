@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#dcd5c6; }
+  a { color:#7f3728; } a:hover { color:#5e2419; }
+</style>
+</helmet>
+
+<section style="padding:48px 56px;display:flex;flex-direction:column;gap:28px;font-family:'Space Grotesk',sans-serif;color:#2b2d29">
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <div style="font-weight:700;font-size:22px">Sport Analytics — rethink</div>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;color:#8a8b81">SPINE + LENS MODEL · BADMINTON / CALISTHENICS / UNIFICATION</div>
+  </div>
+
+  <div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap">
+
+    <!-- 1a · BADMINTON -->
+    <div id="1a" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:#2b2d29;color:#fbf8f1;padding:3px 8px;border-radius:6px">1a</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8a8b81">BADMINTON — MATCH LENS ON THE SPINE · WEB + PHONE</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px 9px;max-width:1120px">
+        <span style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.14em;color:#8a8b81">SLOT MAP · ANNOTATION, NOT PART OF MOCK</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Win Rate · <b style="color:#7f3728">XL ANCHOR</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Session Shape · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Best Month · <b>M</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Head-to-Head · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Am I Improving · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Effort · <b>M</b></span>
+        <a href="Widget Gallery.dc.html" style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.06em;color:#7f3728">FULL S/M/L CATALOG ↗</a>
+      </div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+      <div style="width:1120px;background:#e8e2d7;border-radius:18px;box-shadow:0 8px 20px rgba(43,45,41,.12);padding:26px 30px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:#fbf8f1;background:#315a4a;padding:4px 9px;border-radius:6px">BADMINTON</span>
+            <span style="font-weight:700;font-size:20px">The club ledger</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8b81">96 sessions · 70 with match data</span>
+          </div>
+          <div style="display:flex;border:1px solid #d8d1c2;border-radius:10px;overflow:hidden">
+            <div onClick="{{ setAll }}" style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:6px 12px;cursor:pointer;white-space:nowrap;background:{{ allBg }};color:{{ allFg }}">RANKED · 402</div>
+            <div onClick="{{ setRanked }}" style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:6px 12px;cursor:pointer;white-space:nowrap;background:{{ rankedBg }};color:{{ rankedFg }}">ALL · 696</div>
+          </div>
+        </div>
+        <div style="background:#7f3728;border-radius:20px;padding:22px 26px;display:flex;flex-direction:column;gap:14px;color:#fbf8f1;box-shadow:0 8px 20px rgba(127,55,40,.25)">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;opacity:.75">WIN RATE — VS YOUR OWN BAND</span>
+            <div style="display:flex;border:1px solid rgba(251,248,241,.3);border-radius:7px;overflow:hidden">
+              <div onClick="{{ wSet8 }}" style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap;background:{{ hw8Bg }};color:{{ hw8Fg }}">8W</div>
+              <div onClick="{{ wSetAll }}" style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap;background:{{ hwAllBg }};color:{{ hwAllFg }}">ALL</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:28px">
+            <div style="display:flex;flex-direction:column;gap:10px;min-width:230px">
+              <div style="display:flex;align-items:baseline;gap:12px">
+                <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:48px;letter-spacing:-.02em">{{ winRate }}</span>
+                <span style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;opacity:.9">{{ winVerdict }}</span>
+              </div>
+              <div style="position:relative;height:8px;border-radius:99px;background:rgba(251,248,241,.2)">
+                <div style="position:absolute;left:38%;width:26%;top:0;bottom:0;border-radius:99px;background:rgba(251,248,241,.32)"></div>
+                <div style="position:absolute;left:{{ winPos }};top:-3px;width:3px;height:14px;border-radius:2px;background:#fbf8f1"></div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.08em;opacity:.7">BAND 42–56% · NOT A SCORE TO MAXIMIZE</span>
+            </div>
+            <svg width="100%" height="96" viewBox="0 0 620 96" preserveAspectRatio="none" style="flex:1">
+              <rect x="0" y="34" width="620" height="26" fill="rgba(251,248,241,.12)"></rect>
+              <polyline points="10,66 62,44 114,64 166,54 218,80 270,48 322,70 374,40 426,60 478,72 530,46 582,54" fill="none" stroke="rgba(251,248,241,.4)" stroke-width="1.5"></polyline>
+              <polyline points="10,68 62,60 114,62 166,58 218,66 270,60 322,56 374,50 426,54 478,58 530,50 582,46" fill="none" stroke="#fbf8f1" stroke-width="2.5"></polyline>
+              <circle cx="582" cy="46" r="4" fill="#fbf8f1"></circle>
+            </svg>
+          </div>
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.1em;opacity:.65">THIN = PER SESSION · CREAM = 4-WK ROLLING · 8W / ALL FLIPS THE WHOLE CARD</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+          <div style="background: #fbf8f1; border: 1px solid #e2dcd0; border-radius: 20px; padding: 18px 22px; display: flex; flex-direction: column; gap: 10px; width: 621px; height: 188px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">SESSION SHAPE — WHEN YOU WIN</span>
+              <div style="display:flex;align-items:center;gap:12px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:#8a8b81">
+                <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;height:2px;background:#c9c3b4"></span>ALL</span>
+                <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;height:2px;background:#2b2d29"></span>8W</span>
+              </div>
+            </div>
+            <div style="position:relative">
+              <svg width="100%" height="120" viewBox="0 0 360 120" preserveAspectRatio="none">
+                <line x1="0" y1="55" x2="360" y2="55" stroke="#d8d1c2" stroke-width="1" stroke-dasharray="3 4"></line>
+                <polyline points="10,42 55,38 100,46 145,40 190,50 235,48 280,68 325,84" fill="none" stroke="#c9c3b4" stroke-width="2"></polyline>
+                <polyline points="10,44 55,40 100,44 145,42 190,46 235,50 280,56 325,70" fill="none" stroke="#2b2d29" stroke-width="2.5"></polyline>
+                <line x1="{{ shMarkX }}" y1="6" x2="{{ shMarkX }}" y2="114" stroke="#98998f" stroke-width="1" stroke-dasharray="2 3" opacity="{{ shMarkOpacity }}"></line>
+                <circle cx="{{ shMarkX }}" cy="{{ shMarkYAll }}" r="3.5" fill="#c9c3b4" opacity="{{ shMarkOpacity }}"></circle>
+                <circle cx="{{ shMarkX }}" cy="{{ shMarkY8 }}" r="3.5" fill="#2b2d29" opacity="{{ shMarkOpacity }}"></circle>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex">
+                <sc-for list="{{ shCols }}" as="c" hint-placeholder-count="8">
+                  <div style="flex:1;cursor:crosshair" onMouseEnter="{{ c.onEnter }}" onMouseLeave="{{ c.onLeave }}"></div>
+                </sc-for>
+              </div>
+            </div><div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#98998f"><span>GAME 1</span><span>GAME 9</span><span>GAME 15</span></div>
+            
+            
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:6px;justify-content:center">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">BEST MONTH</span>
+            <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:30px">APR '26</span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;color:#4a4c45">63% WIN RATE · 11 SESSIONS</span>
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#6b6d64;line-height:1.35">Your highest-volume block yet — the wins followed the work.</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">HEAD-TO-HEAD — REGULAR OPPONENTS</span>
+            <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1.4fr;gap:0;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;color:#98998f;padding:0 2px 5px;border-bottom:1px solid #efe9dc">
+              <span>OPPONENT</span><span>ALL TIME</span><span>LAST 8W</span><span>DIRECTION</span>
+            </div>
+            <sc-for list="{{ h2hRows }}" as="o" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1.4fr;align-items:center;padding:8px 2px;border-bottom:1px solid #efe9dc">
+                <span style="font-weight:600;font-size:14px">{{ o.name }}</span><span style="font-family:'Space Mono',monospace;font-size:12px;color:#4a4c45">{{ o.all }}</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:{{ o.dc }}">{{ o.last }}</span><span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:{{ o.dc }}">{{ o.dir }}</span>
+              </div>
+            </sc-for>
+            <div onClick="{{ h2hToggle }}" style="cursor:pointer;text-align:center;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:#7f3728;padding:8px 0 2px">{{ h2hLabel }}</div>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:#98998f">YOUR LOG ONLY — OPPONENTS NEVER SEE THIS</span>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">AM I IMPROVING — 8W VS ALL TIME</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#8a8b81">WIN RATE</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700">49% → <span style="color:#315a4a">54% ▲</span></span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#8a8b81">CLOSE GAMES WON</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700">41% → <span style="color:#315a4a">52% ▲</span></span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#8a8b81">AVG MARGIN</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700">−2.1 → <span style="color:#315a4a">−0.8 ▲</span></span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#8a8b81">FADE POINT</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700">GAME 9 → <span style="color:#315a4a">GAME 11 ▲</span></span></div>
+            
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:14px">
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:10px;justify-content:center">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">EFFORT — HR ZONES, ALL SESSIONS</span>
+            <div style="display:flex;height:10px;border-radius:99px;overflow:hidden">
+              <div style="width:64%;background:#adc2b7"></div><div style="width:21%;background:#315a4a"></div><div style="width:9%;background:#a8702c"></div><div style="width:4%;background:#7f3728"></div><div style="width:2%;background:#4b5578"></div>
+            </div>
+            <div style="display:flex;gap:16px;font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81;flex-wrap:wrap"><span>Z1 64%</span><span>Z2 21%</span><span>Z3 9%</span><span>Z4 4%</span><span>Z5 2%</span></div>
+            
+          </div>
+          <div style="background:#f3eee3;border-radius:20px;padding:18px 22px;display:flex;align-items:center;gap:14px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f;white-space:nowrap">SPINE ↓</span>
+            <span style="font-size:13px;color:#4a4c45;line-height:1.45">Below this line the page continues with the shared spine every sport gets: <b>load vs band · session ledger · heatmap</b>. Same atoms as Home — never redesigned per sport.</span>
+          </div>
+        </div>
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="" hint-size="440px,900px">
+        <div style="min-height:100%;background:#fbf8f1;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;padding:14px 18px 24px;font-family:'Space Grotesk',sans-serif;color:#2b2d29">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="color:#8a8b81;font-size:15px">←</span>
+              <span style="font-weight:700;font-size:16px">Badminton</span>
+            </div>
+            <div style="display:flex;border:1px solid #d8d1c2;border-radius:9px;overflow:hidden">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:5px 9px;background:#2b2d29;color:#fbf8f1">RANKED</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:5px 9px;color:#8a8b81">ALL</span>
+            </div>
+          </div>
+          <div style="background:#7f3728;border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;color:#fbf8f1;box-shadow:0 8px 20px rgba(127,55,40,.25)">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;opacity:.75">WIN RATE — LAST 8 WEEKS</span>
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:40px">54%</span>
+              <span style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;opacity:.9">above your band — improving</span>
+            </div>
+            <div style="position:relative;height:7px;border-radius:99px;background:rgba(251,248,241,.22)">
+              <div style="position:absolute;left:38%;width:26%;top:0;bottom:0;border-radius:99px;background:rgba(251,248,241,.3)"></div>
+              <div style="position:absolute;left:56%;top:-3px;width:3px;height:13px;border-radius:2px;background:#fbf8f1"></div>
+            </div>
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.1em;opacity:.7">BAND 42–56% · ALL TIME 49%</span>
+            <svg width="100%" height="42" viewBox="0 0 300 42" preserveAspectRatio="none" style="margin-top:2px">
+              <polyline points="6,32 32,22 58,30 84,26 110,34 136,24 162,28 188,20 214,26 240,16 266,22 292,14" fill="none" stroke="rgba(251,248,241,.4)" stroke-width="1.5"></polyline>
+              <polyline points="6,34 32,30 58,31 84,29 110,32 136,29 162,28 188,25 214,27 240,22 266,24 292,20" fill="none" stroke="#fbf8f1" stroke-width="2"></polyline>
+              <circle cx="292" cy="20" r="3" fill="#fbf8f1"></circle>
+            </svg>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:7px">
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">HEAD-TO-HEAD — 8W</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:14px">Arjun</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#315a4a">5–1 ▲</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:14px">Dev</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#315a4a">2–3 ▲</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-weight:600;font-size:14px">Sanket</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#8a8b81">3–3 →</span></div>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">AM I IMPROVING — 8W VS ALL TIME</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a8b81">WIN RATE</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">49% → <span style="color:#315a4a">54% ▲</span></span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid #efe9dc"><span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a8b81">CLOSE GAMES</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">41% → <span style="color:#315a4a">52% ▲</span></span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0"><span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a8b81">FADE POINT</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">G9 → <span style="color:#315a4a">G11 ▲</span></span></div>
+          </div>
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:#98998f;text-align:center">GLANCE-ONLY · NO SCRUBS ON iOS · SCOPE TOGGLE IS THE ONLY TAP</span>
+        </div>
+      </x-import>
+      </div>
+    </div>
+
+    <!-- 1b · CALISTHENICS -->
+    <div id="1b" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:#2b2d29;color:#fbf8f1;padding:3px 8px;border-radius:6px">1b</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8a8b81">CALISTHENICS — SKILL LENS ON THE SPINE · WEB + PHONE</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px 9px;max-width:1120px">
+        <span style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.14em;color:#8a8b81">SLOT MAP · ANNOTATION, NOT PART OF MOCK</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Skill Tracks · <b style="color:#7f3728">XL ANCHOR</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Am I Improving · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Tested e1RM · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Consistency · <b>L</b></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Coach's Read · <b>M</b></span>
+        <a href="Widget Gallery.dc.html" style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.06em;color:#7f3728">FULL S/M/L CATALOG ↗</a>
+      </div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+      <div style="width:1120px;background:#e8e2d7;border-radius:18px;box-shadow:0 8px 20px rgba(43,45,41,.12);padding:26px 30px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:#fbf8f1;background:#4f587a;padding:4px 9px;border-radius:6px">CALISTHENICS</span>
+          <span style="font-weight:700;font-size:20px">Skills &amp; strength</span>
+          <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8b81">BUILD PHASE · BLOCK 1 · DAY 28/28</span>
+        </div>
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:16px">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">SKILL TRACKS — THE LADDERS</span>
+          <sc-for list="{{ skills }}" as="sk" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:14px;border-bottom:1px solid #efe9dc">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <div style="display:flex;align-items:baseline;gap:10px">
+                  <span style="font-weight:700;font-size:16px">{{ sk.name }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:10px;color:#8a8b81">{{ sk.metric }}</span>
+                </div>
+                <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#6b6d64">{{ sk.note }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0">
+                <sc-for list="{{ sk.steps }}" as="st" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:center">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:118px">
+                      <div onMouseEnter="{{ st.onEnter }}" onMouseLeave="{{ st.onLeave }}" style="width:100%;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.04em;cursor:default;background:{{ st.bg }};color:{{ st.fg }};border:{{ st.bd }}">{{ st.label }}</div>
+                      <span style="font-family:'Space Mono',monospace;font-size:8.5px;color:#98998f">{{ st.sub }}</span>
+                    </div>
+                    <div style="width:22px;height:2px;background:{{ st.link }}"></div>
+                  </div>
+                </sc-for>
+                <div style="display:flex;flex-direction:column;gap:2px;padding-left:8px">
+                  <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:#7f3728">{{ sk.projLabel }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:9px;color:#98998f">{{ sk.projSub }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:#98998f">EACH FUTURE STEP SHOWS SESSIONS TO TARGET · HOVER A STEP → PROJECTED DATE + THE MATH APPEARS AT ROW END (LIVE) · EVERY MISSED SESSION SLIDES IT RIGHT</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">AM I IMPROVING — AGREED BENCHMARKS</span>
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:#98998f">SET WITH COACH AT SETUP</span>
+            </div>
+            <sc-for list="{{ benchmarks }}" as="b" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                  <span style="font-weight:600;font-size:14px">{{ b.name }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8b81">{{ b.start }} → <b style="color:#7f3728">{{ b.now }}</b> / {{ b.target }}</span>
+                </div>
+                <div style="position:relative;height:7px;border-radius:99px;background:#efe9dc">
+                  <div style="position:absolute;left:0;top:0;bottom:0;width:{{ b.pct }};border-radius:99px;background:#4f587a"></div>
+                </div>
+              </div>
+            </sc-for>
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#6b6d64;line-height:1.4">The long-run truths we agreed on day one — everything else is noise. — Coach</span>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:#fbf8f1;background:#7f3728;padding:3px 7px;border-radius:5px">TESTED</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">STRENGTH — PULL-UP e1RM + PR MARKS</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:#98998f">PULL-UP e1RM</span>
+                <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:26px;color:#7f3728">96.5<span style="font-size:13px">KG</span></span>
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#315a4a">▲ +4.0 THIS BLOCK · PR JUN 28</span>
+              </div>
+              <svg width="100%" height="86" viewBox="0 0 380 86" preserveAspectRatio="none" style="flex:1">
+                <line x1="0" y1="64" x2="380" y2="64" stroke="#d8d1c2" stroke-width="1" stroke-dasharray="3 4"></line>
+                <polyline points="16,70 76,66 136,60 196,54 256,44 316,34 364,26" fill="none" stroke="#7f3728" stroke-width="2.5"></polyline>
+                <circle cx="76" cy="66" r="6" fill="#fbf8f1" stroke="#7f3728" stroke-width="2" style="cursor:pointer" onMouseEnter="{{ rmT1 }}" onMouseLeave="{{ rmLeave }}"></circle>
+                <circle cx="196" cy="54" r="6" fill="#fbf8f1" stroke="#7f3728" stroke-width="2" style="cursor:pointer" onMouseEnter="{{ rmT2 }}" onMouseLeave="{{ rmLeave }}"></circle>
+                <circle cx="316" cy="34" r="6" fill="#fbf8f1" stroke="#7f3728" stroke-width="2" style="cursor:pointer" onMouseEnter="{{ rmT3 }}" onMouseLeave="{{ rmLeave }}"></circle>
+                <circle cx="364" cy="26" r="6" fill="#7f3728" style="cursor:pointer" onMouseEnter="{{ rmT4 }}" onMouseLeave="{{ rmLeave }}"></circle>
+                <text x="364" y="12" text-anchor="middle" font-family="Space Mono" font-size="9" font-weight="700" fill="#7f3728">PR</text>
+              </svg>
+            </div>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:#4a4c45;min-height:26px;line-height:1.4">{{ rmText }}</span>
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#6b6d64;line-height:1.4"><b style="font-style:normal;font-family:'Space Mono',monospace;font-size:10px;color:#7f3728">e1RM</b> = estimated 1-rep max, worked out from your reps × weight — so you see progress without ever maxing out.</span>
+          </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">CONSISTENCY — SKILL SESSIONS / WK</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#7f3728">9-WK STREAK</span>
+              </div>
+              <div style="display:flex;gap:5px">
+                <sc-for list="{{ weekCells }}" as="c" hint-placeholder-count="12">
+                  <div style="flex:1;height:30px;border-radius:6px;background:{{ c.bg }}"></div>
+                </sc-for>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:8.5px;color:#98998f"><span>12 WKS AGO</span><span>FILLED = HIT WEEKLY FLOOR</span><span>NOW</span></div>
+              <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#6b6d64;line-height:1.45">Consistency is the whole game here — skills grow on repetition, not intensity. Floor met 10 of the last 12 weeks. — Coach</span>
+            </div>
+            <div style="background:#f3eee3;border-radius:20px;padding:16px 22px;display:flex;flex-direction:column;gap:5px">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">COACH'S READ</span>
+              <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#4a4c45;line-height:1.45">Compression is the bottleneck on press, not balance. The front lever is two honest weeks ahead of schedule. — Coach</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="" hint-size="440px,900px">
+        <div style="min-height:100%;background:#fbf8f1;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;padding:14px 18px 24px;font-family:'Space Grotesk',sans-serif;color:#2b2d29">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="color:#8a8b81;font-size:15px">←</span>
+            <span style="font-weight:700;font-size:16px">Calisthenics</span>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;color:#fbf8f1;background:#4f587a;padding:3px 7px;border-radius:5px;margin-left:auto">BLOCK 1 · 28/28</span>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">SKILL TRACKS</span>
+            <div style="display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:1px solid #efe9dc">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-weight:700;font-size:15px">Front lever</span><span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#7f3728">FULL ≈ OCT 4</span></div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="flex:1;height:8px;border-radius:99px;background:#4f587a"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#4f587a"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#7f3728"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">NOW SINGLE LEG 3×20s · STRADDLE IN ≈9 SESS</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:1px solid #efe9dc">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-weight:700;font-size:15px">Press handstand</span><span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#7f3728">NEG ≈ NOV 20</span></div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="flex:1;height:8px;border-radius:99px;background:#7f3728"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">NOW PIKE COMPRESSION · L-SIT 40s · ≈14 SESS</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-weight:700;font-size:15px">Handstand</span><span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#7f3728">60s ≈ AUG 30</span></div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="flex:1;height:8px;border-radius:99px;background:#4f587a"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#4f587a"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#7f3728"></div>
+                <div style="flex:1;height:8px;border-radius:99px;background:#e8e2d7"></div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">NOW 48s FREE · ≈5 SESS TO 60s</span>
+            </div>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">AM I IMPROVING — BENCHMARKS</span>
+            <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:13.5px;font-weight:600">Weighted pull-up</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">+5 → <span style="color:#7f3728">+12.5KG</span> <span style="color:#315a4a">▲</span></span></div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:13.5px;font-weight:600">Front lever</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">0 → <span style="color:#7f3728">25s SL</span> <span style="color:#315a4a">▲</span></span></div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:13.5px;font-weight:600">Handstand</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">12 → <span style="color:#7f3728">48s</span> <span style="color:#315a4a">▲</span></span></div>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">CONSISTENCY</span>
+              <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#7f3728">9-WK STREAK</span>
+            </div>
+            <div style="display:flex;gap:4px">
+              <sc-for list="{{ weekCells }}" as="c" hint-placeholder-count="12">
+                <div style="flex:1;height:24px;border-radius:5px;background:{{ c.bg }}"></div>
+              </sc-for>
+            </div>
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:#98998f">WEEKLY SKILL FLOOR · MET 10 / 12 WEEKS</span>
+          </div>
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:#98998f;text-align:center">TAP A TRACK → SKILL DETAIL + TEST LOG</span>
+        </div>
+      </x-import>
+      </div>
+    </div>
+
+
+    <!-- 2a · RUNNING -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="2a" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:#2b2d29;color:#fbf8f1;padding:3px 8px;border-radius:6px">2a</span>
+    <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8a8b81">RUNNING — PACE LENS ON THE SPINE · BROTHER'S PAGE · WEB + PHONE</span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px 9px;max-width:1120px">
+    <span style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.14em;color:#8a8b81">SLOT MAP · ANNOTATION, NOT PART OF MOCK</span>
+    <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Weekly Volume · <b style="color:#7f3728">XL ANCHOR</b></span>
+    <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Benchmark · <b>M</b></span>
+    <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">PBs · <b>L</b></span>
+    <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Pace Trend · <b>L</b></span>
+    <span style="font-family:'Space Mono',monospace;font-size:9.5px;color:#4a4c45;background:#fbf8f1;border:1px solid #d8d1c2;border-radius:6px;padding:3px 8px">Coach's Read · <b>M</b></span>
+    <a href="Widget Gallery.dc.html" style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.06em;color:#7f3728">FULL S/M/L CATALOG ↗</a>
+  </div>
+  <div style="display:flex;gap:24px;align-items:flex-start">
+    <div style="width:1120px;background:#e8e2d7;border-radius:18px;box-shadow:0 8px 20px rgba(43,45,41,.12);padding:26px 30px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:#fbf8f1;background:#a8702c;padding:4px 9px;border-radius:6px">RUNNING</span>
+        <span style="font-weight:700;font-size:20px">Road log</span>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8b81">19 runs · GPS + HR from watch → spine + effort + pace lens</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:#a8702c;border-radius:20px;padding:22px 26px;display:flex;flex-direction:column;gap:14px;color:#fbf8f1;box-shadow:0 8px 20px rgba(168,112,44,.25)">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;opacity:.75">WEEKLY VOLUME — VS YOUR OWN BAND</span>
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.08em;opacity:.7">8-WK BAND 16–26 KM · +10%/WK CAP</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:26px">
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:150px">
+              <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:'Space Mono',monospace;font-weight:700;font-size:46px;letter-spacing:-.02em">24.6</span><span style="font-family:'Space Mono',monospace;font-size:16px;opacity:.8">KM</span></div>
+              <span style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;opacity:.9">in the band — steady build</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+              <div style="position:relative;display:flex;align-items:flex-end;gap:7px;height:78px">
+                <div style="position:absolute;left:0;right:0;top:24%;height:38%;background:rgba(251,248,241,.12);border-radius:4px"></div>
+                <div style="flex:1;height:44%;background:rgba(251,248,241,.55);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:52%;background:rgba(251,248,241,.55);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:48%;background:rgba(251,248,241,.55);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:62%;background:rgba(251,248,241,.55);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:56%;background:rgba(251,248,241,.55);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:70%;background:rgba(251,248,241,.7);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:64%;background:rgba(251,248,241,.7);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:78%;background:#fbf8f1;border-radius:4px 4px 0 0"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.06em;opacity:.7"><span>8 WKS AGO</span><span>PER-WEEK KM · SHADED = BAND</span><span>THIS WK</span></div>
+            </div>
+          </div>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;opacity:.9;border-top:1px solid rgba(251,248,241,.2);padding-top:12px">Sunday long run 12.1 km — longest this block. The build is honest and inside the lines. — Coach</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">BENCHMARK — RIVER LOOP 5.2K</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;color:#fbf8f1;background:#315a4a;padding:3px 7px;border-radius:5px">▲ 14S vs 8W</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:14px">
+              <div style="display:flex;flex-direction:column">
+                <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:34px;line-height:1">26:54</span>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a8b81;margin-top:2px">5:10 /KM</span>
+              </div>
+              <svg width="100%" height="52" viewBox="0 0 240 52" preserveAspectRatio="none" style="flex:1">
+                <polyline points="8,14 52,20 96,18 140,28 184,32 232,40" fill="none" stroke="#a8702c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                <circle cx="232" cy="40" r="4" fill="#a8702c"></circle>
+              </svg>
+            </div>
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#6b6d64;line-height:1.35">Same route every time — the only honest comparison. Down on the chart is faster.</span>
+          </div>
+          <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:7px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">PBs — QUIET FLAGS</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:13.5px">1K</span><span style="font-family:'Space Mono',monospace;font-size:12px;color:#4a4c45">4:02 · MAY 3</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:13.5px">5K</span><span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#7f3728">22:48 · JUL 6 — PR</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:13.5px">10K</span><span style="font-family:'Space Mono',monospace;font-size:12px;color:#4a4c45">48:30 · JUN 14</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 9px;margin-top:2px;border-radius:10px;background:rgba(168,112,44,.1);border:1px dashed rgba(168,112,44,.5)"><span style="font-weight:600;font-size:13.5px;color:#a8702c">HALF · 21K</span><span style="font-family:'Space Mono',monospace;font-size:10px;color:#a8702c">NEXT MILESTONE · ON TRACK ≈ SEP</span></div>
+            <span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:#98998f">ONLY THE NEXT DISTANCE SHOWS — 42K UNLOCKS AFTER 21K</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">PACE TREND — ALL RUNS</span>
+            <div style="display:flex;border:1px solid #e2dcd0;border-radius:7px;overflow:hidden">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;padding:3px 8px;background:#2b2d29;color:#fbf8f1">8W</span>
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;padding:3px 8px;color:#8a8b81">ALL</span>
+            </div>
+          </div>
+          <svg width="100%" height="130" viewBox="0 0 620 130" preserveAspectRatio="none">
+            <line x1="0" y1="60" x2="620" y2="60" stroke="#d8d1c2" stroke-width="1" stroke-dasharray="3 4"></line>
+            <polyline points="10,40 62,52 114,44 166,58 218,50 270,62 322,54 374,68 426,60 478,74 530,68 582,80" fill="none" stroke="#d3b184" stroke-width="1.5"></polyline>
+            <polyline points="10,46 62,48 114,50 166,52 218,54 270,58 322,60 374,64 426,66 478,70 530,72 582,76" fill="none" stroke="#a8702c" stroke-width="2.5"></polyline>
+            <circle cx="582" cy="76" r="4" fill="#a8702c"></circle>
+          </svg>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#98998f"><span>5:44/KM</span><span>DOWN = FASTER</span><span>5:10/KM</span></div>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:#98998f">THIN = PER RUN · AMBER = 4-WK ROLLING · HOVER-SCRUB → RUN DATE, DISTANCE, SPLITS</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:#f3eee3;border-radius:20px;padding:16px 22px;display:flex;flex-direction:column;gap:5px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">COACH'S READ</span>
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#4a4c45;line-height:1.5">The rolling line is dropping without the HR drifting up — that's real aerobic gain, not just effort. Hold the Sunday long run. — Coach</span>
+          </div>
+          <div style="background:#f3eee3;border-radius:20px;padding:16px 22px;display:flex;align-items:center;gap:14px">
+            <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f;white-space:nowrap">SPINE ↓</span>
+            <span style="font-size:13px;color:#4a4c45;line-height:1.45">Same shared spine below: <b>load vs band · session ledger · heatmap</b>. No matches for running — the play lens simply never mounts.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="" hint-size="440px,900px">
+      <div style="min-height:100%;background:#fbf8f1;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;padding:14px 18px 24px;font-family:'Space Grotesk',sans-serif;color:#2b2d29">
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="color:#8a8b81;font-size:15px">←</span>
+          <span style="font-weight:700;font-size:16px">Running</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;color:#fbf8f1;background:#a8702c;padding:3px 7px;border-radius:5px;margin-left:auto">19 RUNS</span>
+        </div>
+        <div style="background:#a8702c;border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;color:#fbf8f1;box-shadow:0 8px 20px rgba(168,112,44,.25)">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;opacity:.75">BENCHMARK — RIVER LOOP 5.2K</span>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:40px">5:10</span>
+            <span style="font-family:'Space Mono',monospace;font-size:13px;opacity:.85">/KM</span>
+          </div>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;opacity:.9">14 seconds faster than eight weeks ago</span>
+        </div>
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">THIS WEEK — 24.6 OF BAND 16–26 KM</span>
+          <div style="position:relative;height:7px;border-radius:99px;background:#e8e2d7">
+            <div style="position:absolute;left:0;width:75%;top:0;bottom:0;border-radius:99px;background:#a8702c"></div>
+          </div>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:#98998f">SUN LONG RUN 12.1 KM — LONGEST THIS BLOCK</span>
+        </div>
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:7px">
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">PBs</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:14px">1K</span><span style="font-family:'Space Mono',monospace;font-size:13px;color:#4a4c45">4:02</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #efe9dc"><span style="font-weight:600;font-size:14px">5K</span><span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#7f3728">22:48 — PR</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-weight:600;font-size:14px">10K</span><span style="font-family:'Space Mono',monospace;font-size:13px;color:#4a4c45">48:30</span></div>
+        </div>
+        <div style="background:#f3eee3;border-radius:20px;padding:14px 18px;display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:#98998f">COACH'S READ</span>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#4a4c45;line-height:1.45">Real aerobic gain — pace dropping while HR holds. Keep the Sunday long run. — Coach</span>
+        </div>
+      </div>
+    </x-import>
+  </div>
+    </div>
+
+    <!-- 1c · UNIFICATION -->
+    <div id="1c" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:#2b2d29;color:#fbf8f1;padding:3px 8px;border-radius:6px">1c</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8a8b81">UNIFICATION — ONE TEMPLATE, EVIDENCE-MOUNTED WIDGETS</span>
+      </div>
+      <div style="width:1120px;background:#e8e2d7;border-radius:18px;box-shadow:0 8px 20px rgba(43,45,41,.12);padding:26px 30px;display:flex;flex-direction:column;gap:18px">
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">THE RULE</span>
+          <span style="font-size:15px;line-height:1.5;max-width:900px">Every sport page is <b>SPINE + LENS</b>. The spine is identical everywhere: commitment vs floor · load vs band · session ledger · heatmap. The lens is sport-specific widget sets that <b>mount from evidence, not from settings</b> — if the data tier exists in the logs, the widgets appear; if not, the section collapses. Nobody configures a dashboard.</span>
+          <div style="display:flex;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.06em">
+            <span style="background:#2b2d29;color:#fbf8f1;padding:5px 10px;border-radius:7px">TIER 0 · SESSIONS → SPINE</span>
+            <span style="background:rgba(49,90,74,.14);color:#315a4a;padding:5px 10px;border-radius:7px">TIER 1 · MATCHES → PLAY LENS</span>
+            <span style="background:rgba(127,55,40,.12);color:#7f3728;padding:5px 10px;border-radius:7px">TIER 2 · HR → EFFORT LENS</span>
+            <span style="background:rgba(79,88,122,.12);color:#4f587a;padding:5px 10px;border-radius:7px">TIER 3 · TESTS/GPS → PROGRESSION LENS</span>
+          </div>
+        </div>
+        <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">THE SHARED SPINE — IDENTICAL ON EVERY SPORT PAGE</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+            <div style="background:#f7f3ea;border:1px solid #e2dcd0;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.1em;color:#98998f">COMMITMENT VS FLOOR</span>
+              <div style="display:flex;align-items:flex-end;gap:6px;height:46px;position:relative">
+                <div style="position:absolute;left:0;right:0;bottom:32%;height:1px;background:#b3654e"></div>
+                <div style="flex:1;height:70%;background:#315a4a;border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:52%;background:#315a4a;border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:88%;background:#315a4a;border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:40%;background:#c9c3b4;border-radius:4px 4px 0 0"></div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:8px;color:#98998f">RED = WEEKLY FLOOR</span>
+            </div>
+            <div style="background:#f7f3ea;border:1px solid #e2dcd0;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.1em;color:#98998f">LOAD VS BAND</span>
+              <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px">
+                <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:20px;color:#7f3728">IN BAND</span>
+                <div style="position:relative;height:8px;border-radius:99px;background:#efe9dc">
+                  <div style="position:absolute;left:34%;width:34%;top:0;bottom:0;border-radius:99px;background:rgba(127,55,40,.22)"></div>
+                  <div style="position:absolute;left:52%;top:-3px;width:3px;height:14px;border-radius:2px;background:#7f3728"></div>
+                </div>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:8px;color:#98998f">7-DAY LOAD VS ROLLING BAND</span>
+            </div>
+            <div style="background:#f7f3ea;border:1px solid #e2dcd0;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.1em;color:#98998f">SESSION LEDGER</span>
+              <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #efe9dc"><span style="width:3px;height:18px;border-radius:2px;background:#315a4a"></span><span style="font-size:11.5px;font-weight:600;flex:1">Club night</span><span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">+412</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #efe9dc"><span style="width:3px;height:18px;border-radius:2px;background:#4f587a"></span><span style="font-size:11.5px;font-weight:600;flex:1">Skills A</span><span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">+96</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="width:3px;height:18px;border-radius:2px;background:#a8702c"></span><span style="font-size:11.5px;font-weight:600;flex:1">River loop</span><span style="font-family:'Space Mono',monospace;font-size:9px;color:#8a8b81">+180</span></div>
+            </div>
+            <div style="background:#f7f3ea;border:1px solid #e2dcd0;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+              <span style="font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.1em;color:#98998f">HEATMAP</span>
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+                <sc-for list="{{ heatCells }}" as="h" hint-placeholder-count="35">
+                  <div style="aspect-ratio:1;border-radius:3px;background:{{ h.bg }}"></div>
+                </sc-for>
+              </div>
+              <span style="font-family:'Space Mono',monospace;font-size:8px;color:#98998f">LAST 5 WEEKS · DENSITY = LOAD</span>
+            </div>
+          </div>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;color:#98998f">These four never change. The sport-specific lens mounts above them — from evidence, not settings.</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+          <sc-for list="{{ athletes }}" as="a" hint-placeholder-count="3">
+            <div style="background:#fbf8f1;border:1px solid #e2dcd0;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-weight:700;font-size:15px">{{ a.who }}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;color:#fbf8f1;background:{{ a.chipBg }};padding:3px 8px;border-radius:6px">{{ a.sport }}</span>
+              </div>
+              <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#6b6d64;line-height:1.4">{{ a.style }}</span>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <sc-for list="{{ a.tiers }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:10px;background:{{ t.bg }}">
+                    <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;width:14px;color:{{ t.fg }}">{{ t.mark }}</span>
+                    <span style="font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.04em;color:{{ t.fg }};flex:1">{{ t.label }}</span>
+                    <span style="font-family:'Space Mono',monospace;font-size:8.5px;color:{{ t.fg }};opacity:.75">{{ t.result }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#f3eee3;border-radius:20px;padding:16px 24px;display:flex;flex-direction:column;gap:5px">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.14em;color:#98998f">WHY THIS UNIFIES YOU TWO</span>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#4a4c45;line-height:1.5">Separate accounts, one template, each person's data their own — there is no comparison view by design. You log per-game opponents and scores, so your badminton page carries the deep play lens (head-to-head, closing, session shape). Your brother logs sessions only, so his page is the spine plus effort — no empty boxes, absence collapses. His running page is the same template with the pace lens carrying PBs. — Coach</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ranked: false, wS8: true, shHover: null, hov: null, h2hOpen: false, rm: null };
+  withHover(arr) {
+    const hov = this.state.hov;
+    return arr.map((sk, si) => ({
+      ...sk,
+      projLabel: hov && hov.si === si ? hov.l : sk.projLabel,
+      projSub: hov && hov.si === si ? hov.s : sk.projSub,
+      steps: sk.steps.map((st) => ({
+        ...st,
+        onEnter: () => this.setState({ hov: { si, l: st.label, s: st.math || st.sub } }),
+        onLeave: () => this.setState({ hov: null })
+      }))
+    }));
+  }
+  renderVals() {
+    const r = this.state.ranked, st = this.state;
+    const on = ['#2b2d29', '#fbf8f1'], off = ['#fbf8f1', '#8a8b81'];
+    const w = st.wS8 ? on : off, wo = st.wS8 ? off : on;
+    const shGames = [
+      { x: 10, l: 'GAME 1', y8: 44, yAll: 42, w8: 64, wAll: 60 },
+      { x: 55, l: 'GAME 3', y8: 40, yAll: 38, w8: 68, wAll: 66 },
+      { x: 100, l: 'GAME 5', y8: 44, yAll: 46, w8: 64, wAll: 56 },
+      { x: 145, l: 'GAME 7', y8: 42, yAll: 40, w8: 66, wAll: 62 },
+      { x: 190, l: 'GAME 9', y8: 46, yAll: 50, w8: 60, wAll: 52 },
+      { x: 235, l: 'GAME 11', y8: 50, yAll: 48, w8: 56, wAll: 54 },
+      { x: 280, l: 'GAME 13', y8: 56, yAll: 68, w8: 48, wAll: 38 },
+      { x: 325, l: 'GAME 15', y8: 70, yAll: 84, w8: 38, wAll: 24 }
+    ];
+    const shMark = st.shHover == null ? null : shGames[st.shHover];
+    const h2hAll = [
+      { name: 'Arjun', all: '24–18', last: '5–1', dir: 'closing him out now', dc: '#315a4a' },
+      { name: 'Dev', all: '9–21', last: '2–3', dir: 'margins tightening', dc: '#315a4a' },
+      { name: 'Sanket', all: '15–11', last: '3–3', dir: 'steady rivalry', dc: '#8a8b81' },
+      { name: 'Rohit', all: '18–14', last: '4–2', dir: 'edge holding', dc: '#315a4a' },
+      { name: 'Karan', all: '7–19', last: '1–4', dir: 'his pace, not yours', dc: '#b3654e' },
+      { name: 'Meng', all: '11–11', last: '2–2', dir: 'a true coin-flip', dc: '#8a8b81' }
+    ];
+    const benchmarks = [
+      { name: 'Weighted pull-up', start: '+5KG', now: '+12.5KG', target: '+20KG', pct: '58%' },
+      { name: 'Front lever hold', start: '0s', now: '25s SL', target: 'FULL', pct: '46%' },
+      { name: 'Freestanding HS', start: '12s', now: '48s', target: '60s', pct: '80%' },
+      { name: 'L-sit', start: '20s', now: '40s', target: '60s', pct: '66%' }
+    ];
+    const weeks = [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1];
+    const rmMap = {
+      t1: 'MAY 2 · +82.5KG e1RM — tested a heavy triple, clean.',
+      t2: 'JUN 3 · +88.0KG e1RM — strong day, no grinders.',
+      t3: 'JUL 1 · +93.0KG e1RM — grip was the limiter, not the pull.',
+      t4: 'JUN 28 · +96.5KG e1RM — PR. New working weights set from this.'
+    };
+    return {
+      setAll: () => this.setState({ ranked: false }),
+      setRanked: () => this.setState({ ranked: true }),
+      allBg: r ? '#fbf8f1' : '#2b2d29', allFg: r ? '#8a8b81' : '#fbf8f1',
+      rankedBg: r ? '#2b2d29' : '#fbf8f1', rankedFg: r ? '#fbf8f1' : '#8a8b81',
+      wSet8: () => this.setState({ wS8: true }), wSetAll: () => this.setState({ wS8: false }),
+      w8Bg: w[0], w8Fg: w[1], wAllBg: wo[0], wAllFg: wo[1],
+      hw8Bg: st.wS8 ? '#fbf8f1' : 'transparent', hw8Fg: st.wS8 ? '#7f3728' : 'rgba(251,248,241,.7)',
+      hwAllBg: st.wS8 ? 'transparent' : '#fbf8f1', hwAllFg: st.wS8 ? 'rgba(251,248,241,.7)' : '#7f3728',
+      winRate: st.wS8 ? (r ? '57%' : '54%') : (r ? '52%' : '49%'),
+      winPos: st.wS8 ? '56%' : '47%',
+      winVerdict: st.wS8 ? 'above the band — improving' : 'in the band',
+      shCols: shGames.map((g, i) => ({ onEnter: () => this.setState({ shHover: i }), onLeave: () => this.setState({ shHover: null }) })),
+      shMarkX: shMark ? shMark.x : -20,
+      shMarkY8: shMark ? shMark.y8 : 0,
+      shMarkYAll: shMark ? shMark.yAll : 0,
+      shMarkOpacity: shMark ? '1' : '0',
+      shReadout: shMark ? (shMark.l + '   ·   8W ' + shMark.w8 + '%   ·   ALL ' + shMark.wAll + '%') : 'Grey = all-time, ink = last 8 weeks. The fade that used to start at game 9 now holds to game 11. — Coach',
+      h2hRows: st.h2hOpen ? h2hAll : h2hAll.slice(0, 3),
+      h2hToggle: () => this.setState({ h2hOpen: !st.h2hOpen }),
+      h2hLabel: st.h2hOpen ? 'SHOW FEWER ▲' : 'SHOW ALL ' + h2hAll.length + ' OPPONENTS ▼',
+      benchmarks: benchmarks,
+      weekCells: weeks.map((v) => ({ bg: v ? '#4f587a' : '#e2dcd0' })),
+      heatCells: Array.from({ length: 35 }, (_, i) => { const lv = [0, 0.14, 0.3, 0.55, 0.85][(i * 3 + 2) % 5]; return { bg: lv === 0 ? '#efe9dc' : 'rgba(49,90,74,' + lv + ')' }; }),
+      rmT1: () => this.setState({ rm: 't1' }), rmT2: () => this.setState({ rm: 't2' }),
+      rmT3: () => this.setState({ rm: 't3' }), rmT4: () => this.setState({ rm: 't4' }),
+      rmLeave: () => this.setState({ rm: null }),
+      rmText: rmMap[st.rm] || 'Ringed dots are test days (every 6 weeks). Hover one for that day\u2019s detail — the line between them is an estimate.',
+      skills: this.withHover([
+        { name: 'Front lever', metric: 'BEST SL HOLD 25s', note: 'Primary skill this block — Guruji protocol.',
+          projLabel: 'FULL ≈ OCT 4', projSub: 'IF 2 SESS/WK HOLD',
+          steps: [
+            { label: 'TUCK', sub: 'MAR \'26', bg: '#4f587a', fg: '#fbf8f1', bd: 'none', link: '#c9c3b4' },
+            { label: 'ADV TUCK', sub: 'MAY \'26', bg: '#4f587a', fg: '#fbf8f1', bd: 'none', link: '#c9c3b4' },
+            { label: 'SINGLE LEG', sub: 'NOW · 3×20s', math: 'LAST 3 TESTS · L 15s→20s→25s · R 12s→18s→22s', bg: '#7f3728', fg: '#fbf8f1', bd: 'none', link: '#e0d9c9' },
+            { label: 'STRADDLE', sub: '≈9 SESSIONS', math: '≈ SEP 12 · 9 SESS AT 2/WK · FROM LAST 3 TESTS', bg: '#fbf8f1', fg: '#7f3728', bd: '1px dashed #cf8f78', link: '#e0d9c9' },
+            { label: 'FULL', sub: '≈21 SESSIONS', math: '≈ OCT 4 · 21 SESS AT 2/WK + DELOAD WK', bg: '#fbf8f1', fg: '#98998f', bd: '1px dashed #d8d1c2', link: 'transparent' }
+          ] },
+        { name: 'Press handstand', metric: 'CAP 1.0 SKILL SESS/WK', note: 'Bottleneck: compression, not balance.',
+          projLabel: 'NEG ≈ NOV 20', projSub: 'COMPRESSION-GATED',
+          steps: [
+            { label: 'PIKE COMP.', sub: 'NOW · L-SIT 40s', bg: '#7f3728', fg: '#fbf8f1', bd: 'none', link: '#e0d9c9' },
+            { label: 'STRADDLE UP', sub: 'WALL-ASSIST', bg: '#cf8f78', fg: '#fbf8f1', bd: 'none', link: '#e0d9c9' },
+            { label: 'NEGATIVES', sub: '≈14 SESSIONS', math: '≈ NOV 20 · 14 SESS AT 1/WK · GATED ON L-SIT 60s', bg: '#fbf8f1', fg: '#7f3728', bd: '1px dashed #cf8f78', link: '#e0d9c9' },
+            { label: 'FULL PRESS', sub: '—', bg: '#fbf8f1', fg: '#98998f', bd: '1px dashed #d8d1c2', link: 'transparent' }
+          ] },
+        { name: 'Freestanding handstand', metric: 'BEST 48s', note: 'Maintained in Workout A — not chased.',
+          projLabel: '60s ≈ AUG 30', projSub: 'MAINTENANCE PACE',
+          steps: [
+            { label: 'WALL', sub: 'NOV ’25', bg: '#4f587a', fg: '#fbf8f1', bd: 'none', link: '#c9c3b4' },
+            { label: 'PEEL-OFF', sub: 'FEB \'26', bg: '#4f587a', fg: '#fbf8f1', bd: 'none', link: '#c9c3b4' },
+            { label: '30s FREE', sub: 'NOW · 48s', bg: '#7f3728', fg: '#fbf8f1', bd: 'none', link: '#e0d9c9' },
+            { label: '60s FREE', sub: '≈5 SESSIONS', math: '≈ AUG 30 · 5 SESS AT MAINTENANCE · BEST 39s→44s→48s', bg: '#fbf8f1', fg: '#7f3728', bd: '1px dashed #cf8f78', link: 'transparent' }
+          ] }
+      ]),
+      athletes: [
+        { who: 'You', sport: 'BADMINTON', chipBg: '#315a4a',
+          style: 'Logs every game with opponent + score. HR strap on.',
+          tiers: [
+            { mark: '✓', label: 'SESSIONS 96', result: 'FULL SPINE', bg: 'rgba(43,45,41,.06)', fg: '#2b2d29' },
+            { mark: '✓✓', label: 'PER-GAME + OPPONENTS', result: 'DEEP PLAY LENS · H2H', bg: 'rgba(49,90,74,.18)', fg: '#315a4a' },
+            { mark: '✓', label: 'HR STRAP', result: 'EFFORT LENS', bg: 'rgba(127,55,40,.1)', fg: '#7f3728' },
+            { mark: '—', label: 'NO TESTS', result: 'COLLAPSED', bg: 'rgba(43,45,41,.04)', fg: '#98998f' }
+          ] },
+        { who: 'Brother', sport: 'BADMINTON', chipBg: '#315a4a',
+          style: 'Plays club nights, logs sessions only — no games, no scores.',
+          tiers: [
+            { mark: '✓', label: 'SESSIONS 61', result: 'FULL SPINE', bg: 'rgba(43,45,41,.06)', fg: '#2b2d29' },
+            { mark: '—', label: 'NO GAME LOGGING', result: 'PLAY LENS COLLAPSED', bg: 'rgba(43,45,41,.04)', fg: '#98998f' },
+            { mark: '✓', label: 'HR FROM WATCH', result: 'EFFORT LENS', bg: 'rgba(127,55,40,.1)', fg: '#7f3728' },
+            { mark: '—', label: 'NO TESTS', result: 'COLLAPSED', bg: 'rgba(43,45,41,.04)', fg: '#98998f' }
+          ] },
+        { who: 'Brother', sport: 'RUNNING', chipBg: '#a8702c',
+          style: 'GPS watch — pace, cadence, PBs from every run.',
+          tiers: [
+            { mark: '✓', label: 'RUNS 19', result: 'FULL SPINE', bg: 'rgba(43,45,41,.06)', fg: '#2b2d29' },
+            { mark: '—', label: 'NO MATCHES', result: 'N/A FOR SPORT', bg: 'rgba(43,45,41,.04)', fg: '#98998f' },
+            { mark: '✓', label: 'HR FROM WATCH', result: 'EFFORT LENS', bg: 'rgba(127,55,40,.1)', fg: '#7f3728' },
+            { mark: '✓', label: 'GPS + PBs', result: 'PACE LENS', bg: 'rgba(168,112,44,.14)', fg: '#a8702c' }
+          ] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

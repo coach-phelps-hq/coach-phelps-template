@@ -25,6 +25,82 @@ export interface MainQuest {
   unit_label?: string;
   event_date?: string;
   notes?: string;
+  // Optional - Akash's "Build Phase" coaching model (season/phase/block progression) uses a
+  // weekly-session-floor main quest instead of a single count target. See the Warm Instrument
+  // UI migration (sibling-shipyard/coach-phelps-hq) for the components that read these.
+  weekly_floor?: number;
+  loaded_floor?: number;
+  skill_weight?: number;
+  skill_cap?: number;
+  sessions?: QuestSession[];
+}
+
+export interface Season {
+  name: string;
+  start_date: string;
+  end_date: string;
+}
+
+export interface Block {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  note?: string;
+}
+
+export interface Phase {
+  name: string;
+  start_date: string;
+  current_block: Block;
+}
+
+export interface QuestSession {
+  date: string;
+  label: string;
+  kind: "loaded" | "skill";
+  weight: number;
+}
+
+/**
+ * Structured progression for a milestone that reduces to a single scalar
+ * (e.g. handstand hold seconds). Optional — bilateral or set×rep milestones
+ * that don't reduce cleanly omit this and render terse strings only.
+ * `projected_date` is computed by the pipeline (Bob), not the UI.
+ */
+export interface MilestoneProgress {
+  unit: string;
+  baseline_value: number;
+  current_value: number;
+  target_value: number;
+  history?: { date: string; value: number }[];
+  projected_date?: string;
+}
+
+export interface Milestone {
+  id: string;
+  name: string;
+  baseline: number | string | null;
+  current: number | string | null;
+  target: string;
+  note?: string;
+  // Terse display fields for the dashboard rows. Prose name/current/target stay
+  // canonical (quest log + coach read them); these are optional UI overrides.
+  short_name?: string;
+  short_current?: string;
+  short_target?: string;
+  progress?: MilestoneProgress;
+}
+
+export interface GraduatedQuest {
+  id: string;
+  name: string;
+  type: "daily_streak" | "progress";
+  graduated_on: string;
+  polarity?: "default_done" | "default_not_done";
+  missed_dates?: string[];
+  excused_dates?: string[];
+  notes?: string;
 }
 
 export interface Quest {
@@ -63,6 +139,12 @@ export interface ChallengeV2 {
   weekly_targets?: WeeklyTargets;
   main_quest: MainQuest;
   quests: Quest[];
+  // Optional - Akash's "Build Phase" coaching model (season/phase/block progression) instead
+  // of a single fixed-duration challenge. Components must guard on presence.
+  season?: Season;
+  phase?: Phase;
+  milestones?: Milestone[];
+  graduated?: GraduatedQuest[];
 }
 
 /** Format a Date as YYYY-MM-DD in local time (avoids UTC drift from toISOString). */

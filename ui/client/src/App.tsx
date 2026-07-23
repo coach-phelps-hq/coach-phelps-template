@@ -12,10 +12,10 @@ import Onboarding from "./pages/Onboarding";
 import AuthError from "./pages/AuthError";
 import Workouts from "./pages/Workouts";
 import WorkoutTimer from "./pages/workout-timer";
-import RunAnalytics from "./pages/RunAnalytics";
 import MonthlyAnalytics from "./pages/MonthlyAnalytics";
-import BadmintonAnalytics from "./pages/BadmintonAnalytics";
-import BadmintonMatchAnalytics from "./pages/BadmintonMatchAnalytics";
+import SportAnalyticsBadminton from "./pages/SportAnalyticsBadminton";
+import SportAnalyticsRunning from "./pages/SportAnalyticsRunning";
+import SportAnalyticsCalisthenics from "./pages/SportAnalyticsCalisthenics";
 
 function Router() {
   return (
@@ -23,10 +23,10 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path="/workouts" component={Workouts} />
       <Route path="/workouts/:id" component={WorkoutTimer} />
-      <Route path="/run" component={RunAnalytics} />
-      <Route path="/monthly" component={MonthlyAnalytics} />
-      <Route path="/badminton" component={BadmintonAnalytics} />
-      <Route path="/badminton-match-analytics" component={BadmintonMatchAnalytics} />
+      <Route path="/analytics/running" component={SportAnalyticsRunning} />
+      <Route path="/analytics/monthly" component={MonthlyAnalytics} />
+      <Route path="/analytics/badminton" component={SportAnalyticsBadminton} />
+      <Route path="/analytics/calisthenics" component={SportAnalyticsCalisthenics} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

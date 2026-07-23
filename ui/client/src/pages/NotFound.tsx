@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { AlertCircle, Home } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
+import "@/components/home-warm/warm-instrument.css";
+import "@/components/login/login.css";
 
 export default function NotFound() {
   const [, setLocation] = useLocation();
@@ -10,24 +11,22 @@ export default function NotFound() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-      <div className="border-2 border-foreground p-8 w-full max-w-lg text-center space-y-4">
-        <AlertCircle className="h-12 w-12 mx-auto text-primary" />
-
-        <h1 className="text-4xl font-bold">404</h1>
-
-        <h2 className="text-xl font-bold uppercase tracking-widest">Page Not Found</h2>
-
-        <p className="text-sm text-muted-foreground">
-          Sorry, the page you are looking for doesn't exist.
-          <br />
-          It may have been moved or deleted.
-        </p>
-
-        <Button onClick={handleGoHome} className="w-full">
-          <Home className="w-4 h-4" />
-          Go Home
-        </Button>
+    <div className="wi-shell">
+      <div className="auth-card-shell">
+        <div className="auth-card">
+          <AlertCircle className="auth-card__icon" aria-hidden="true" />
+          <span className="auth-card__eyebrow">404</span>
+          <h1 className="auth-card__heading">Page not found</h1>
+          <p className="auth-card__body">
+            Sorry, the page you are looking for doesn&apos;t exist. It may have been moved or
+            deleted.
+          </p>
+          <div className="auth-card__buttons">
+            <button type="button" className="auth-card__button auth-card__button--primary" onClick={handleGoHome}>
+              Go home
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

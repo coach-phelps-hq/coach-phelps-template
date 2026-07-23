@@ -1,9 +1,13 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export function useBeep() {
   const audioCtx = useRef<AudioContext | null>(null);
+  const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(muted);
+  mutedRef.current = muted;
 
   const beep = useCallback((freq: number = 800, duration: number = 150) => {
+    if (mutedRef.current) return;
     try {
       if (!audioCtx.current) {
         audioCtx.current = new AudioContext();
@@ -36,5 +40,9 @@ export function useBeep() {
     setTimeout(() => beep(1400, 300), 350);
   }, [beep]);
 
-  return { countdown3, transitionBeep, completeBeep };
+  const toggleMute = useCallback(() => {
+    setMuted((m) => !m);
+  }, []);
+
+  return { countdown3, transitionBeep, completeBeep, muted, toggleMute };
 }

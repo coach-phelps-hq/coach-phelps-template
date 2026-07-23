@@ -17,8 +17,11 @@ export interface UseTimerEngineReturn {
   state: TimerState;
   pos: TimerPosition;
   timer: number;
+  stateDuration: number;
   isPaused: boolean;
   setIsPaused: Dispatch<SetStateAction<boolean>>;
+  muted: boolean;
+  toggleMute: () => void;
   totalElapsed: number;
   progressPct: number;
   phase: Phase | undefined;
@@ -44,7 +47,7 @@ export function useTimerEngine(
   workout: Workout,
   onComplete: (elapsed: number) => void,
 ): UseTimerEngineReturn {
-  const { countdown3, transitionBeep, completeBeep } = useBeep();
+  const { countdown3, transitionBeep, completeBeep, muted, toggleMute } = useBeep();
 
   const [state, setState] = useState<TimerState>(() => {
     const firstPhase = workout.phases[0];
@@ -638,6 +641,17 @@ export function useTimerEngine(
   const isPhaseTransition = state === "phase_transition";
   const isReps = state === "exercise" && exercise?.type === "reps";
 
+  // Duration the current countdown started from — lets presentations render
+  // a fill/progress indicator for the active state without re-deriving rest
+  // rules themselves.
+  const stateDuration = useMemo(() => {
+    if (state === "phase_transition") return phase?.transition_rest_secs ?? 0;
+    if (state === "prep") return exercise?.prep_secs ?? 0;
+    if (state === "exercise" && exercise?.type === "timed") return exercise.duration_secs ?? 0;
+    if (state === "rest") return getRestDuration();
+    return 0;
+  }, [state, phase, exercise, getRestDuration]);
+
   const nextPreview = ((): { label: string; name: string } | null => {
     if (!exercise || !phase) return null;
 
@@ -676,8 +690,11 @@ export function useTimerEngine(
     state,
     pos,
     timer,
+    stateDuration,
     isPaused,
     setIsPaused,
+    muted,
+    toggleMute,
     totalElapsed,
     progressPct,
     phase,

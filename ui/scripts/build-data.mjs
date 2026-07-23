@@ -7,6 +7,7 @@
  * Reads:
  *   data/history/*.json    → activities (sorted newest-first)
  *   data/challenge_v2.json   → challenge_v2 (copy)
+ *   training/current_week.json   → current_week (validated copy, or "unavailable" fallback)
  *   data/templates/*.json  → workouts.templates
  *   data/sessions/*.json   → workouts.sessions (session overrides template for same date+id)
  *   data/sync_status.json  → sync_status (copy, default if missing)
@@ -25,6 +26,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "../..");
 const OUT_DIR = path.join(REPO_ROOT, "ui", "client", "src", "data");
 const SCHEMA_VERSION = 1;
+
+const UNAVAILABLE_CURRENT_WEEK = {
+  schema_version: null,
+  data_status: "unavailable",
+  timezone: "Europe/London",
+  week: null,
+  coach_read: null,
+  days: [],
+  coach_comments: [],
+  updated_at: null,
+  updated_by: "build-data",
+};
 
 /**
  * Builds the merged data object in memory. Pure - no filesystem writes.
@@ -75,7 +88,23 @@ function buildAggregate() {
     result.challenge_v2 = null;
   }
 
-  // 3. Bundle workout templates and sessions → workouts
+  // 3. current_week.json — validated copy, or an "unavailable" fallback shape.
+  const currentWeekSrc = path.join(REPO_ROOT, "training", "current_week.json");
+  if (fs.existsSync(currentWeekSrc)) {
+    try {
+      const raw = fs.readFileSync(currentWeekSrc, "utf-8");
+      result.current_week = JSON.parse(raw);
+      console.log("✓ current_week loaded");
+    } catch (e) {
+      result.current_week = UNAVAILABLE_CURRENT_WEEK;
+      console.warn(`⚠ Invalid training/current_week.json; using unavailable fallback: ${e.message}`);
+    }
+  } else {
+    result.current_week = UNAVAILABLE_CURRENT_WEEK;
+    console.warn("⚠ No training/current_week.json found; using unavailable fallback");
+  }
+
+  // 4. Bundle workout templates and sessions → workouts
   const templatesDir = path.join(REPO_ROOT, "templates");
   const sessionsDir = path.join(REPO_ROOT, "sessions");
   const workouts = { templates: [], sessions: [] };
@@ -120,7 +149,7 @@ function buildAggregate() {
   }
   result.workouts = workouts;
 
-  // 4. sync_status.json
+  // 5. sync_status.json
   const syncStatusSrc = path.join(REPO_ROOT, "training", "sync_status.json");
   if (fs.existsSync(syncStatusSrc)) {
     result.sync_status = JSON.parse(fs.readFileSync(syncStatusSrc, "utf-8"));
@@ -133,7 +162,7 @@ function buildAggregate() {
     console.log("✓ sync_status — no data, using default");
   }
 
-  // 5. sleep_log.json / quest_history.json - not produced by any pipeline step yet,
+  // 6. sleep_log.json / quest_history.json - not produced by any pipeline step yet,
   // carried through from whatever's already committed in client/src/data/ as a
   // placeholder. Real values land here once a sleep/quest pipeline exists.
   const sleepLogPath = path.join(OUT_DIR, "sleep_log.json");
@@ -161,6 +190,7 @@ fs.writeFileSync(path.join(OUT_DIR, "activities.json"), JSON.stringify(aggregate
 if (aggregate.challenge_v2) {
   fs.writeFileSync(path.join(OUT_DIR, "challenge_v2.json"), JSON.stringify(aggregate.challenge_v2, null, 2));
 }
+fs.writeFileSync(path.join(OUT_DIR, "current_week.json"), JSON.stringify(aggregate.current_week, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, "workouts.json"), JSON.stringify(aggregate.workouts, null, 2));
 fs.writeFileSync(path.join(OUT_DIR, "sync_status.json"), JSON.stringify(aggregate.sync_status, null, 2));
 console.log("✓ Data build complete");

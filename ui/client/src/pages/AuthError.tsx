@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import "@/components/home-warm/warm-instrument.css";
+import "@/components/login/login.css";
 
 const MESSAGES: Record<string, { heading: string; body: string; cta: string; href: string }> = {
   not_installed: {
@@ -63,13 +64,18 @@ export default function AuthError({ type }: { type: string }) {
   const msg = MESSAGES[type] ?? FALLBACK;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background px-4">
-      <div className="border-2 border-foreground p-8 w-full max-w-sm text-center space-y-4">
-        <h1 className="text-xl font-bold uppercase tracking-widest">{msg.heading}</h1>
-        <p className="text-sm text-muted-foreground">{msg.body}</p>
-        <Button asChild className="w-full">
-          <a href={msg.href}>{msg.cta}</a>
-        </Button>
+    <div className="wi-shell">
+      <div className="auth-card-shell">
+        <div className="auth-card">
+          <span className="auth-card__eyebrow">Sign-in error</span>
+          <h1 className="auth-card__heading">{msg.heading}</h1>
+          <p className="auth-card__body">{msg.body}</p>
+          <div className="auth-card__buttons">
+            <a href={msg.href} className="auth-card__button auth-card__button--primary">
+              {msg.cta}
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
