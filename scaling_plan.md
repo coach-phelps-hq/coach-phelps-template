@@ -13,11 +13,11 @@ hand-built personal repos. Recommended approach: fork/scrub one of the two exist
 repos into a clean public starter (keep `SOUL.md`, `templates/`, `scripts/`,
 `.github/workflows/`, strip real training data and history) that a new friend forks, fills in
 their own sync credentials, then installs Coach Phelps via "Sign up with GitHub." See
-[issue #32](https://github.com/sibling-shipyard/coach-phelps-template/issues/32).
+[issue #32](https://github.com/sibling-shipyard/coach-phelps-hq/issues/32).
 
 **Auto-provisioning, as a fancier alternative to the manual-fork approach above.** Instead of a
 new friend manually forking a starter repo, the shared site could call GitHub's API on their
-behalf to instantiate `coach-phelps-template` into a new repo automatically the first time they
+behalf to instantiate `coach-phelps-hq` into a new repo automatically the first time they
 log in with no repo yet — exactly what clicking "Use this template" does manually, automated.
 Real engineering, not designed, and needs the **Administration** GitHub App permission (see
 below). Two things fall out of building this that don't exist yet: **guided sync-source
@@ -38,7 +38,7 @@ for what each is used for and why they were added.
 
 **Per-user page configurability.** All three analytics pages (Run, Badminton, Badminton Match
 Analytics) ship to every user today, no per-user toggle. Making page inclusion configurable is
-tracked as [issue #13](https://github.com/sibling-shipyard/coach-phelps-template/issues/13), not
+tracked as [issue #13](https://github.com/sibling-shipyard/coach-phelps-hq/issues/13), not
 designed yet.
 
 **Open questions from the login-flow hardening, not yet decided or built:**
@@ -104,7 +104,7 @@ redirect. Updated: local git remotes, and the handful of doc/code-comment refere
 spelled out the old org name.
 
 **Still pending — the repo name and the actual "Coach Phelps" product persona.** The org rename
-happened on its own rather than bundled with these, so they're still open: `coach-phelps-template`
+happened on its own rather than bundled with these, so they're still open: `coach-phelps-hq`
 itself is still named after the persona, and the coaching persona/character (`SOUL.md`, the
 "Coach Phelps" name a user actually sees and talks to) hasn't been renamed at all yet — that's
 the part with the actual legal exposure once this is public, not the org name. Renaming the repo
@@ -150,5 +150,5 @@ costed, just an idea to start from instead of re-deriving the option space from 
 
 ## Ownership
 
-Confirmed: `coach-phelps-template` (and any future hosted layer built on it) is jointly owned by
+Confirmed: `coach-phelps-hq` (and any future hosted layer built on it) is jointly owned by
 Skanda and Akash going forward — not one person's repo the other treats as upstream.

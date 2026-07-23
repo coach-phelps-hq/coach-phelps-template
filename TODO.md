@@ -1,4 +1,4 @@
-# coach-phelps-template — TODO
+# coach-phelps-hq — TODO
 
 ## Done (v1)
 - [x] SOUL.md — generic Phelps identity + First Session Protocol

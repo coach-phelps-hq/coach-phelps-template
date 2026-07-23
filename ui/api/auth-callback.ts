@@ -101,7 +101,7 @@ export default {
     // someone else's repo that already has the App installed will see that installation too.
     // Confirmed in practice: without the account.login check, a collaborator's session
     // resolved to the repo owner's installation, not their own (a real cross-account data
-    // exposure - see sibling-shipyard/coach-phelps-template#30). account.login is the account
+    // exposure - see sibling-shipyard/coach-phelps-hq#30). account.login is the account
     // the App is actually installed *on*, which is what "is this actually my installation"
     // has to mean.
     const installationsRes = await fetch("https://api.github.com/user/installations", {

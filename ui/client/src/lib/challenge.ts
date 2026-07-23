@@ -7,7 +7,7 @@ export interface ChallengeMetadata {
   name: string;
   start_date: string;
   // Optional - not every repo's build pipeline derives this (it's computable from
-  // start_date/end_date when absent). See sibling-shipyard/coach-phelps-template's
+  // start_date/end_date when absent). See sibling-shipyard/coach-phelps-hq's
   // reconciliation of Akash's season/phase model, which has no single fixed duration.
   duration_days?: number;
   end_date: string;
