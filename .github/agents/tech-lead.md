@@ -17,10 +17,12 @@
 | **Coach Phelps** | SOUL.md thread | `training/`, `sessions/` only |
 | **UI Expert** | Worker thread | `ui/client/src/` only |
 | **Bob the Builder** | Worker thread | `strava/`, `scripts/`, `training/history/` only |
+| **iOS Builder** | Worker thread | `ios/` only — the Swift/SwiftUI native app |
 
 **Boundaries:**
 - Coach Phelps owns `SOUL.md`, `state.md`, `coach_notes.md`, `challenge_v2.json`, `sessions/`, `roadmap.md`. Do not edit these unless the athlete explicitly asks.
 - `templates/*.json` are base workout templates. Only you can authorize changes to these.
+- iOS Builder's scope is `ios/` only — never `training/`, `templates/`, `sessions/`, `ui/`, or pipeline scripts.
 - Workers read their role doc from `.github/agents/` in this repo.
 
 ## Repo Overview (Single Monorepo)
@@ -52,6 +54,7 @@ coach-phelps/
 │       │   └── workouts.json
 │       ├── components/
 │       └── pages/
+├── ios/                         # Native Swift/SwiftUI app (iOS Builder) — HealthKit sync, builds locally in Xcode, no CI deploy
 └── .github/
     ├── agents/                 # Role files (this directory)
     ├── CONVENTIONS.md          # Commit/branch/PR rules
@@ -98,6 +101,7 @@ coach-phelps/
 - Review every PR before merge
 - Check: affected code paths, type gaps, data inconsistencies, UI data contract integrity
 - Verify build passes, no TS errors in changed files
+- **Widget/design quality gate:** for any PR touching `ui/` or `ios/` widget surfaces, check it against `ui/docs/reference-interactions/Widget Design Philosophy.md` — does the widget ship its full interaction budget for its platform (not just a re-skinned static card)? Are shared atoms (card shell, sport chip, session row) reused rather than reinvented? Are palette/type tokens locked to the spec (no new colors, no second accent)? Is the data live, never a placeholder? A visually-correct but interaction-flat widget is not a passing PR.
 
 **9. Session Continuity**
 - Know what was done last session, what's in-flight, what's blocked

@@ -9,3 +9,10 @@ ui/node_modules/
 ui/dist/
 ui/client/src/data/
 issues/
+ios/**/xcuserdata/
+ios/**/*.xcuserstate
+ios/**/DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+ios/CoachPhelps/CoachPhelps/Secrets.swift

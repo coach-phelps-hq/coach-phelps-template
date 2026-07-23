@@ -16,6 +16,7 @@ Format: `<prefix>: <description>`
 | `fix:` | Bob, UI Expert | Bug fixes — include issue ref: `fix: <desc> (#N)` |
 | `data:` | Pipeline (auto) | Auto-generated: sync, quest_log, sync_status |
 | `ui:` | UI Expert | Frontend-only changes with no data impact |
+| `ios:` | iOS Builder | App code (Swift/SwiftUI) — include issue ref: `ios: <desc> (#N)`; iOS Builder also uses `core:` for cross-cutting changes |
 
 **Coach format:** `coach: day-N — <brief summary>`
 Example: `coach: day-8 — shoulder-modified workout, strong session`
@@ -32,6 +33,8 @@ No `Co-Authored-By` footers on any commit.
 |---|---|---|
 | `feat/<issue-N>-<brief>` | Bob, UI Expert | `feat/12-session-heatmap` |
 | `fix/<issue-N>-<brief>` | Bob, UI Expert | `fix/7-quest-log-clamp` |
+| `feat/ios-<feature-name>` | iOS Builder | `feat/ios-widgetkit-engine` |
+| `fix/ios-<description>` | iOS Builder | `fix/ios-sync-race-condition` |
 | `core/<brief>` | Tech Lead | `core/soul-v2` |
 
 Coach Phelps pushes session data **directly to main** — no branches needed.
@@ -66,6 +69,7 @@ Always include `fixes #N` in the PR body. PR body must follow `.github/agents/is
 - Templates (`templates/*.json`)
 - SOUL.md, agent docs, CLAUDE.md, CONVENTIONS.md
 - UI source: `ui/client/src/` (components, pages, styles)
+- iOS app code (`ios/**` — **never** push directly to main)
 - Anything that changes how data is processed or displayed
 
 **If in doubt:** use a branch.

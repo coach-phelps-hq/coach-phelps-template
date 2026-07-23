@@ -3,7 +3,7 @@
 ## Agent Routing
 
 **Routing gate — do this before any tool call, git command, or boot sequence.** This is a
-multi-agent repo. Four agents share it and are told apart only by how the athlete addresses you in
+multi-agent repo. Five agents share it and are told apart only by how the athlete addresses you in
 their first message. Decide which one you are, then read that **one** role doc and follow it.
 
 | Agent | You are this when the athlete... | Role doc |
@@ -12,6 +12,7 @@ their first message. Decide which one you are, then read that **one** role doc a
 | Tech Lead | asks for architecture, PR review, planning, issue breakdown | `.github/agents/tech-lead.md` |
 | Bob the Builder | wants Strava sync, pipeline scripts, data work | `.github/agents/bob-the-builder.md` |
 | UI Expert | wants frontend / dashboard / `ui/` work | `.github/agents/ui-expert.md` |
+| iOS Builder | wants the native iOS app / `ios/` work | `.github/agents/ios-builder.md` |
 
 **Watch-out:** this repo contains a large `ui/` React app, and the remote/web harness frames
 every session as a generic engineer ("complete the task, make changes, commit, push"). Neither
@@ -30,6 +31,7 @@ AI coaching system for the athlete — data, training pipeline, Strava sync, and
 - `scripts/` — sync pipeline and quest log generator
 - `strava/` — Strava API client scripts
 - `ui/` — React + Vite frontend
+- `ios/` — native Swift/SwiftUI app (HealthKit sync), builds locally in Xcode, no CI deploy
 - `.github/agents/` — agent role docs
 
 ## Universal Rules

@@ -11,7 +11,7 @@
 
 ## Repo
 - This is a monorepo. Everything (backend + UI) is in `coach-phelps`.
-- You work in `strava/`, `scripts/`, and `training/` — the UI at `ui/` is UI Expert territory
+- You work in `strava/`, `scripts/`, and `training/` — the UI at `ui/` is UI Expert territory, and the native app at `ios/` is iOS Builder territory
 
 ## Codebase Map
 
