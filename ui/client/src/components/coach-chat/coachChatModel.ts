@@ -20,6 +20,8 @@ export type ChatMessage =
       highlights?: Record<string, { text: string; color: string }>;
     };
 
+export type ChatThreadStatus = "active" | "archived" | "deleted";
+
 export type ChatThread = {
   id: string;
   dayOffset: number;
@@ -27,6 +29,13 @@ export type ChatThread = {
   preview: string;
   ageLabel: string;
   statusLabel?: string;
+  status?: ChatThreadStatus;
+  /** @deprecated Prefer `status`. Kept for older localStorage payloads. */
+  archived?: boolean;
+  /** Epoch ms when moved to archived. Used for 30-day retention. */
+  archivedAt?: number;
+  /** Epoch ms when soft-deleted. Used for 7-day retention. */
+  deletedAt?: number;
   messages: ChatMessage[];
 };
 
@@ -35,6 +44,11 @@ export type ChatStarter = {
   label: string;
   icon: "week" | "cold" | "match";
 };
+
+export const ARCHIVED_RETENTION_DAYS = 30;
+export const DELETED_RETENTION_DAYS = 7;
+export const ARCHIVED_RETENTION_MS = ARCHIVED_RETENTION_DAYS * DAY_MS;
+export const DELETED_RETENTION_MS = DELETED_RETENTION_DAYS * DAY_MS;
 
 /** Challenge day since start (1-indexed). Falls back to 1 if dates are missing. */
 export function challengeDayNumber(challenge: ChallengeV2, now = new Date()): number {
@@ -55,6 +69,64 @@ export const CHAT_STARTERS: ChatStarter[] = [
   { id: "cold", label: "Why was the bar cold?", icon: "cold" },
   { id: "match", label: "Plan Thursday's match", icon: "match" },
 ];
+
+export function threadStatus(thread: ChatThread): ChatThreadStatus {
+  if (thread.status) return thread.status;
+  if (thread.archived) return "archived";
+  return "active";
+}
+
+export function isThreadExpired(thread: ChatThread, now = Date.now()): boolean {
+  const status = threadStatus(thread);
+  if (status === "deleted") {
+    const deletedAt = thread.deletedAt ?? 0;
+    return deletedAt > 0 && now - deletedAt >= DELETED_RETENTION_MS;
+  }
+  if (status === "archived") {
+    const archivedAt = thread.archivedAt ?? 0;
+    return archivedAt > 0 && now - archivedAt >= ARCHIVED_RETENTION_MS;
+  }
+  return false;
+}
+
+export function purgeExpiredThreads(threads: ChatThread[], now = Date.now()): ChatThread[] {
+  return threads.filter((thread) => !isThreadExpired(thread, now));
+}
+
+export function normalizeThread(thread: ChatThread): ChatThread {
+  const status = threadStatus(thread);
+  return {
+    ...thread,
+    status,
+    archived: status === "archived",
+  };
+}
+
+function storageKey(userKey: string): string {
+  return `coach-phelps:coach-chat:threads:v1:${userKey}`;
+}
+
+export function loadStoredThreads(userKey: string): ChatThread[] | null {
+  try {
+    const raw = localStorage.getItem(storageKey(userKey));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return null;
+    return purgeExpiredThreads(
+      parsed.filter((item): item is ChatThread => Boolean(item && typeof item === "object" && "id" in item)),
+    ).map(normalizeThread);
+  } catch {
+    return null;
+  }
+}
+
+export function saveStoredThreads(userKey: string, threads: ChatThread[]): void {
+  try {
+    localStorage.setItem(storageKey(userKey), JSON.stringify(purgeExpiredThreads(threads).map(normalizeThread)));
+  } catch {
+    // Quota / private mode — ignore; UI still works in-memory.
+  }
+}
 
 /** Seed threads from the Coach Chat design doc — illustrative history, not live LLM replies. */
 export function buildSeedThreads(engineLoad: number | null): ChatThread[] {

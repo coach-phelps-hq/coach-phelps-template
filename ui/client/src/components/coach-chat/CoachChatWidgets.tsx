@@ -1,6 +1,8 @@
 import {
   type FormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   useEffect,
   useId,
@@ -9,14 +11,24 @@ import {
 } from "react";
 import { Link } from "wouter";
 import {
+  ARCHIVED_RETENTION_DAYS,
   CHAT_STARTERS,
+  DELETED_RETENTION_DAYS,
   type ChatMessage,
   type ChatStarter,
   type ChatThread,
+  type ChatThreadStatus,
   type CoachChip,
   threadDayLabel,
+  threadStatus,
 } from "./coachChatModel";
 
+type ThreadMenuState = {
+  threadId: string;
+  status: ChatThreadStatus;
+  x: number;
+  y: number;
+};
 function PlusIcon() {
   return (
     <svg aria-hidden="true" fill="none" height="15" viewBox="0 0 24 24" width="15">
@@ -240,18 +252,331 @@ function Composer({
   );
 }
 
+function ThreadContextMenu({
+  menu,
+  onClose,
+  onArchive,
+  onUnarchive,
+  onDelete,
+  onRestore,
+  onDeleteForever,
+}: {
+  menu: ThreadMenuState;
+  onClose: () => void;
+  onArchive: (id: string) => void;
+  onUnarchive: (id: string) => void;
+  onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDeleteForever: (id: string) => void;
+}) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) onClose();
+    }
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    function handleScroll() {
+      onClose();
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKey);
+    window.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKey);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    const node = menuRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    const pad = 8;
+    let left = menu.x;
+    let top = menu.y;
+    if (left + rect.width > window.innerWidth - pad) {
+      left = Math.max(pad, window.innerWidth - rect.width - pad);
+    }
+    if (top + rect.height > window.innerHeight - pad) {
+      top = Math.max(pad, window.innerHeight - rect.height - pad);
+    }
+    node.style.left = `${left}px`;
+    node.style.top = `${top}px`;
+  }, [menu.x, menu.y]);
+
+  return (
+    <div
+      ref={menuRef}
+      className="cc-ctx"
+      role="menu"
+      aria-label="Conversation actions"
+      style={{ left: menu.x, top: menu.y }}
+    >
+      {menu.status === "deleted" ? (
+        <>
+          <button
+            className="cc-ctx__item"
+            role="menuitem"
+            type="button"
+            onClick={() => {
+              onRestore(menu.threadId);
+              onClose();
+            }}
+          >
+            Restore
+          </button>
+          <button
+            className="cc-ctx__item cc-ctx__item--danger"
+            role="menuitem"
+            type="button"
+            onClick={() => {
+              onDeleteForever(menu.threadId);
+              onClose();
+            }}
+          >
+            Delete forever
+          </button>
+        </>
+      ) : (
+        <>
+          {menu.status === "archived" ? (
+            <button
+              className="cc-ctx__item"
+              role="menuitem"
+              type="button"
+              onClick={() => {
+                onUnarchive(menu.threadId);
+                onClose();
+              }}
+            >
+              Unarchive
+            </button>
+          ) : (
+            <button
+              className="cc-ctx__item"
+              role="menuitem"
+              type="button"
+              onClick={() => {
+                onArchive(menu.threadId);
+                onClose();
+              }}
+            >
+              Archive
+            </button>
+          )}
+          <button
+            className="cc-ctx__item cc-ctx__item--danger"
+            role="menuitem"
+            type="button"
+            onClick={() => {
+              onDelete(menu.threadId);
+              onClose();
+            }}
+          >
+            Delete
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ThreadRow({
+  dayNumber,
+  thread,
+  active,
+  onSelect,
+  onOpenMenu,
+}: {
+  dayNumber: number;
+  thread: ChatThread;
+  active: boolean;
+  onSelect: (id: string) => void;
+  onOpenMenu: (state: ThreadMenuState) => void;
+}) {
+  const longPressTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
+  const status = threadStatus(thread);
+
+  function clearLongPress() {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }
+
+  function openMenu(x: number, y: number) {
+    onOpenMenu({
+      threadId: thread.id,
+      status,
+      x,
+      y,
+    });
+  }
+
+  function handleContextMenu(event: ReactMouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    openMenu(event.clientX, event.clientY);
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (event.pointerType === "mouse") return;
+    longPressFired.current = false;
+    clearLongPress();
+    const { clientX, clientY } = event;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressFired.current = true;
+      openMenu(clientX, clientY);
+    }, 520);
+  }
+
+  function handleClick() {
+    if (longPressFired.current) {
+      longPressFired.current = false;
+      return;
+    }
+    onSelect(thread.id);
+  }
+
+  return (
+    <button
+      className={`cc-thread-row ${active ? "is-active" : ""} ${status !== "active" ? `is-${status}` : ""}`}
+      onClick={handleClick}
+      onContextMenu={handleContextMenu}
+      onPointerDown={handlePointerDown}
+      onPointerUp={clearLongPress}
+      onPointerCancel={clearLongPress}
+      onPointerLeave={clearLongPress}
+      type="button"
+    >
+      <div className="cc-thread-row__top">
+        <span className={`cc-thread-row__day ${active ? "is-active" : ""}`}>
+          {threadDayLabel(dayNumber, thread.dayOffset)}
+        </span>
+        <span className="cc-thread-row__title">{thread.title}</span>
+        <span className="cc-thread-row__age">{thread.ageLabel}</span>
+      </div>
+      <div className="cc-thread-row__preview">{thread.preview}</div>
+    </button>
+  );
+}
+
+function ThreadSections({
+  dayNumber,
+  threads,
+  activeId,
+  onSelect,
+  onArchive,
+  onUnarchive,
+  onDelete,
+  onRestore,
+  onDeleteForever,
+}: {
+  dayNumber: number;
+  threads: ChatThread[];
+  activeId: string | null;
+  onSelect: (id: string) => void;
+  onArchive: (id: string) => void;
+  onUnarchive: (id: string) => void;
+  onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDeleteForever: (id: string) => void;
+}) {
+  const [menu, setMenu] = useState<ThreadMenuState | null>(null);
+  const recent = threads.filter((thread) => threadStatus(thread) === "active");
+  const archived = threads.filter((thread) => threadStatus(thread) === "archived");
+  const deleted = threads.filter((thread) => threadStatus(thread) === "deleted");
+
+  return (
+    <>
+      <div className="cc-sidebar__section">RECENT</div>
+      {recent.length === 0 ? (
+        <div className="cc-thread-empty">No open conversations</div>
+      ) : (
+        recent.map((thread) => (
+          <ThreadRow
+            key={thread.id}
+            dayNumber={dayNumber}
+            thread={thread}
+            active={thread.id === activeId}
+            onSelect={onSelect}
+            onOpenMenu={setMenu}
+          />
+        ))
+      )}
+      {archived.length > 0 ? (
+        <>
+          <div className="cc-sidebar__section cc-sidebar__section--spaced">ARCHIVED</div>
+          <div className="cc-sidebar__hint">Kept {ARCHIVED_RETENTION_DAYS} days, then removed</div>
+          {archived.map((thread) => (
+            <ThreadRow
+              key={thread.id}
+              dayNumber={dayNumber}
+              thread={thread}
+              active={thread.id === activeId}
+              onSelect={onSelect}
+              onOpenMenu={setMenu}
+            />
+          ))}
+        </>
+      ) : null}
+      {deleted.length > 0 ? (
+        <>
+          <div className="cc-sidebar__section cc-sidebar__section--spaced">DELETED</div>
+          <div className="cc-sidebar__hint">Kept {DELETED_RETENTION_DAYS} days, then removed</div>
+          {deleted.map((thread) => (
+            <ThreadRow
+              key={thread.id}
+              dayNumber={dayNumber}
+              thread={thread}
+              active={thread.id === activeId}
+              onSelect={onSelect}
+              onOpenMenu={setMenu}
+            />
+          ))}
+        </>
+      ) : null}
+      {menu ? (
+        <ThreadContextMenu
+          menu={menu}
+          onClose={() => setMenu(null)}
+          onArchive={onArchive}
+          onUnarchive={onUnarchive}
+          onDelete={onDelete}
+          onRestore={onRestore}
+          onDeleteForever={onDeleteForever}
+        />
+      ) : null}
+    </>
+  );
+}
+
 export function ThreadSidebar({
   dayNumber,
   threads,
   activeId,
   onSelect,
   onNew,
+  onArchive,
+  onUnarchive,
+  onDelete,
+  onRestore,
+  onDeleteForever,
 }: {
   dayNumber: number;
   threads: ChatThread[];
   activeId: string | null;
   onSelect: (id: string) => void;
   onNew: () => void;
+  onArchive: (id: string) => void;
+  onUnarchive: (id: string) => void;
+  onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDeleteForever: (id: string) => void;
 }) {
   return (
     <aside className="cc-sidebar" aria-label="Conversations">
@@ -266,27 +591,17 @@ export function ThreadSidebar({
         </button>
       </div>
       <div className="cc-sidebar__list">
-        <div className="cc-sidebar__section">RECENT</div>
-        {threads.map((thread) => {
-          const active = thread.id === activeId;
-          return (
-            <button
-              className={`cc-thread-row ${active ? "is-active" : ""}`}
-              key={thread.id}
-              onClick={() => onSelect(thread.id)}
-              type="button"
-            >
-              <div className="cc-thread-row__top">
-                <span className={`cc-thread-row__day ${active ? "is-active" : ""}`}>
-                  {threadDayLabel(dayNumber, thread.dayOffset)}
-                </span>
-                <span className="cc-thread-row__title">{thread.title}</span>
-                <span className="cc-thread-row__age">{thread.ageLabel}</span>
-              </div>
-              <div className="cc-thread-row__preview">{thread.preview}</div>
-            </button>
-          );
-        })}
+        <ThreadSections
+          dayNumber={dayNumber}
+          threads={threads}
+          activeId={activeId}
+          onSelect={onSelect}
+          onArchive={onArchive}
+          onUnarchive={onUnarchive}
+          onDelete={onDelete}
+          onRestore={onRestore}
+          onDeleteForever={onDeleteForever}
+        />
       </div>
     </aside>
   );
@@ -429,13 +744,25 @@ export function EmptyChatPane({
 export function MobileThreadList({
   dayNumber,
   threads,
+  activeId,
   onSelect,
   onNew,
+  onArchive,
+  onUnarchive,
+  onDelete,
+  onRestore,
+  onDeleteForever,
 }: {
   dayNumber: number;
   threads: ChatThread[];
+  activeId: string | null;
   onSelect: (id: string) => void;
   onNew: () => void;
+  onArchive: (id: string) => void;
+  onUnarchive: (id: string) => void;
+  onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDeleteForever: (id: string) => void;
 }) {
   return (
     <section className="cc-mobile-list" aria-label="Conversations">
@@ -452,24 +779,17 @@ export function MobileThreadList({
         <PlusIcon />
         New conversation
       </button>
-      <div className="cc-sidebar__section">RECENT</div>
-      {threads.map((thread) => (
-        <button
-          className="cc-thread-row"
-          key={thread.id}
-          onClick={() => onSelect(thread.id)}
-          type="button"
-        >
-          <div className="cc-thread-row__top">
-            <span className="cc-thread-row__day">
-              {threadDayLabel(dayNumber, thread.dayOffset)}
-            </span>
-            <span className="cc-thread-row__title">{thread.title}</span>
-            <span className="cc-thread-row__age">{thread.ageLabel}</span>
-          </div>
-          <div className="cc-thread-row__preview">{thread.preview}</div>
-        </button>
-      ))}
+      <ThreadSections
+        dayNumber={dayNumber}
+        threads={threads}
+        activeId={activeId}
+        onSelect={onSelect}
+        onArchive={onArchive}
+        onUnarchive={onUnarchive}
+        onDelete={onDelete}
+        onRestore={onRestore}
+        onDeleteForever={onDeleteForever}
+      />
     </section>
   );
 }
