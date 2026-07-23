@@ -16,6 +16,7 @@ import MonthlyAnalytics from "./pages/MonthlyAnalytics";
 import SportAnalyticsBadminton from "./pages/SportAnalyticsBadminton";
 import SportAnalyticsRunning from "./pages/SportAnalyticsRunning";
 import SportAnalyticsCalisthenics from "./pages/SportAnalyticsCalisthenics";
+import CoachChat from "./pages/CoachChat";
 
 function Router() {
   return (
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/analytics/monthly" component={MonthlyAnalytics} />
       <Route path="/analytics/badminton" component={SportAnalyticsBadminton} />
       <Route path="/analytics/calisthenics" component={SportAnalyticsCalisthenics} />
+      <Route path="/coach-chat" component={CoachChat} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

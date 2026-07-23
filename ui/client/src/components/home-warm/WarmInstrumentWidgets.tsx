@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 import { Link } from "wouter";
-import { Dumbbell, LogOut, Repeat } from "lucide-react";
+import { Dumbbell, LogOut, MessageSquare, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { ActivityGlyph, type ActivityGlyphKind } from "./ActivityGlyph";
@@ -347,6 +347,7 @@ export function InstrumentHeader({
   sportAnalyticsLinks = DEFAULT_SPORT_ANALYTICS_LINKS,
   analyticsHref = "/analytics/monthly",
   workoutsHref = "/workouts",
+  coachChatHref = "/coach-chat",
   currentRoute,
 }: {
   phaseLabel: string;
@@ -358,6 +359,7 @@ export function InstrumentHeader({
   sportAnalyticsLinks?: SportAnalyticsNavLink[];
   analyticsHref?: string;
   workoutsHref?: string;
+  coachChatHref?: string;
   /** Which nav href matches the current page, for aria-current + active styling. */
   currentRoute?: string;
 }) {
@@ -469,6 +471,15 @@ export function InstrumentHeader({
         >
           <Dumbbell size={20} strokeWidth={1.8} />
           <span className="sr-only">Workouts</span>
+        </Link>
+        <Link
+          aria-current={currentRoute === coachChatHref ? "page" : undefined}
+          className={currentRoute === coachChatHref ? "is-active" : undefined}
+          href={coachChatHref}
+          title="Coach Chat"
+        >
+          <MessageSquare size={20} strokeWidth={1.8} />
+          <span className="sr-only">Coach Chat</span>
         </Link>
       </nav>
     </header>
