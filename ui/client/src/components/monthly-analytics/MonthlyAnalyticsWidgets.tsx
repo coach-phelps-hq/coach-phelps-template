@@ -1,6 +1,8 @@
 import {
   type CSSProperties,
   type MouseEvent as ReactMouseEvent,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import { ActivityGlyph, type ActivityGlyphKind } from "@/components/home-warm/ActivityGlyph";
@@ -195,6 +197,17 @@ export function MonthOverviewGrid({
   selectedMonth: number;
   onSelectMonth: (month: number) => void;
 }) {
+  const activeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    activeRef.current?.scrollIntoView({
+      behavior: reduced ? "auto" : "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [selectedMonth]);
+
   return (
     <div
       className="ma-month-grid"
@@ -205,14 +218,17 @@ export function MonthOverviewGrid({
         return (
           <button
             key={cell.label}
+            ref={active ? activeRef : undefined}
             type="button"
             className={`ma-month-cell ${active ? "is-active" : ""}`.trim()}
             title={`${cell.fullName}`}
             onClick={() => onSelectMonth(cell.month)}
           >
             <span className="ma-month-cell__label">{cell.label}</span>
-            <strong className="ma-month-cell__days">{cell.activeDays}d</strong>
-            <span className="ma-month-cell__hours">{formatHours(cell.hours)}h</span>
+            <span className="ma-month-cell__stats">
+              <strong className="ma-month-cell__days">{cell.activeDays}d</strong>
+              <span className="ma-month-cell__hours">{formatHours(cell.hours)}h</span>
+            </span>
           </button>
         );
       })}
@@ -224,7 +240,6 @@ export function MonthStepper({
   monthLabel,
   year,
   summaryLine,
-  noteLine,
   canGoPrev,
   canGoNext,
   onPrev,
@@ -233,7 +248,6 @@ export function MonthStepper({
   monthLabel: string;
   year: number;
   summaryLine: string;
-  noteLine: string;
   canGoPrev: boolean;
   canGoNext: boolean;
   onPrev: () => void;
@@ -265,7 +279,6 @@ export function MonthStepper({
         </svg>
       </button>
       <span className="ma-stepper__summary">{summaryLine}</span>
-      <span className="ma-stepper__note">{noteLine}</span>
     </div>
   );
 }

@@ -690,16 +690,30 @@
 
 @media (max-width: 720px) {
   .wi-board:has(.cc-shell) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
     padding: 0;
   }
 
+  .wi-board:has(.cc-shell) > .wi-instrument-header {
+    flex-shrink: 0;
+    padding: 14px 16px;
+  }
+
+  .wi-board:has(.cc-shell) > .cc-shell {
+    flex: 1;
+    min-height: 0;
+  }
+
   .cc-shell {
-    min-height: calc(100dvh - 88px);
+    min-height: 0;
   }
 
   .cc-frame {
     flex-direction: column;
-    min-height: calc(100dvh - 100px);
+    flex: 1;
+    min-height: 0;
     max-height: none;
     margin-top: 0;
     border: none;

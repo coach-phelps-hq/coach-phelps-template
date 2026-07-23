@@ -709,19 +709,6 @@
   font-size: 9px;
 }
 
-.wtx-list-empty-slot {
-  display: flex;
-  min-height: 120px;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #cabfa9;
-  border-radius: 16px;
-  color: #a89f8c;
-  font-family: "Space Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-}
-
 @media (max-width: 720px) {
   .wtx-list-grid {
     grid-template-columns: 1fr;

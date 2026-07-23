@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 import { Link } from "wouter";
-import { Dumbbell, LogOut, MessageSquare, Repeat } from "lucide-react";
+import { Dumbbell, Home, LogOut, Menu, MessageSquare, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { ActivityGlyph, type ActivityGlyphKind } from "./ActivityGlyph";
@@ -281,22 +281,6 @@ function formatCompact(value: number) {
   return Math.round(value).toLocaleString("en-GB");
 }
 
-function GaugeIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height={size}
-      viewBox="0 0 24 24"
-      width={size}
-    >
-      <path d="M4 15a8 8 0 0 1 16 0" />
-      <path d="m12 15 4.5-4.5" />
-      <circle cx="12" cy="15" r="1.6" />
-    </svg>
-  );
-}
-
 function AnalyticsIcon({ size = 20 }: { size?: number }) {
   return (
     <svg
@@ -326,6 +310,10 @@ function SyncIcon({ healthy, spinning }: { healthy: boolean; spinning?: boolean 
       className={`${healthy ? "is-healthy" : "is-warning"} ${spinning ? "is-spinning" : ""}`.trim()}
       fill="none"
       height="18"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.8"
       viewBox="0 0 24 24"
       width="18"
     >
@@ -334,6 +322,189 @@ function SyncIcon({ healthy, spinning }: { healthy: boolean; spinning?: boolean 
       <path d="M19.6 10A8 8 0 0 0 6.4 6.6L4 9" />
       <path d="M4.4 14a8 8 0 0 0 13.2 3.4L20 15" />
     </svg>
+  );
+}
+
+function HeaderNavMenu({
+  homeHref,
+  workoutsHref,
+  sportAnalyticsLinks,
+  analyticsHref,
+  coachChatHref,
+  currentRoute,
+  showAccountActions,
+  login,
+  syncHealthy,
+  syncLabel,
+  onOpenSync,
+}: {
+  homeHref: string;
+  workoutsHref: string;
+  sportAnalyticsLinks: SportAnalyticsNavLink[];
+  analyticsHref: string;
+  coachChatHref: string;
+  currentRoute?: string;
+  showAccountActions: boolean;
+  login?: string;
+  syncHealthy: boolean;
+  syncLabel: string;
+  onOpenSync?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  const menuHasActive = currentRoute
+    ? [
+        ...sportAnalyticsLinks.map((link) => link.href),
+        analyticsHref,
+      ].includes(currentRoute)
+    : false;
+
+  async function handleSync() {
+    if (syncing) return;
+    setSyncing(true);
+    toast.info("Syncing... usually takes ~30s");
+    try {
+      const res = await fetch("/api/trigger-sync", { method: "POST" });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success("Sync triggered! Refresh in ~2 min to see results.");
+      } else {
+        toast.error(`Sync failed: ${data.error || "Unknown error"}`);
+      }
+    } catch {
+      toast.error("Could not reach sync endpoint.");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  function triggerSync() {
+    closeMenu();
+    if (onOpenSync) {
+      onOpenSync();
+      return;
+    }
+    void handleSync();
+  }
+
+  useEffect(() => {
+    if (!open) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  function closeMenu() {
+    setOpen(false);
+  }
+
+  return (
+    <div className="wi-instrument-header__menu" ref={rootRef}>
+      <button
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label="More navigation"
+        className={`wi-instrument-header__menu-btn ${menuHasActive ? "is-active" : ""}`.trim()}
+        onClick={() => setOpen((value) => !value)}
+        type="button"
+      >
+        <Menu aria-hidden="true" size={20} strokeWidth={1.8} />
+      </button>
+      {open ? (
+        <div className="wi-instrument-header__menu-panel" role="menu">
+          <Link
+            className={`wi-mobile-only ${currentRoute === homeHref ? "is-active" : ""}`.trim()}
+            href={homeHref}
+            onClick={closeMenu}
+            role="menuitem"
+          >
+            <Home aria-hidden="true" size={18} strokeWidth={1.8} />
+            <span>Home</span>
+          </Link>
+          <Link
+            className={`wi-mobile-only ${currentRoute === workoutsHref ? "is-active" : ""}`.trim()}
+            href={workoutsHref}
+            onClick={closeMenu}
+            role="menuitem"
+          >
+            <Dumbbell aria-hidden="true" size={18} strokeWidth={1.8} />
+            <span>Workouts</span>
+          </Link>
+          <Link
+            className={`wi-mobile-only ${currentRoute === coachChatHref ? "is-active" : ""}`.trim()}
+            href={coachChatHref}
+            onClick={closeMenu}
+            role="menuitem"
+          >
+            <MessageSquare aria-hidden="true" size={18} strokeWidth={1.8} />
+            <span>Coach Chat</span>
+          </Link>
+          <div aria-hidden="true" className="wi-instrument-header__menu-divider wi-mobile-only" />
+          {sportAnalyticsLinks.map((link) => (
+            <Link
+              key={link.href}
+              className={currentRoute === link.href ? "is-active" : undefined}
+              href={link.href}
+              onClick={closeMenu}
+              role="menuitem"
+            >
+              <ActivityGlyph kind={link.glyph} size={18} />
+              <span>{link.title}</span>
+            </Link>
+          ))}
+          <Link
+            className={currentRoute === analyticsHref ? "is-active" : undefined}
+            href={analyticsHref}
+            onClick={closeMenu}
+            role="menuitem"
+          >
+            <AnalyticsIcon size={18} />
+            <span>Monthly analytics</span>
+          </Link>
+          <div aria-hidden="true" className="wi-instrument-header__menu-divider" />
+          <button
+            aria-label={`Trigger sync. ${syncing ? "Syncing…" : `Synced · ${syncLabel}`}.`}
+            className="wi-instrument-header__menu-sync"
+            disabled={syncing}
+            onClick={triggerSync}
+            role="menuitem"
+            type="button"
+          >
+            <SyncIcon healthy={syncHealthy} spinning={syncing} />
+            <span>{syncing ? "Syncing…" : `Sync · ${syncLabel}`}</span>
+          </button>
+          {showAccountActions ? (
+            <>
+              <div aria-hidden="true" className="wi-instrument-header__menu-divider" />
+              <a href="/?switch_repo=1" onClick={closeMenu} role="menuitem">
+                <Repeat aria-hidden="true" size={18} strokeWidth={1.8} />
+                <span>Switch repo</span>
+              </a>
+              <a href="/api/auth-logout" onClick={closeMenu} role="menuitem">
+                <LogOut aria-hidden="true" size={18} strokeWidth={1.8} />
+                <span>Sign out{login ? ` (${login})` : ""}</span>
+              </a>
+            </>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -364,28 +535,6 @@ export function InstrumentHeader({
   currentRoute?: string;
 }) {
   const auth = useAuth();
-  const [syncing, setSyncing] = useState(false);
-
-  async function handleSync() {
-    if (syncing) return;
-    setSyncing(true);
-    toast.info("Syncing... usually takes ~30s");
-    try {
-      const res = await fetch("/api/trigger-sync", { method: "POST" });
-      const data = await res.json();
-      if (data.ok) {
-        toast.success("Sync triggered! Refresh in ~2 min to see results.");
-      } else {
-        toast.error(`Sync failed: ${data.error || "Unknown error"}`);
-      }
-    } catch {
-      toast.error("Could not reach sync endpoint.");
-    } finally {
-      setSyncing(false);
-    }
-  }
-
-  const syncTitle = syncing ? "Syncing…" : `Synced · ${syncLabel}`;
   const showAccountActions = auth.status === "authenticated";
 
   return (
@@ -399,89 +548,49 @@ export function InstrumentHeader({
         <span className="wi-mobile-only">{mobilePhaseLabel ?? phaseLabel}</span>
       </span>
       <div className="wi-instrument-header__actions">
-        <button
-          aria-label={`Trigger sync. ${syncTitle}.`}
-          className="wi-instrument-header__sync wi-instrument-header__sync-button"
-          disabled={syncing}
-          onClick={onOpenSync ?? handleSync}
-          type="button"
-        >
-          <SyncIcon healthy={syncHealthy} spinning={syncing} />
-          <span className="wi-instrument-header__sync-tip" role="tooltip">{syncTitle}</span>
-        </button>
-        {showAccountActions ? (
-          <>
-            <a
-              aria-label="Switch repo"
-              className="wi-instrument-header__sync"
-              href="/?switch_repo=1"
-            >
-              <Repeat aria-hidden="true" size={18} strokeWidth={1.8} />
-              <span className="wi-instrument-header__sync-tip" role="tooltip">Switch repo</span>
-            </a>
-            <a
-              aria-label={`Sign out${auth.login ? ` (${auth.login})` : ""}`}
-              className="wi-instrument-header__sync"
-              href="/api/auth-logout"
-            >
-              <LogOut aria-hidden="true" size={18} strokeWidth={1.8} />
-              <span className="wi-instrument-header__sync-tip" role="tooltip">
-                Sign out{auth.login ? ` (${auth.login})` : ""}
-              </span>
-            </a>
-          </>
-        ) : null}
-      </div>
-      <nav className="wi-instrument-header__nav" aria-label="Primary navigation">
-        <Link
-          aria-current={currentRoute === homeHref ? "page" : undefined}
-          className={currentRoute === homeHref ? "is-active" : undefined}
-          href={homeHref}
-          title="Engine"
-        >
-          <GaugeIcon />
-          <span className="sr-only">Engine</span>
-        </Link>
-        {sportAnalyticsLinks.map((link) => (
+        <nav className="wi-instrument-header__nav" aria-label="Primary navigation">
           <Link
-            key={link.href}
-            aria-current={currentRoute === link.href ? "page" : undefined}
-            className={currentRoute === link.href ? "is-active" : undefined}
-            href={link.href}
-            title={link.title}
+            aria-current={currentRoute === homeHref ? "page" : undefined}
+            className={currentRoute === homeHref ? "is-active" : undefined}
+            href={homeHref}
+            title="Home"
           >
-            <ActivityGlyph kind={link.glyph} size={20} />
-            <span className="sr-only">{link.title}</span>
+            <Home aria-hidden="true" size={20} strokeWidth={1.8} />
+            <span className="sr-only">Home</span>
           </Link>
-        ))}
-        <Link
-          aria-current={currentRoute === analyticsHref ? "page" : undefined}
-          className={currentRoute === analyticsHref ? "is-active" : undefined}
-          href={analyticsHref}
-          title="Monthly analytics"
-        >
-          <AnalyticsIcon />
-          <span className="sr-only">Monthly analytics</span>
-        </Link>
-        <Link
-          aria-current={currentRoute === workoutsHref ? "page" : undefined}
-          className={currentRoute === workoutsHref ? "is-active" : undefined}
-          href={workoutsHref}
-          title="Workouts"
-        >
-          <Dumbbell size={20} strokeWidth={1.8} />
-          <span className="sr-only">Workouts</span>
-        </Link>
-        <Link
-          aria-current={currentRoute === coachChatHref ? "page" : undefined}
-          className={currentRoute === coachChatHref ? "is-active" : undefined}
-          href={coachChatHref}
-          title="Coach Chat"
-        >
-          <MessageSquare size={20} strokeWidth={1.8} />
-          <span className="sr-only">Coach Chat</span>
-        </Link>
-      </nav>
+          <Link
+            aria-current={currentRoute === workoutsHref ? "page" : undefined}
+            className={currentRoute === workoutsHref ? "is-active" : undefined}
+            href={workoutsHref}
+            title="Workouts"
+          >
+            <Dumbbell aria-hidden="true" size={20} strokeWidth={1.8} />
+            <span className="sr-only">Workouts</span>
+          </Link>
+          <Link
+            aria-current={currentRoute === coachChatHref ? "page" : undefined}
+            className={currentRoute === coachChatHref ? "is-active" : undefined}
+            href={coachChatHref}
+            title="Coach Chat"
+          >
+            <MessageSquare aria-hidden="true" size={20} strokeWidth={1.8} />
+            <span className="sr-only">Coach Chat</span>
+          </Link>
+        </nav>
+        <HeaderNavMenu
+          analyticsHref={analyticsHref}
+          coachChatHref={coachChatHref}
+          currentRoute={currentRoute}
+          homeHref={homeHref}
+          login={auth.login}
+          onOpenSync={onOpenSync}
+          showAccountActions={showAccountActions}
+          sportAnalyticsLinks={sportAnalyticsLinks}
+          syncHealthy={syncHealthy}
+          syncLabel={syncLabel}
+          workoutsHref={workoutsHref}
+        />
+      </div>
     </header>
   );
 }
