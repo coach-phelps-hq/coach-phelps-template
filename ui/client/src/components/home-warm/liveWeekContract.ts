@@ -36,6 +36,15 @@ function disciplineFor(category: TrainingCategory): SessionDiscipline {
   if (category === "ride") return "cycling";
   if (category === "foundation") return "foundation";
   if (category === "recovery" || category === "realign") return "recovery";
+  if (category === "run") return "run";
+  if (category === "strength") return "strength";
+  if (category === "weight_training") return "weight_training";
+  if (category === "hike") return "hike";
+  if (category === "walk") return "walk";
+  if (category === "cricket") return "cricket";
+  if (category === "football") return "football";
+  if (category === "workout") return "workout";
+  if (category === "swim") return "swim";
   return "other";
 }
 

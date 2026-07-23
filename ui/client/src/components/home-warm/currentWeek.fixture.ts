@@ -7,7 +7,16 @@ export type SessionDiscipline =
   | "cycling"
   | "foundation"
   | "recovery"
-  | "other";
+  | "other"
+  | "run"
+  | "strength"
+  | "weight_training"
+  | "hike"
+  | "walk"
+  | "cricket"
+  | "football"
+  | "workout"
+  | "swim";
 export type SessionPriority = "anchor" | "support" | "optional";
 export type SessionStatus = "planned" | "completed" | "skipped" | "moved";
 export type CoachTone = "steady" | "positive" | "caution";

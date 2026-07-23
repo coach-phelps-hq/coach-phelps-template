@@ -45,6 +45,15 @@ function disciplineFor(category: TrainingCategory): SessionDiscipline {
   if (category === "ride") return "cycling";
   if (category === "foundation") return "foundation";
   if (category === "recovery" || category === "realign") return "recovery";
+  if (category === "run") return "run";
+  if (category === "strength") return "strength";
+  if (category === "weight_training") return "weight_training";
+  if (category === "hike") return "hike";
+  if (category === "walk") return "walk";
+  if (category === "cricket") return "cricket";
+  if (category === "football") return "football";
+  if (category === "workout") return "workout";
+  if (category === "swim") return "swim";
   return "other";
 }
 
@@ -56,6 +65,15 @@ function mapDiscipline(discipline: string): SessionDiscipline {
   if (value === "cycling" || value === "ride" || value === "bike") return "cycling";
   if (value === "foundation") return "foundation";
   if (value === "recovery" || value === "realign" || value === "mobility") return "recovery";
+  if (value === "run" || value === "running") return "run";
+  if (value === "strength") return "strength";
+  if (value === "weight_training" || value === "weights" || value === "weight training") return "weight_training";
+  if (value === "hike" || value === "hiking") return "hike";
+  if (value === "walk" || value === "walking") return "walk";
+  if (value === "cricket") return "cricket";
+  if (value === "football" || value === "soccer") return "football";
+  if (value === "workout") return "workout";
+  if (value === "swim" || value === "swimming") return "swim";
   return "other";
 }
 

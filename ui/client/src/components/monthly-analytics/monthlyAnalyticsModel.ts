@@ -38,11 +38,64 @@ const SPORT_ROWS: Array<{
     match: (category) => category === "calisthenics",
   },
   {
+    id: "run",
+    label: "RUN",
+    color: "#c44020",
+    match: (category) => category === "run",
+  },
+  {
+    id: "strength",
+    label: "STRENGTH",
+    color: "#111111",
+    match: (category) => category === "strength",
+  },
+  {
+    id: "weight_training",
+    label: "WEIGHTS",
+    color: "#3b4a6b",
+    match: (category) => category === "weight_training",
+  },
+  {
+    id: "hike",
+    label: "HIKE",
+    color: "#8b6f47",
+    match: (category) => category === "hike",
+  },
+  {
+    id: "walk",
+    label: "WALK",
+    color: "#a8a29e",
+    match: (category) => category === "walk",
+  },
+  {
+    id: "cricket",
+    label: "CRICKET",
+    color: "#2dd4bf",
+    match: (category) => category === "cricket",
+  },
+  {
+    id: "football",
+    label: "FOOTBALL",
+    color: "#e11d48",
+    match: (category) => category === "football",
+  },
+  {
+    id: "workout",
+    label: "WORKOUT",
+    color: "#6b7280",
+    match: (category) => category === "workout",
+  },
+  {
+    id: "swim",
+    label: "SWIM",
+    color: "#0ea5e9",
+    match: (category) => category === "swim",
+  },
+  {
     id: "other",
     label: "OTHER",
     color: "#9a9b90",
-    match: (category) =>
-      category === "other" || category === "run",
+    match: (category) => category === "other",
   },
 ];
 

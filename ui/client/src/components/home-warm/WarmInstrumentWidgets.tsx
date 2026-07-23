@@ -34,7 +34,15 @@ export type WarmSportId =
   | "calisthenics"
   | "foundation"
   | "run"
-  | "other";
+  | "other"
+  | "strength"
+  | "weight_training"
+  | "hike"
+  | "walk"
+  | "cricket"
+  | "football"
+  | "workout"
+  | "swim";
 
 export interface ActivityInspectionSnapshot {
   id: string;
@@ -187,6 +195,14 @@ export type ActivityCellState =
   | "foundation"
   | "cycling"
   | "run"
+  | "strength"
+  | "weight_training"
+  | "hike"
+  | "walk"
+  | "cricket"
+  | "football"
+  | "workout"
+  | "swim"
   | "planned-missed";
 
 export interface ActivityMonthSnapshot {
@@ -990,6 +1006,15 @@ const ACTIVITY_LEGEND: Array<{ state: ActivityCellState; label: string }> = [
   { state: "calisthenics", label: "CAL" },
   { state: "foundation", label: "FDN" },
   { state: "cycling", label: "RIDE" },
+  { state: "run", label: "RUN" },
+  { state: "strength", label: "STR" },
+  { state: "weight_training", label: "WGT" },
+  { state: "hike", label: "HIK" },
+  { state: "walk", label: "WLK" },
+  { state: "cricket", label: "CRK" },
+  { state: "football", label: "FBL" },
+  { state: "workout", label: "WKT" },
+  { state: "swim", label: "SWM" },
   { state: "planned-missed", label: "PLANNED · MISSED" },
 ];
 

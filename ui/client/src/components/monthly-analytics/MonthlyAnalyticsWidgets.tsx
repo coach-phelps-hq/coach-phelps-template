@@ -32,6 +32,15 @@ function sportGlyph(id: WarmSportId): ActivityGlyphKind {
   if (id === "badminton") return "badminton";
   if (id === "calisthenics") return "calisthenics";
   if (id === "foundation") return "foundation";
+  if (id === "run") return "run";
+  if (id === "strength") return "strength";
+  if (id === "weight_training") return "weight_training";
+  if (id === "hike") return "hike";
+  if (id === "walk") return "walk";
+  if (id === "cricket") return "cricket";
+  if (id === "football") return "football";
+  if (id === "workout") return "workout";
+  if (id === "swim") return "swim";
   return "other";
 }
 

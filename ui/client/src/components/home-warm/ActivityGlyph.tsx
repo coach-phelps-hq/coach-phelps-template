@@ -7,7 +7,15 @@ export type ActivityMarkKind =
   | "calisthenics"
   | "run"
   | "recovery"
-  | "other";
+  | "other"
+  | "strength"
+  | "weight_training"
+  | "hike"
+  | "walk"
+  | "cricket"
+  | "football"
+  | "workout"
+  | "swim";
 
 /** Backwards-compatible alias for the existing Warm Instrument snapshot types. */
 export type ActivityGlyphKind = ActivityMarkKind;
@@ -97,6 +105,78 @@ function OtherMark() {
   );
 }
 
+/** Barbell — shared by `strength` and `weight_training`, differentiated by color only,
+ * the same way the four badminton sub-categories share `BadmintonMark`. */
+function StrengthMark() {
+  return (
+    <>
+      <path d="M2 12h20" />
+      <path d="M5 8v8M19 8v8" />
+      <path d="M7 9.5v5M17 9.5v5" />
+    </>
+  );
+}
+
+function HikeMark() {
+  return (
+    <>
+      <path d="M3 19h18" />
+      <path d="m5 19 5-11 3 6 2-3 4 8Z" />
+    </>
+  );
+}
+
+function WalkMark() {
+  return (
+    <>
+      <circle cx="12" cy="5.5" r="1.7" />
+      <path d="M12 7.2v5.3" />
+      <path d="M12 12.5 9 19M12 12.5l3.5 2.5 1 4" />
+      <path d="M12 10 9.5 11.5M12 10l2.8.8" />
+    </>
+  );
+}
+
+function CricketMark() {
+  return (
+    <>
+      <path d="M6 18 16 8" />
+      <path d="M15 7c1-1 2.6-1 3.6 0s1 2.6 0 3.6L17 12l-3.6-3.6Z" />
+      <circle cx="5" cy="19" r="1.6" />
+    </>
+  );
+}
+
+function FootballMark() {
+  return (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m12 8 3.4 2.5-1.3 4H9.9l-1.3-4Z" />
+      <path d="M12 3.5v4.2M4.6 9l3.4 1M19.4 9l-3.4 1M7 19l2-4.7M17 19l-2-4.7" />
+    </>
+  );
+}
+
+function WorkoutMark() {
+  return (
+    <>
+      <path d="M9 9.5a3 3 0 1 1 6 0" />
+      <path d="M7.5 9.5h9l1 3.2a5 5 0 0 1-11 0Z" />
+    </>
+  );
+}
+
+function SwimMark() {
+  return (
+    <>
+      <path d="M2 15c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0 3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
+      <path d="M2 19c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0 3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
+      <circle cx="17" cy="6" r="2" />
+      <path d="M9 10.5 15 8" />
+    </>
+  );
+}
+
 export function ActivityMark({ kind, size = 24, ...props }: ActivityMarkProps) {
   return (
     <svg
@@ -119,6 +199,13 @@ export function ActivityMark({ kind, size = 24, ...props }: ActivityMarkProps) {
       {kind === "foundation" ? <FoundationMark /> : null}
       {kind === "run" ? <RunMark /> : null}
       {kind === "recovery" ? <RecoveryMark /> : null}
+      {kind === "strength" || kind === "weight_training" ? <StrengthMark /> : null}
+      {kind === "hike" ? <HikeMark /> : null}
+      {kind === "walk" ? <WalkMark /> : null}
+      {kind === "cricket" ? <CricketMark /> : null}
+      {kind === "football" ? <FootballMark /> : null}
+      {kind === "workout" ? <WorkoutMark /> : null}
+      {kind === "swim" ? <SwimMark /> : null}
       {kind === "other" ? <OtherMark /> : null}
     </svg>
   );

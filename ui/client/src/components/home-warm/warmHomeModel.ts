@@ -364,6 +364,15 @@ function glyphForDiscipline(discipline: SessionDiscipline): ActivityGlyphKind {
   if (discipline === "badminton") return "badminton";
   if (discipline === "calisthenics") return "calisthenics";
   if (discipline === "recovery") return "recovery";
+  if (discipline === "run") return "run";
+  if (discipline === "strength") return "strength";
+  if (discipline === "weight_training") return "weight_training";
+  if (discipline === "hike") return "hike";
+  if (discipline === "walk") return "walk";
+  if (discipline === "cricket") return "cricket";
+  if (discipline === "football") return "football";
+  if (discipline === "workout") return "workout";
+  if (discipline === "swim") return "swim";
   return "other";
 }
 

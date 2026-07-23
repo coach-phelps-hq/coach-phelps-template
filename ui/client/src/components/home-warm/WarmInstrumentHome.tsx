@@ -83,6 +83,14 @@ function categoryToSport(category: TrainingCategory): WarmSportId {
   }
   if (category === "ride") return "cycling";
   if (category === "run") return "run";
+  if (category === "strength") return "strength";
+  if (category === "weight_training") return "weight_training";
+  if (category === "hike") return "hike";
+  if (category === "walk") return "walk";
+  if (category === "cricket") return "cricket";
+  if (category === "football") return "football";
+  if (category === "workout") return "workout";
+  if (category === "swim") return "swim";
   return "other";
 }
 
@@ -92,6 +100,15 @@ function disciplineToSport(discipline: SessionDiscipline): WarmSportId | "recove
   if (discipline === "calisthenics") return "calisthenics";
   if (discipline === "foundation") return "foundation";
   if (discipline === "recovery") return "recovery";
+  if (discipline === "run") return "run";
+  if (discipline === "strength") return "strength";
+  if (discipline === "weight_training") return "weight_training";
+  if (discipline === "hike") return "hike";
+  if (discipline === "walk") return "walk";
+  if (discipline === "cricket") return "cricket";
+  if (discipline === "football") return "football";
+  if (discipline === "workout") return "workout";
+  if (discipline === "swim") return "swim";
   return "other";
 }
 
@@ -168,6 +185,15 @@ export function buildEngineSnapshot(
     { id: "foundation", label: "Foundation", shortLabel: "FDN", color: "#cdd3a8" },
     { id: "calisthenics", label: "Calisthenics", shortLabel: "CAL", color: "#aeb2c9" },
     { id: "cycling", label: "Ride", shortLabel: "RIDE", color: "#e0b06e" },
+    { id: "run", label: "Run", shortLabel: "RUN", color: "#c44020" },
+    { id: "strength", label: "Strength", shortLabel: "STR", color: "#111111" },
+    { id: "weight_training", label: "Weights", shortLabel: "WGT", color: "#3b4a6b" },
+    { id: "hike", label: "Hike", shortLabel: "HIK", color: "#8b6f47" },
+    { id: "walk", label: "Walk", shortLabel: "WLK", color: "#a8a29e" },
+    { id: "cricket", label: "Cricket", shortLabel: "CRK", color: "#2dd4bf" },
+    { id: "football", label: "Football", shortLabel: "FBL", color: "#e11d48" },
+    { id: "workout", label: "Workout", shortLabel: "WKT", color: "#6b7280" },
+    { id: "swim", label: "Swim", shortLabel: "SWM", color: "#0ea5e9" },
   ];
   const mix = mixDefinition.map((item) => ({
     ...item,
@@ -489,6 +515,14 @@ function dominantActivityState(categories: TrainingCategory[]): ActivityCellStat
   if (states.includes("run")) return "run";
   if (states.includes("cycling")) return "cycling";
   if (states.includes("foundation")) return "foundation";
+  if (states.includes("strength")) return "strength";
+  if (states.includes("weight_training")) return "weight_training";
+  if (states.includes("hike")) return "hike";
+  if (states.includes("walk")) return "walk";
+  if (states.includes("cricket")) return "cricket";
+  if (states.includes("football")) return "football";
+  if (states.includes("workout")) return "workout";
+  if (states.includes("swim")) return "swim";
   return "empty";
 }
 

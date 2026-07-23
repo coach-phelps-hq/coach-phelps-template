@@ -826,6 +826,62 @@ button.wi-commitment-card:hover {
   background: rgba(127, 55, 40, 0.08);
 }
 
+.wi-plan-day__slot.is-strength {
+  border-style: solid;
+  border-color: rgba(17, 17, 17, 0.35);
+  color: #111111;
+  background: rgba(17, 17, 17, 0.08);
+}
+
+.wi-plan-day__slot.is-weight_training {
+  border-style: solid;
+  border-color: rgba(59, 74, 107, 0.35);
+  color: #3b4a6b;
+  background: rgba(59, 74, 107, 0.1);
+}
+
+.wi-plan-day__slot.is-hike {
+  border-style: solid;
+  border-color: rgba(139, 111, 71, 0.35);
+  color: #8b6f47;
+  background: rgba(139, 111, 71, 0.1);
+}
+
+.wi-plan-day__slot.is-walk {
+  border-style: solid;
+  border-color: rgba(168, 162, 158, 0.4);
+  color: #a8a29e;
+  background: rgba(168, 162, 158, 0.1);
+}
+
+.wi-plan-day__slot.is-cricket {
+  border-style: solid;
+  border-color: rgba(45, 212, 191, 0.35);
+  color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.1);
+}
+
+.wi-plan-day__slot.is-football {
+  border-style: solid;
+  border-color: rgba(225, 29, 72, 0.35);
+  color: #e11d48;
+  background: rgba(225, 29, 72, 0.1);
+}
+
+.wi-plan-day__slot.is-workout {
+  border-style: solid;
+  border-color: rgba(107, 114, 128, 0.35);
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.wi-plan-day__slot.is-swim {
+  border-style: solid;
+  border-color: rgba(14, 165, 233, 0.35);
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.1);
+}
+
 .wi-plan-day__slot > span {
   color: #b9b3a5;
   font-family: "Space Mono", monospace;
@@ -960,6 +1016,46 @@ button.wi-commitment-card:hover {
 .wi-training-card__legend i.is-run,
 .wi-activity-month__grid i.is-run {
   background: var(--wi-rust);
+}
+
+.wi-training-card__legend i.is-strength,
+.wi-activity-month__grid i.is-strength {
+  background: #111111;
+}
+
+.wi-training-card__legend i.is-weight_training,
+.wi-activity-month__grid i.is-weight_training {
+  background: #3b4a6b;
+}
+
+.wi-training-card__legend i.is-hike,
+.wi-activity-month__grid i.is-hike {
+  background: #8b6f47;
+}
+
+.wi-training-card__legend i.is-walk,
+.wi-activity-month__grid i.is-walk {
+  background: #a8a29e;
+}
+
+.wi-training-card__legend i.is-cricket,
+.wi-activity-month__grid i.is-cricket {
+  background: #2dd4bf;
+}
+
+.wi-training-card__legend i.is-football,
+.wi-activity-month__grid i.is-football {
+  background: #e11d48;
+}
+
+.wi-training-card__legend i.is-workout,
+.wi-activity-month__grid i.is-workout {
+  background: #6b7280;
+}
+
+.wi-training-card__legend i.is-swim,
+.wi-activity-month__grid i.is-swim {
+  background: #0ea5e9;
 }
 
 .wi-training-card__legend i.is-planned-missed,
@@ -1199,6 +1295,38 @@ button.wi-commitment-card:hover {
   background: var(--wi-cycling);
 }
 
+.wi-session-row__vein.is-strength {
+  background: #111111;
+}
+
+.wi-session-row__vein.is-weight_training {
+  background: #3b4a6b;
+}
+
+.wi-session-row__vein.is-hike {
+  background: #8b6f47;
+}
+
+.wi-session-row__vein.is-walk {
+  background: #a8a29e;
+}
+
+.wi-session-row__vein.is-cricket {
+  background: #2dd4bf;
+}
+
+.wi-session-row__vein.is-football {
+  background: #e11d48;
+}
+
+.wi-session-row__vein.is-workout {
+  background: #6b7280;
+}
+
+.wi-session-row__vein.is-swim {
+  background: #0ea5e9;
+}
+
 .wi-session-row > strong {
   min-width: 0;
   flex: 1;
@@ -1242,6 +1370,38 @@ button.wi-commitment-card:hover {
 
 .wi-session-row > b.is-cycling {
   color: var(--wi-cycling);
+}
+
+.wi-session-row > b.is-strength {
+  color: #111111;
+}
+
+.wi-session-row > b.is-weight_training {
+  color: #3b4a6b;
+}
+
+.wi-session-row > b.is-hike {
+  color: #8b6f47;
+}
+
+.wi-session-row > b.is-walk {
+  color: #a8a29e;
+}
+
+.wi-session-row > b.is-cricket {
+  color: #2dd4bf;
+}
+
+.wi-session-row > b.is-football {
+  color: #e11d48;
+}
+
+.wi-session-row > b.is-workout {
+  color: #6b7280;
+}
+
+.wi-session-row > b.is-swim {
+  color: #0ea5e9;
 }
 
 .wi-build-card {
@@ -2030,6 +2190,42 @@ button.wi-commitment-card:hover {
 
   .wi-open-engine__dose > div > b.is-cycling {
     color: var(--wi-cycling);
+  }
+
+  .wi-open-engine__dose > div > b.is-calisthenics {
+    color: var(--wi-calisthenics);
+  }
+
+  .wi-open-engine__dose > div > b.is-strength {
+    color: #111111;
+  }
+
+  .wi-open-engine__dose > div > b.is-weight_training {
+    color: #3b4a6b;
+  }
+
+  .wi-open-engine__dose > div > b.is-hike {
+    color: #8b6f47;
+  }
+
+  .wi-open-engine__dose > div > b.is-walk {
+    color: #a8a29e;
+  }
+
+  .wi-open-engine__dose > div > b.is-cricket {
+    color: #2dd4bf;
+  }
+
+  .wi-open-engine__dose > div > b.is-football {
+    color: #e11d48;
+  }
+
+  .wi-open-engine__dose > div > b.is-workout {
+    color: #6b7280;
+  }
+
+  .wi-open-engine__dose > div > b.is-swim {
+    color: #0ea5e9;
   }
 
   .wi-open-engine__dose > div.is-rest strong,
