@@ -195,7 +195,6 @@ export interface MonthlyAnalyticsModel {
   monthFullName: string;
   isCurrentMonth: boolean;
   summaryLine: string;
-  noteLine: string;
   yearOptions: number[];
   monthOverview: MonthOverviewCell[];
   engine: MonthlyEngineModel;
@@ -584,10 +583,6 @@ export function buildMonthlyAnalyticsModel(
     `${breakdown.activeDays} ACTIVE DAYS`,
   ].join(" · ");
 
-  const noteLine = isCurrentMonth
-    ? "Your current month."
-    : `Reflecting ${monthLabel} ${year}.`;
-
   return {
     year,
     month,
@@ -595,7 +590,6 @@ export function buildMonthlyAnalyticsModel(
     monthFullName,
     isCurrentMonth,
     summaryLine,
-    noteLine,
     yearOptions: availableYears(activities, now),
     monthOverview: buildMonthOverview(activities, year, now),
     engine: buildMonthlyEngine(activities, year, month),

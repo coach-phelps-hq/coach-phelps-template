@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { RepoDataGate } from "@/components/RepoDataGate";
 import { useRepoData, type RepoData } from "@/hooks/useRepoData";
 import { toLocalDateStr } from "@/lib/challenge";
+import type { SyncStatusPayload } from "@/components/home-warm/warmHomeModel";
+import { InstrumentHeader } from "@/components/home-warm/WarmInstrumentWidgets";
 import {
   Workout,
   WorkoutType,
@@ -12,10 +14,10 @@ import {
 } from "@/lib/workouts";
 import {
   SportBadge,
-  TimerTopBar,
   accentFor,
   deriveBlockTags,
 } from "@/components/workout-timer-warm/WorkoutTimerWidgets";
+import "@/components/home-warm/warm-instrument.css";
 
 const TYPE_ORDER: WorkoutType[] = ["foundation", "strength", "calisthenics", "recovery", "realign"];
 const TYPE_LABEL: Record<WorkoutType, string> = {
@@ -83,6 +85,7 @@ export default function Workouts() {
 
 function WorkoutsContent({ data }: { data: RepoData }) {
   const workoutsData = data.workouts as WorkoutsData;
+  const syncStatusData = data.sync_status as SyncStatusPayload;
 
   const groups = useMemo(() => {
     const today = toLocalDateStr(new Date());
@@ -108,7 +111,14 @@ function WorkoutsContent({ data }: { data: RepoData }) {
   return (
     <div className="wi-shell">
       <div className="wi-board" style={{ maxWidth: 1180 }}>
-        <TimerTopBar backHref="/" title="Workouts" />
+        <InstrumentHeader
+          currentRoute="/workouts"
+          mobilePhaseLabel="WORKOUTS"
+          phaseLabel="WORKOUTS"
+          syncHealthy={syncStatusData.status === "success" || syncStatusData.status === "none"}
+          syncLabel={syncStatusData.status}
+          workoutsHref="/workouts"
+        />
         {hasTodaySession ? (
           <div className="wtx-list-banner">
             <div className="wtx-list-banner__title">Coach has customized workouts for today</div>
@@ -125,11 +135,6 @@ function WorkoutsContent({ data }: { data: RepoData }) {
                 {group.cards.map((card) => (
                   <WorkoutCard key={card.workout.id} workout={card.workout} hasSession={card.hasSession} />
                 ))}
-                {group.cards.length % 2 === 1 ? (
-                  <div className="wtx-list-empty-slot">
-                    + MORE {TYPE_LABEL[group.type]} SESSIONS
-                  </div>
-                ) : null}
               </div>
             </div>
           ))}

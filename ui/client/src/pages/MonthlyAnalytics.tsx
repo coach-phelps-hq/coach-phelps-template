@@ -116,7 +116,6 @@ function MonthlyAnalyticsContent({ data }: { data: RepoData }) {
             monthLabel={model.monthLabel}
             year={scope.year}
             summaryLine={model.summaryLine}
-            noteLine={model.noteLine}
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}
             onPrev={goPrevMonth}

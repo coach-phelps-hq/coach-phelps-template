@@ -101,6 +101,12 @@
   color: var(--wi-ink-faint);
 }
 
+.ma-month-cell__stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .ma-month-cell__days {
   margin-top: 12px;
   font-family: "Space Mono", monospace;
@@ -171,14 +177,6 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--wi-ink-muted);
-}
-
-.ma-stepper__note {
-  margin-left: auto;
-  font-family: "Newsreader", Georgia, serif;
-  font-style: italic;
-  font-size: 14px;
-  color: var(--wi-ink-faint);
 }
 
 .ma-hero-row {
@@ -497,7 +495,7 @@
   font-size: 18px;
 }
 
-.ma-sleep-card__connect {
+button.ma-sleep-card__connect {
   align-self: flex-start;
   padding: 8px 14px;
   border: 1px solid rgba(127, 55, 40, 0.4);
@@ -631,7 +629,11 @@
   flex: 1;
 }
 
-.ma-side-quests__head > span:not(:first-child),
+.ma-side-quests__head > span:not(:first-child) {
+  width: 42px;
+  text-align: right;
+}
+
 .ma-side-quests__num {
   width: 42px;
   text-align: right;
@@ -715,7 +717,7 @@
   }
 
   .ma-stepper__arrow:not(:disabled):hover,
-  .ma-sleep-card__connect:hover {
+  button.ma-sleep-card__connect:hover {
     background: rgba(127, 55, 40, 0.07);
   }
 
@@ -753,24 +755,166 @@
   .ma-engine-hero__number strong {
     font-size: 64px;
   }
-
-  .ma-stepper__note {
-    margin-left: 0;
-    width: 100%;
-  }
 }
 
 @media (max-width: 720px) {
-  .ma-right-rail {
-    grid-template-columns: 1fr;
+  .ma-page {
+    margin-top: 14px;
   }
 
-  .ma-month-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .ma-header {
+    gap: 12px;
+    align-items: flex-start;
   }
 
   .ma-header__title {
-    font-size: 28px;
+    font-size: 24px;
+  }
+
+  .ma-header__subtitle {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .ma-header__years {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ma-year-button {
+    padding: 7px 14px;
+    font-size: 11px;
+  }
+
+  .ma-month-grid {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    margin-inline: -16px;
+    padding: 0 16px 2px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .ma-month-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ma-month-cell {
+    flex: 0 0 auto;
+    min-width: 58px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    align-items: center;
+    text-align: center;
+    scroll-snap-align: center;
+  }
+
+  .ma-month-cell__label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .ma-month-cell__stats {
+    align-items: center;
+    margin-top: 4px;
+    gap: 1px;
+  }
+
+  .ma-month-cell__days {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  .ma-month-cell__hours {
+    margin-top: 0;
+    font-size: 8.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .ma-month-cell.is-active {
+    box-shadow: 0 6px 14px rgba(43, 45, 41, 0.18);
+  }
+
+  .ma-stepper {
+    margin-top: 14px;
+    gap: 8px 10px;
+  }
+
+  .ma-stepper__arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .ma-stepper__label {
+    min-width: 0;
+    flex: 1;
+    font-size: 17px;
+  }
+
+  .ma-stepper__summary {
+    width: 100%;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .ma-hero-row {
+    margin-top: 14px;
+    gap: 14px;
+  }
+
+  .ma-engine-hero {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .ma-engine-hero__number strong {
+    font-size: 48px;
+  }
+
+  .ma-engine-hero__number em {
+    margin-top: 10px;
+    font-size: 17px;
+  }
+
+  .ma-engine-hero__week-bars {
+    gap: 8px;
+    height: 56px;
+  }
+
+  .ma-breakdown-row {
+    margin-top: 14px;
+    gap: 14px;
+  }
+
+  .ma-breakdown-card,
+  .ma-side-quests-card,
+  .ma-vo2-card,
+  .ma-sleep-card {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .ma-breakdown__stats {
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .ma-breakdown__stats strong {
+    margin-top: 4px;
+    font-size: 24px;
+  }
+
+  .ma-vo2-card__value strong {
+    font-size: 32px;
+  }
+
+  .ma-right-rail {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -782,7 +926,7 @@
   .ma-side-quests-card,
   .ma-stepper__arrow,
   .ma-year-button,
-  .ma-sleep-card__connect {
+  button.ma-sleep-card__connect {
     transition: none;
   }
 }
