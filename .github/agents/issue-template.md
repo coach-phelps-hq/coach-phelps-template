@@ -7,9 +7,9 @@ Use this format when creating GitHub issues for workers. The issue should be a *
 **Repo:** Always `<your-github-username>/<your-repo-name>` — replace with your own repo once you've set it up.
 PRs go on this repo. Reference issues with `fixes <your-github-username>/<your-repo-name>#X` in the PR body.
 
-**Title:** `[ui-expert]` or `[bob]` prefix + concise description
+**Title:** `[ui-expert]`, `[bob]`, or `[ios]` prefix + concise description
 
-**Labels:** `ui-expert` or `bob-the-builder`
+**Labels:** `ui-expert`, `bob-the-builder`, or `ios-builder`
 
 **Body:**
 

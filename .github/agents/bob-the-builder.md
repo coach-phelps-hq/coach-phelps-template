@@ -114,6 +114,16 @@ cp training/challenge_v2.json ui/client/src/data/challenge_v2.json
 - Always preview renames with dry-run before applying
 - Strava rate limit: 100 req/15 min. Token refresh is automatic via `strava_api.py`
 
+## Design System Awareness
+
+You don't build UI, but the **Warm Instrument** widgets on web and iOS (spec: `ui/docs/reference-interactions/Widget Design Philosophy.md`) consume specific derived fields your pipeline is the one to produce — you don't need the design spec itself, just the data contract:
+- **Rhythm band** — an 8-week rolling load range (e.g. "447–671") the Engine widget shows load against
+- **Hard-dose zone splits** — Z4/Z5 minutes counted separately from the existing zone breakdown
+- **Sport commitment floors** — the weekly session-count floor per sport that the commitment cubes check against
+- **VO2 max trend + percentile** — rolling value plus an age-band percentile badge
+
+When Tech Lead opens an issue asking for one of these as a new field in `analytics_snapshot.json` or `challenge_v2.json`, that's your pipeline work — check the widget-by-widget section of `Widget Design Philosophy.md` for exactly what each widget needs semantically before implementing the calculation. This doesn't change your scope, workflow, or the rules above — you still never touch `ui/` or `ios/` directly.
+
 ## Git Setup
 - If `git push` fails with token auth errors, run: `gh auth setup-git`
 - If push is rejected (remote ahead): `git pull --rebase origin main && git push origin main`
