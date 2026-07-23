@@ -1,5 +1,6 @@
 import {
   getTrainingCategory,
+  parseLocal,
   type Activity,
   type TrainingCategory,
 } from "@/lib/activities";
@@ -203,7 +204,7 @@ export function adaptCurrentWeek(
   const unclaimedByDate = new Map<string, Activity[]>();
   for (const activity of activities) {
     if (claimedActivityIds.has(activity.id)) continue;
-    const when = new Date(activity.start_date_local);
+    const when = parseLocal(activity.start_date_local);
     if (when < weekStart || when >= weekEndExclusive) continue;
     const dateKey = activity.start_date_local.slice(0, 10);
     const bucket = unclaimedByDate.get(dateKey);
@@ -217,8 +218,8 @@ export function adaptCurrentWeek(
     const overlays = (unclaimedByDate.get(day.date) ?? [])
       .sort(
         (left, right) =>
-          new Date(left.start_date_local).getTime() -
-          new Date(right.start_date_local).getTime(),
+          parseLocal(left.start_date_local).getTime() -
+          parseLocal(right.start_date_local).getTime(),
       )
       .map(overlaySession);
     const sessions = [...planned, ...overlays];

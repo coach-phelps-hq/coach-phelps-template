@@ -88,11 +88,24 @@
   white-space: nowrap;
 }
 
+.wi-instrument-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
 .wi-instrument-header__sync {
   position: relative;
   display: flex;
   align-items: center;
-  margin-left: auto;
+  color: var(--wi-ink-muted);
+  cursor: pointer;
+}
+
+.wi-instrument-header__sync:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 
 .wi-instrument-header__sync-tip {
@@ -140,6 +153,21 @@
 
 .wi-instrument-header__sync svg.is-warning {
   color: var(--wi-cycling);
+}
+
+.wi-instrument-header__sync svg.is-spinning {
+  animation: wi-spin 0.7s linear infinite;
+}
+
+@keyframes wi-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wi-instrument-header__sync svg.is-spinning {
+    animation: none;
+  }
 }
 
 .wi-instrument-header__nav {
@@ -1429,8 +1457,9 @@ button.wi-commitment-card:hover {
     font-size: 9px;
   }
 
-  .wi-instrument-header__sync {
+  .wi-instrument-header__actions {
     margin-left: auto;
+    gap: 10px;
   }
 
   .wi-instrument-header__sync svg {

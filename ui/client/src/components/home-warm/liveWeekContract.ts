@@ -1,6 +1,7 @@
 import type { ChallengeV2 } from "@/lib/challenge";
 import {
   getTrainingCategory,
+  parseLocal,
   type Activity,
   type TrainingCategory,
 } from "@/lib/activities";
@@ -54,7 +55,7 @@ function recordedDays(activities: Activity[], monday: Date): CurrentWeekDay[] {
       .filter((activity) => activity.start_date_local.slice(0, 10) === dateKey)
       .sort(
         (left, right) =>
-          new Date(left.start_date_local).getTime() - new Date(right.start_date_local).getTime(),
+          parseLocal(left.start_date_local).getTime() - parseLocal(right.start_date_local).getTime(),
       );
     const categories = matches.map(getTrainingCategory);
 
@@ -94,7 +95,7 @@ export function buildLiveWeekContract(
   const startDate = localDateKey(monday);
   const endDate = localDateKey(sunday);
   const weekActivities = activities.filter((activity) => {
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     return date >= monday && date < new Date(monday.getTime() + 7 * DAY_MS);
   });
   const activeDays = new Set(

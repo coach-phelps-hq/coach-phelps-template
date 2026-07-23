@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import { RepoDataGate } from "@/components/RepoDataGate";
 import { useRepoData, type RepoData } from "@/hooks/useRepoData";
 import { WorkoutsData } from "@/lib/workouts";
+import { toLocalDateStr } from "@/lib/challenge";
 import { WarmWorkoutOverview } from "./WarmWorkoutOverview";
 import { WarmActiveTimer } from "./WarmActiveTimer";
 import { WarmWorkoutComplete } from "./WarmWorkoutComplete";
@@ -22,7 +23,7 @@ function WorkoutTimerContent({ data }: { data: RepoData }) {
   const workoutsData = data.workouts as WorkoutsData;
 
   const workout = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = toLocalDateStr(new Date());
     const session = workoutsData.sessions.find(
       (s) => s.id === workoutId && s.session_date === today,
     );

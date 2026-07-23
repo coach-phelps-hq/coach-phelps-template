@@ -4,7 +4,7 @@
  * No fabricated numbers: widgets with insufficient sample size report an
  * empty/opt-in state rather than guessing.
  */
-import { type Activity, getTrainingCategory } from "@/lib/activities";
+import { type Activity, getTrainingCategory, parseLocal } from "@/lib/activities";
 import {
   getAllGames,
   getRankedGames,
@@ -46,7 +46,7 @@ function buildSessions(activities: Activity[]): BadmintonSession[] {
       activity: activity as Activity & { ebadders?: any },
       parsed,
       dateKey: activity.start_date_local.slice(0, 10),
-      timestamp: new Date(activity.start_date_local).getTime(),
+      timestamp: parseLocal(activity.start_date_local).getTime(),
     });
   }
   result.sort((a, b) => a.timestamp - b.timestamp);
@@ -158,7 +158,7 @@ function buildWinRate(sessions: BadmintonSession[], mode: BadmintonMode, now: nu
     const games = gamesForMode(session, mode);
     const wins = games.filter((g) => g.result === "W").length;
     const losses = games.filter((g) => g.result === "L").length;
-    const date = new Date(session.activity.start_date_local);
+    const date = parseLocal(session.activity.start_date_local);
     return {
       timestamp: session.timestamp,
       label: date.toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase(),
@@ -326,7 +326,7 @@ export interface BestMonthSnapshot {
 function buildBestMonth(sessions: BadmintonSession[], mode: BadmintonMode): BestMonthSnapshot {
   const byMonth = new Map<string, { sessions: number; wins: number; losses: number; label: string }>();
   for (const session of sessions) {
-    const date = new Date(session.activity.start_date_local);
+    const date = parseLocal(session.activity.start_date_local);
     const key = `${date.getFullYear()}-${date.getMonth()}`;
     const games = gamesForMode(session, mode);
     if (games.length === 0) continue;
@@ -669,7 +669,7 @@ export function buildBadmintonActivityHeatmap(
   for (const activity of activities) {
     const category = getTrainingCategory(activity);
     if (!ALL_CATEGORIES.has(category)) continue;
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     const timestamp = date.getTime();
     const key = localDateKey(date);
     streakDateKeys.push(key);

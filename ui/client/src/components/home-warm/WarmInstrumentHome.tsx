@@ -3,6 +3,7 @@ import type { ChallengeV2 } from "@/lib/challenge";
 import {
   getThisWeekActivities,
   getTrainingCategory,
+  parseLocal,
   type Activity,
   type TrainingCategory,
 } from "@/lib/activities";
@@ -104,11 +105,11 @@ export function buildActivityEvidenceSnapshots(
   return [...activities]
     .sort(
       (left, right) =>
-        new Date(right.start_date_local).getTime() - new Date(left.start_date_local).getTime(),
+        parseLocal(right.start_date_local).getTime() - parseLocal(left.start_date_local).getTime(),
     )
     .map((activity, index) => {
       const category = getTrainingCategory(activity);
-      const date = new Date(activity.start_date_local);
+      const date = parseLocal(activity.start_date_local);
       const calories = Number(activity.calories) || 0;
       const distance = Number(activity.distance) || 0;
       const activityLoad = getActivityZoneLoad(activity);
@@ -213,11 +214,11 @@ export function buildEngineSnapshot(
   const doseRows: EngineSnapshot["doseRows"] = [...thisWeek]
     .sort(
       (left, right) =>
-        new Date(left.start_date_local).getTime() - new Date(right.start_date_local).getTime(),
+        parseLocal(left.start_date_local).getTime() - parseLocal(right.start_date_local).getTime(),
     )
     .slice(-5)
     .map((activity) => ({
-      day: new Date(activity.start_date_local).toLocaleDateString("en-GB", { weekday: "short" }).toUpperCase(),
+      day: parseLocal(activity.start_date_local).toLocaleDateString("en-GB", { weekday: "short" }).toUpperCase(),
       title: formatSessionTitle(activity.name),
       detail: formatDuration(activity),
       load: getActivityZoneLoad(activity) === null
@@ -438,7 +439,7 @@ function buildCaloriesSnapshot(
   const now = new Date();
   const current = activities
     .filter((activity) => {
-      const date = new Date(activity.start_date_local);
+      const date = parseLocal(activity.start_date_local);
       return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
     })
     .reduce((sum, activity) => sum + (Number(activity.calories) || 0), 0);
@@ -446,7 +447,7 @@ function buildCaloriesSnapshot(
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const daysLeft = Math.max(0, daysInMonth - now.getDate());
   const monthActivities = activities.filter((activity) => {
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
   });
   const caloriesByDay = monthActivities.reduce<Map<string, number>>((totals, activity) => {
@@ -532,7 +533,7 @@ export function buildTrainingActivitySnapshot(
   const summaryStart = new Date(now.getFullYear(), now.getMonth() - 3, 1);
   const byDate = new Map<string, TrainingCategory[]>();
   activities.forEach((activity) => {
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     if (date < start || date > now) return;
     const key = localDateKey(date);
     const categories = byDate.get(key) ?? [];
