@@ -11,7 +11,9 @@ import {
   useState,
 } from "react";
 import { Link } from "wouter";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, LogOut, Repeat } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import { ActivityGlyph, type ActivityGlyphKind } from "./ActivityGlyph";
 
 export type SportAnalyticsNavLink = {
@@ -301,11 +303,11 @@ function AnalyticsIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-function SyncIcon({ healthy }: { healthy: boolean }) {
+function SyncIcon({ healthy, spinning }: { healthy: boolean; spinning?: boolean }) {
   return (
     <svg
       aria-hidden="true"
-      className={healthy ? "is-healthy" : "is-warning"}
+      className={`${healthy ? "is-healthy" : "is-warning"} ${spinning ? "is-spinning" : ""}`.trim()}
       fill="none"
       height="18"
       viewBox="0 0 24 24"
@@ -343,7 +345,31 @@ export function InstrumentHeader({
   /** Which nav href matches the current page, for aria-current + active styling. */
   currentRoute?: string;
 }) {
-  const syncTitle = `Synced · ${syncLabel}`;
+  const auth = useAuth();
+  const [syncing, setSyncing] = useState(false);
+
+  async function handleSync() {
+    if (syncing) return;
+    setSyncing(true);
+    toast.info("Syncing... usually takes ~30s");
+    try {
+      const res = await fetch("/api/trigger-sync", { method: "POST" });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success("Sync triggered! Refresh in ~2 min to see results.");
+      } else {
+        toast.error(`Sync failed: ${data.error || "Unknown error"}`);
+      }
+    } catch {
+      toast.error("Could not reach sync endpoint.");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  const syncTitle = syncing ? "Syncing…" : `Synced · ${syncLabel}`;
+  const showAccountActions = auth.status === "authenticated";
+
   return (
     <header className="wi-instrument-header">
       <Link className="wi-instrument-header__brand" href={homeHref}>
@@ -354,23 +380,40 @@ export function InstrumentHeader({
         <span className="wi-desktop-only">{phaseLabel}</span>
         <span className="wi-mobile-only">{mobilePhaseLabel ?? phaseLabel}</span>
       </span>
-      {onOpenSync ? (
+      <div className="wi-instrument-header__actions">
         <button
-          aria-haspopup="dialog"
-          aria-label={`Open sync details. ${syncTitle}.`}
+          aria-label={`Trigger sync. ${syncTitle}.`}
           className="wi-instrument-header__sync wi-instrument-header__sync-button"
-          onClick={onOpenSync}
+          disabled={syncing}
+          onClick={onOpenSync ?? handleSync}
           type="button"
         >
-          <SyncIcon healthy={syncHealthy} />
+          <SyncIcon healthy={syncHealthy} spinning={syncing} />
           <span className="wi-instrument-header__sync-tip" role="tooltip">{syncTitle}</span>
         </button>
-      ) : (
-        <span className="wi-instrument-header__sync" tabIndex={0} aria-label={syncTitle}>
-          <SyncIcon healthy={syncHealthy} />
-          <span className="wi-instrument-header__sync-tip" role="tooltip" aria-hidden="true">{syncTitle}</span>
-        </span>
-      )}
+        {showAccountActions ? (
+          <>
+            <a
+              aria-label="Switch repo"
+              className="wi-instrument-header__sync"
+              href="/?switch_repo=1"
+            >
+              <Repeat aria-hidden="true" size={18} strokeWidth={1.8} />
+              <span className="wi-instrument-header__sync-tip" role="tooltip">Switch repo</span>
+            </a>
+            <a
+              aria-label={`Sign out${auth.login ? ` (${auth.login})` : ""}`}
+              className="wi-instrument-header__sync"
+              href="/api/auth-logout"
+            >
+              <LogOut aria-hidden="true" size={18} strokeWidth={1.8} />
+              <span className="wi-instrument-header__sync-tip" role="tooltip">
+                Sign out{auth.login ? ` (${auth.login})` : ""}
+              </span>
+            </a>
+          </>
+        ) : null}
+      </div>
       <nav className="wi-instrument-header__nav" aria-label="Primary navigation">
         <Link
           aria-current={currentRoute === homeHref ? "page" : undefined}

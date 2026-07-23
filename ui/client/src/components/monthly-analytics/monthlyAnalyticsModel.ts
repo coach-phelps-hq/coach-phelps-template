@@ -1,5 +1,5 @@
 import type { Activity, TrainingCategory } from "@/lib/activities";
-import { getTrainingCategory, totalCalories } from "@/lib/activities";
+import { getTrainingCategory, parseLocal, totalCalories } from "@/lib/activities";
 import type { ChallengeV2, Quest } from "@/lib/challenge";
 import { getActivityZoneLoad } from "@/components/home-warm/warmHomeModel";
 import type { WarmSportId } from "@/components/home-warm/WarmInstrumentWidgets";
@@ -200,7 +200,7 @@ function monthBounds(year: number, month: number): { start: Date; end: Date; ela
 function activitiesInMonth(activities: Activity[], year: number, month: number): Activity[] {
   const { start, end } = monthBounds(year, month);
   return activities.filter((activity) => {
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     return date >= start && date <= end;
   });
 }
@@ -208,7 +208,7 @@ function activitiesInMonth(activities: Activity[], year: number, month: number):
 function activeDayKeys(activities: Activity[]): Set<string> {
   const keys = new Set<string>();
   for (const activity of activities) {
-    keys.add(localDateKey(new Date(activity.start_date_local)));
+    keys.add(localDateKey(parseLocal(activity.start_date_local)));
   }
   return keys;
 }
@@ -226,7 +226,7 @@ function activitiesForWeek(activities: Activity[], weekStart: Date): Activity[] 
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 7);
   return activities.filter((activity) => {
-    const date = new Date(activity.start_date_local);
+    const date = parseLocal(activity.start_date_local);
     return date >= weekStart && date < weekEnd;
   });
 }
@@ -503,7 +503,7 @@ function buildMonthOverview(activities: Activity[], year: number, now: Date): Mo
 function availableYears(activities: Activity[], now: Date): number[] {
   const years = new Set<number>([now.getFullYear()]);
   for (const activity of activities) {
-    years.add(new Date(activity.start_date_local).getFullYear());
+    years.add(parseLocal(activity.start_date_local).getFullYear());
   }
   return Array.from(years).sort((left, right) => right - left).slice(0, 3);
 }
