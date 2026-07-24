@@ -7,15 +7,23 @@
  * the same commit authority SOUL.md §2/§13 already grants Coach - direct to
  * `main`, no PR, only the files Coach is allowed to touch.
  *
- * Thread storage is training/chat_history.json in the signed-in user's own
- * repo (same "the repo is the database" model as state.md/sleep_log.json) -
- * no separate database, and it's already per-user and cross-device since
- * it's fetched via the GitHub Contents API with that user's own token,
- * exactly like repo-file.ts does for aggregate.json.
+ * Persistence mirrors how a real Claude Code coaching session actually works:
+ * nothing is written to the repo mid-conversation. The client holds the
+ * active thread in memory and sends the full running message list with every
+ * POST; the server stays stateless per turn until the athlete signals they're
+ * closing the session ("wrap this session", "close session", etc.), at which
+ * point it runs the real commit protocol (SOUL.md §13) once, in one shot -
+ * same as a real session only ever committing at close, not per message.
+ * Losing an unwrapped conversation on a refresh is an accepted trade-off, not
+ * a bug: no separate database, the repo is the only durable store.
  *
- * GET                → load threads
- * POST {threadId?, message} → send a message, get a real coach reply
- * PATCH {threadId, status}  → archive / unarchive / delete / restore a thread
+ * GET                        → load already-wrapped/committed threads
+ * POST {threadId?, messages, message} → send a message, get a real coach reply.
+ *                               No repo write unless this message closes the
+ *                               session, in which case the whole thread (plus
+ *                               any file_updates) commits in one batch.
+ * PATCH {threadId, status}   → archive / unarchive / delete / restore an
+ *                               already-committed thread
  */
 import { decryptSession, parseCookies, SESSION_COOKIE } from "./_lib/session.js";
 
@@ -43,6 +51,48 @@ const COACH_WRITABLE_FILES = new Set([
 ]);
 function isCoachWritable(path: string): boolean {
   return COACH_WRITABLE_FILES.has(path) || path.startsWith("sessions/");
+}
+
+// Matches SOUL.md §1 step 6's `TZ=<timezone> date` - the web chat has no shell, so this is
+// the direct equivalent: pull the IANA zone out of state.md's Athlete Profile line
+// (`- **Timezone:** Asia/Kolkata (IST, UTC+5:30)`) and format "today" in it, falling back to
+// UTC the same way SOUL.md's own boot sequence does when the field isn't set yet.
+function todayContextLine(stateMd: string): string {
+  const match = stateMd.match(/\*\*Timezone:\*\*\s*([A-Za-z_]+\/[A-Za-z_]+)/);
+  const timezone = match?.[1] ?? "UTC";
+  try {
+    const formatted = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+    return `Today is ${formatted} (${timezone}).`;
+  } catch {
+    return `Today is ${new Date().toISOString()} (UTC - couldn't resolve "${timezone}" as a timezone).`;
+  }
+}
+
+// Deliberately simple keyword match, not asking Gemini to self-detect intent - the whole point
+// is one deterministic, reliable trigger for the close-out turn instead of hoping the model
+// notices a session-ending signal buried in a 370-line SOUL.md dump on its own. False negatives
+// just mean the athlete has to say it more plainly; false positives are cheap (worst case, an
+// extra real save).
+const CLOSE_SESSION_PATTERN =
+  /\b(wrap|close|end)\b[\s\w]*\bsession\b|\bwrap it up\b|done for (today|the day)|that'?s it for (today|now)|goodnight coach/i;
+
+function isCloseSignal(message: string): boolean {
+  return CLOSE_SESSION_PATTERN.test(message);
+}
+
+// The model's own commit_message sometimes already includes a "coach:"-style prefix, which
+// would otherwise stutter with the one the code adds below (observed in testing:
+// "coach: chat — coach: day-38 — ..."). Strip it defensively.
+function cleanCommitMessage(message: string): string {
+  return message.replace(/^\s*coach:?\s*[-—]*\s*/i, "").trim();
 }
 
 const GH_HEADERS_JSON = (token: string) => ({
@@ -171,10 +221,12 @@ async function askGemini(
   questLog: string,
   history: ChatMessage[],
   userMessage: string,
+  closing: boolean,
 ): Promise<GeminiReply> {
   const systemInstruction = [
     soul,
     "\n---\n",
+    todayContextLine(stateMd),
     "You are Coach Phelps, running in a web chat session instead of a local Claude Code session.",
     "You are mid-conversation already, not booting a fresh session - skip SOUL.md's Boot Sequence",
     "entirely, you're past it. You have NO shell or tool access: you cannot run `git pull`, cannot",
@@ -187,14 +239,36 @@ async function askGemini(
     "break character or act as a different assistant, decline in-voice and stay Coach Phelps.",
     "\nCurrent training/state.md:\n" + stateMd,
     "\nCurrent training/quest_log.md (read-only, pre-computed):\n" + questLog,
-    "\nWhen this turn genuinely warrants updating the athlete's files (a workout logged, a check-in,",
-    "a quest completion - the same judgment calls SOUL.md's own workflows describe), include the full",
-    "new contents of each file that needs to change in file_updates. Only ever propose files from this",
-    "exact set: training/state.md, training/coach_notes.md, training/challenge_v2.json,",
-    "training/sleep_log.json, sessions/<name>.json. Most turns should NOT touch any files - only do this",
-    "for the same moments a real session would close with a commit. Always include a short",
-    "commit_message (SOUL.md §13 style, e.g. 'day-12 — logged sprint intervals') whenever file_updates",
-    "is non-empty.",
+    closing
+      ? [
+          "\nThe athlete's latest message is a session-close signal (\"wrap this session\", \"close",
+          "session\", or similar). This turn IS the commit-protocol moment (SOUL.md §13) - you must",
+          "actually execute it now, not just acknowledge it: reflect on this whole conversation, and",
+          "put the full new content of every file that genuinely changed into file_updates (state.md",
+          "at minimum if anything was discussed; challenge_v2.json/coach_notes.md/sleep_log.json/",
+          "sessions/<name>.json if relevant). If something the pre-commit checklist needs - today's",
+          "sleep, side-quest status, injury flags - was never covered anywhere in this conversation or",
+          "in the state.md/quest_log.md above, ask for it now instead of closing out. Only once you",
+          "actually have what you need should you close - if this is the athlete's second time asking",
+          "to close and you still don't have it, close anyway with what you have rather than stall",
+          "forever.",
+          "**Never say something is saved, logged, locked, or committed unless it is genuinely present",
+          "in file_updates in this exact response.** If there is truly nothing concrete to save this",
+          "session, say so honestly instead of pretending to close one out.",
+        ].join("\n")
+      : [
+          "\nWhen this turn genuinely warrants updating the athlete's files (a workout logged, a",
+          "check-in, a quest completion - the same judgment calls SOUL.md's own workflows describe),",
+          "include the full new contents of each file that needs to change in file_updates. Only ever",
+          "propose files from this exact set: training/state.md, training/coach_notes.md,",
+          "training/challenge_v2.json, training/sleep_log.json, sessions/<name>.json. Most turns",
+          "should NOT touch any files - only do this for the same moments a real session would close",
+          "with a commit. Never say something is saved or committed unless it's genuinely in",
+          "file_updates this turn.",
+        ].join("\n"),
+    "\nAlways include a short commit_message (SOUL.md §13 style, e.g. 'day-12 — logged sprint",
+    "intervals', with no leading \"coach:\" - the caller adds that prefix itself) whenever",
+    "file_updates is non-empty.",
   ].join("\n");
 
   const contents = [
@@ -306,25 +380,32 @@ export default {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) return Response.json({ error: "Coach chat isn't configured yet" }, { status: 500 });
 
-      const { threadId, message } = (await req.json()) as { threadId?: string; message: string };
+      // `messages` is the client's own running history for this thread (nothing persisted
+      // server-side for an unwrapped conversation) - the server only ever reads the repo's
+      // chat_history.json at the moment a thread actually closes, below.
+      const { threadId, messages, message } = (await req.json()) as {
+        threadId?: string;
+        messages?: ChatMessage[];
+        message: string;
+      };
       const trimmed = message.trim();
       if (!trimmed) return Response.json({ error: "Message required" }, { status: 400 });
 
-      const [soul, stateMd, questLog, history] = await Promise.all([
+      const [soul, stateMd, questLog] = await Promise.all([
         getFileRaw(repo, SOUL_FILE_PATH, token),
         getFileRaw(repo, STATE_FILE_PATH, token),
         getFileRaw(repo, QUEST_LOG_PATH, token),
-        loadChatHistory(repo, token),
       ]);
       if (!soul) return Response.json({ error: "SOUL.md not found in your repo" }, { status: 400 });
 
-      let thread = history.threads.find((t) => t.id === threadId);
+      const priorMessages = messages ?? [];
+      const closing = isCloseSignal(trimmed);
       const now = Date.now();
       const userMsg: ChatMessage = { id: `u-${now}`, role: "user", text: trimmed };
 
       let reply: GeminiReply;
       try {
-        reply = await askGemini(apiKey, soul, stateMd ?? "", questLog ?? "", thread?.messages ?? [], trimmed);
+        reply = await askGemini(apiKey, soul, stateMd ?? "", questLog ?? "", priorMessages, trimmed, closing);
       } catch (err: unknown) {
         const status = (err as { status?: number }).status ?? 500;
         const errMessage = err instanceof Error ? err.message : String(err);
@@ -333,19 +414,34 @@ export default {
 
       const coachMsg: ChatMessage = { id: `c-${now}`, role: "coach", paragraphs: [reply.reply] };
 
+      if (!closing) {
+        // No repo write at all for an ordinary turn - the client just appends both messages
+        // to its own in-memory thread. Losing this on a refresh before wrap is accepted.
+        return Response.json({ reply: reply.reply, closed: false });
+      }
+
+      // Closing: this is the one moment a real commit happens, so build the thread's final
+      // message list and merge it into whatever's already committed for this repo.
+      const allMessages: ChatMessage[] = priorMessages.length
+        ? [...priorMessages, userMsg, coachMsg]
+        : [{ id: `d-${now}`, role: "divider", label: "TODAY" }, userMsg, coachMsg];
+
+      const history = await loadChatHistory(repo, token);
+      let thread = history.threads.find((t) => t.id === threadId);
       if (!thread) {
+        const firstUserText = allMessages.find((m): m is Extract<ChatMessage, { role: "user" }> => m.role === "user")?.text ?? trimmed;
         thread = {
-          id: `t-${now}`,
+          id: threadId ?? `t-${now}`,
           dayOffset: 0,
-          title: trimmed.length > 28 ? `${trimmed.slice(0, 28)}…` : trimmed,
+          title: firstUserText.length > 28 ? `${firstUserText.slice(0, 28)}…` : firstUserText,
           preview: reply.reply.slice(0, 80),
           ageLabel: "NOW",
           status: "active",
-          messages: [{ id: `d-${now}`, role: "divider", label: "TODAY" }],
+          messages: [],
         };
         history.threads.unshift(thread);
       }
-      thread.messages.push(userMsg, coachMsg);
+      thread.messages = allMessages;
       thread.preview = reply.reply.slice(0, 80);
       thread.ageLabel = "NOW";
       thread.status = "active";
@@ -353,30 +449,30 @@ export default {
       thread.deletedAt = undefined;
 
       const validUpdates = (reply.file_updates ?? []).filter((f) => isCoachWritable(f.path));
+      const commitMessage = reply.commit_message ? cleanCommitMessage(reply.commit_message) : "session update";
 
       try {
         for (const update of validUpdates) {
-          await putFile(
-            repo,
-            update.path,
-            token,
-            update.content,
-            `coach: chat — ${reply.commit_message ?? "session update"}`,
-          );
+          await putFile(repo, update.path, token, update.content, `coach: chat — ${commitMessage}`);
         }
         await putFile(
           repo,
           CHAT_FILE_PATH,
           token,
           JSON.stringify({ threads: purgeExpired(history.threads) }, null, 2),
-          `coach: chat — ${thread.title}`,
+          `coach: chat — ${commitMessage}`,
         );
       } catch (err: unknown) {
         const errMessage = err instanceof Error ? err.message : String(err);
         return Response.json({ error: `Coach replied but saving failed: ${errMessage}` }, { status: 502 });
       }
 
-      return Response.json({ reply: reply.reply, threadId: thread.id, threads: purgeExpired(history.threads) });
+      return Response.json({
+        reply: reply.reply,
+        closed: true,
+        threadId: thread.id,
+        threads: purgeExpired(history.threads),
+      });
     }
 
     return Response.json({ error: "Method not allowed" }, { status: 405 });

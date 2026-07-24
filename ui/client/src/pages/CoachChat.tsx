@@ -22,6 +22,7 @@ import {
   sendMessage,
   setThreadStatus as patchThreadStatus,
   threadStatus,
+  type ChatMessage,
   type ChatStarter,
   type ChatThread,
 } from "@/components/coach-chat/coachChatModel";
@@ -104,6 +105,23 @@ function CoachChatContent({ data }: { data: RepoData }) {
       setDraft("");
       setMobileView("list");
     }
+
+    // A thread that hasn't been wrapped yet only exists in local state - nothing's committed
+    // for the server's PATCH to find. Calling it anyway would return the server's committed
+    // thread list, silently dropping this local-only thread out of view. Handle it purely
+    // client-side instead: delete removes it (nothing was ever saved to lose), archive just
+    // hides it from the active list for this session.
+    if (id.startsWith("local-")) {
+      if (status === "deleted") {
+        setThreads((prev) => prev.filter((thread) => thread.id !== id));
+      } else {
+        setThreads((prev) =>
+          prev.map((thread) => (thread.id === id ? { ...thread, status: status ?? "active" } : thread)),
+        );
+      }
+      return;
+    }
+
     try {
       const next = await patchThreadStatus(id, status ?? "active");
       setThreads(next);
@@ -150,13 +168,60 @@ function CoachChatContent({ data }: { data: RepoData }) {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
 
+    // Nothing is persisted server-side until the athlete says wrap/close - the server is
+    // stateless per turn, so the client is the only place holding an in-progress conversation.
+    // We send our own running history with the message and only trust the server's `threads`
+    // back when it reports `closed: true` (a real commit happened); otherwise we append the
+    // reply to local state ourselves, same as before Gemini was ever in the loop.
+    const priorMessages = targetId ? (threads.find((t) => t.id === targetId)?.messages ?? []) : [];
+
     setDraft("");
     setMobileView("thread");
     setSending(true);
+    const now = Date.now();
+    const userMsg: ChatMessage = { id: `u-${now}`, role: "user", text: trimmed };
+
     try {
-      const result = await sendMessage(targetId, trimmed);
-      setThreads(result.threads);
-      setActiveId(result.threadId);
+      const result = await sendMessage(targetId, priorMessages, trimmed);
+
+      if (result.closed) {
+        setThreads(result.threads);
+        setActiveId(result.threadId);
+        return;
+      }
+
+      const coachMsg: ChatMessage = { id: `c-${now}`, role: "coach", paragraphs: [result.reply] };
+
+      if (targetId) {
+        setThreads((prev) =>
+          prev.map((thread) =>
+            thread.id === targetId
+              ? {
+                  ...thread,
+                  preview: result.reply.slice(0, 80),
+                  ageLabel: "NOW",
+                  status: "active" as const,
+                  archivedAt: undefined,
+                  deletedAt: undefined,
+                  messages: [...thread.messages, userMsg, coachMsg],
+                }
+              : thread,
+          ),
+        );
+      } else {
+        const id = `local-${now}`;
+        const created: ChatThread = {
+          id,
+          dayOffset: 0,
+          title: trimmed.length > 28 ? `${trimmed.slice(0, 28)}…` : trimmed,
+          preview: result.reply.slice(0, 80),
+          ageLabel: "NOW",
+          status: "active",
+          messages: [{ id: `d-${now}`, role: "divider", label: "TODAY" }, userMsg, coachMsg],
+        };
+        setThreads((prev) => [created, ...prev]);
+        setActiveId(id);
+      }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Coach didn't reply — try again");
       setDraft(trimmed);
