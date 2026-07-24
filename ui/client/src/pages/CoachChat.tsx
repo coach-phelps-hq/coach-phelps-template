@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { RepoDataGate } from "@/components/RepoDataGate";
 import { useRepoData, type RepoData } from "@/hooks/useRepoData";
-import { useAuth } from "@/contexts/AuthContext";
 import type { Activity } from "@/lib/activities";
 import type { ChallengeV2 } from "@/lib/challenge";
 import { parseCurrentWeek } from "@/lib/currentWeek";
@@ -17,11 +17,10 @@ import {
   ThreadSidebar,
 } from "@/components/coach-chat/CoachChatWidgets";
 import {
-  buildSeedThreads,
   challengeDayNumber,
-  loadStoredThreads,
-  purgeExpiredThreads,
-  saveStoredThreads,
+  fetchThreads,
+  sendMessage,
+  setThreadStatus as patchThreadStatus,
   threadStatus,
   type ChatStarter,
   type ChatThread,
@@ -41,9 +40,6 @@ export default function CoachChat() {
 }
 
 function CoachChatContent({ data }: { data: RepoData }) {
-  const auth = useAuth();
-  const userKey = auth.login ?? (auth.status === "local" ? "local" : "anon");
-
   const activities = data.activities as Activity[];
   const challengeData = data.challenge_v2 as unknown as ChallengeV2;
   const syncStatusData = data.sync_status as SyncStatusPayload;
@@ -62,33 +58,33 @@ function CoachChatContent({ data }: { data: RepoData }) {
     return buildEngineSnapshot(activities, model.engine).load;
   }, [activities, challengeData, currentWeek, syncStatusData]);
 
-  const [threads, setThreads] = useState<ChatThread[]>(() => {
-    const stored = loadStoredThreads(userKey);
-    if (stored && stored.length > 0) return stored;
-    return buildSeedThreads(engineLoad).map((thread) => ({ ...thread, status: "active" as const }));
-  });
-  const [activeId, setActiveId] = useState<string | null>(
-    () => threads.find((thread) => threadStatus(thread) === "active")?.id ?? null,
-  );
+  const [threads, setThreads] = useState<ChatThread[]>([]);
+  const [threadsLoading, setThreadsLoading] = useState(true);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [mobileView, setMobileView] = useState<MobileView>("new");
+  const [sending, setSending] = useState(false);
 
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
 
   useEffect(() => {
-    saveStoredThreads(userKey, threads);
-  }, [threads, userKey]);
-
-  useEffect(() => {
-    function sweep() {
-      setThreads((prev) => {
-        const next = purgeExpiredThreads(prev);
-        return next.length === prev.length ? prev : next;
+    let cancelled = false;
+    fetchThreads()
+      .then((loaded) => {
+        if (cancelled) return;
+        setThreads(loaded);
+        setActiveId(loaded.find((thread) => threadStatus(thread) === "active")?.id ?? null);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        toast.error(err instanceof Error ? err.message : "Failed to load Coach Chat");
+      })
+      .finally(() => {
+        if (!cancelled) setThreadsLoading(false);
       });
-    }
-    sweep();
-    const timer = window.setInterval(sweep, 60_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -101,88 +97,41 @@ function CoachChatContent({ data }: { data: RepoData }) {
     return list.find((thread) => threadStatus(thread) === "active" && thread.id !== excludeId)?.id ?? null;
   }
 
-  function archiveThread(id: string) {
-    const now = Date.now();
-    setThreads((prev) =>
-      prev.map((thread) =>
-        thread.id === id
-          ? {
-              ...thread,
-              status: "archived" as const,
-              archived: true,
-              archivedAt: now,
-              deletedAt: undefined,
-            }
-          : thread,
-      ),
-    );
-    if (activeId === id) {
+  async function updateStatus(id: string, status: ChatThread["status"]) {
+    const wasActive = activeId === id;
+    if (wasActive && status !== "active") {
       setActiveId(firstActiveId(threads, id));
       setDraft("");
       setMobileView("list");
     }
+    try {
+      const next = await patchThreadStatus(id, status ?? "active");
+      setThreads(next);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to update conversation");
+    }
+  }
+
+  function archiveThread(id: string) {
+    void updateStatus(id, "archived");
   }
 
   function unarchiveThread(id: string) {
-    setThreads((prev) =>
-      prev.map((thread) =>
-        thread.id === id
-          ? {
-              ...thread,
-              status: "active" as const,
-              archived: false,
-              archivedAt: undefined,
-              deletedAt: undefined,
-            }
-          : thread,
-      ),
-    );
+    void updateStatus(id, "active");
   }
 
   function deleteThread(id: string) {
-    const now = Date.now();
-    setThreads((prev) =>
-      prev.map((thread) =>
-        thread.id === id
-          ? {
-              ...thread,
-              status: "deleted" as const,
-              archived: false,
-              deletedAt: now,
-            }
-          : thread,
-      ),
-    );
-    if (activeId === id) {
-      setActiveId(firstActiveId(threads, id));
-      setDraft("");
-      setMobileView("list");
-    }
+    void updateStatus(id, "deleted");
   }
 
   function restoreThread(id: string) {
-    setThreads((prev) =>
-      prev.map((thread) =>
-        thread.id === id
-          ? {
-              ...thread,
-              status: "active" as const,
-              archived: false,
-              archivedAt: undefined,
-              deletedAt: undefined,
-            }
-          : thread,
-      ),
-    );
+    void updateStatus(id, "active");
   }
 
   function deleteForever(id: string) {
-    setThreads((prev) => prev.filter((thread) => thread.id !== id));
-    if (activeId === id) {
-      setActiveId(firstActiveId(threads, id));
-      setDraft("");
-      setMobileView("list");
-    }
+    // Hard delete happens server-side once retention expires; from the UI, soft-delete
+    // is the only action available — mirror it here so the button doesn't dead-end.
+    void updateStatus(id, "deleted");
   }
 
   function startNewConversation() {
@@ -197,55 +146,27 @@ function CoachChatContent({ data }: { data: RepoData }) {
     setMobileView("thread");
   }
 
-  function appendUserMessage(text: string, targetId: string | null) {
+  async function appendUserMessage(text: string, targetId: string | null) {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed || sending) return;
 
-    if (!targetId) {
-      const id = `local-${Date.now()}`;
-      const created: ChatThread = {
-        id,
-        dayOffset: 0,
-        title: trimmed.length > 28 ? `${trimmed.slice(0, 28)}…` : trimmed,
-        preview: trimmed,
-        ageLabel: "NOW",
-        status: "active",
-        messages: [
-          { id: `${id}-d`, role: "divider", label: "TODAY" },
-          { id: `${id}-u`, role: "user", text: trimmed },
-        ],
-      };
-      setThreads((prev) => [created, ...prev]);
-      setActiveId(id);
-      setDraft("");
-      setMobileView("thread");
-      return;
-    }
-
-    setThreads((prev) =>
-      prev.map((thread) => {
-        if (thread.id !== targetId) return thread;
-        return {
-          ...thread,
-          preview: trimmed,
-          ageLabel: "NOW",
-          status: "active",
-          archived: false,
-          archivedAt: undefined,
-          deletedAt: undefined,
-          messages: [
-            ...thread.messages,
-            { id: `${thread.id}-${Date.now()}`, role: "user", text: trimmed },
-          ],
-        };
-      }),
-    );
     setDraft("");
     setMobileView("thread");
+    setSending(true);
+    try {
+      const result = await sendMessage(targetId, trimmed);
+      setThreads(result.threads);
+      setActiveId(result.threadId);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Coach didn't reply — try again");
+      setDraft(trimmed);
+    } finally {
+      setSending(false);
+    }
   }
 
   function handleStarter(starter: ChatStarter) {
-    appendUserMessage(starter.label, null);
+    void appendUserMessage(starter.label, null);
   }
 
   const threadActions = {
@@ -271,21 +192,25 @@ function CoachChatContent({ data }: { data: RepoData }) {
         <div className="cc-shell">
           <div className="cc-frame">
             <div className="cc-desktop-chat">
-              <ThreadSidebar
-                dayNumber={dayNumber}
-                threads={threads}
-                activeId={activeId}
-                onSelect={selectThread}
-                onNew={startNewConversation}
-                {...threadActions}
-              />
+              {threadsLoading ? (
+                <aside className="cc-sidebar cc-loading" aria-label="Conversations">Loading conversations…</aside>
+              ) : (
+                <ThreadSidebar
+                  dayNumber={dayNumber}
+                  threads={threads}
+                  activeId={activeId}
+                  onSelect={selectThread}
+                  onNew={startNewConversation}
+                  {...threadActions}
+                />
+              )}
               {activeThread ? (
                 <ConversationPane
                   dayNumber={dayNumber}
                   thread={activeThread}
                   draft={draft}
                   onDraftChange={setDraft}
-                  onSend={() => appendUserMessage(draft, activeId)}
+                  onSend={() => void appendUserMessage(draft, activeId)}
                 />
               ) : (
                 <EmptyChatPane
@@ -293,14 +218,19 @@ function CoachChatContent({ data }: { data: RepoData }) {
                   engineLoad={engineLoad}
                   draft={draft}
                   onDraftChange={setDraft}
-                  onSend={() => appendUserMessage(draft, null)}
+                  onSend={() => void appendUserMessage(draft, null)}
                   onStarter={handleStarter}
                 />
               )}
             </div>
 
             <div className="cc-mobile-chat">
-              {mobileView === "list" ? (
+              {mobileView === "list" && threadsLoading ? (
+                <section className="cc-mobile-list cc-loading" aria-label="Conversations">
+                  Loading conversations…
+                </section>
+              ) : null}
+              {mobileView === "list" && !threadsLoading ? (
                 <MobileThreadList
                   dayNumber={dayNumber}
                   threads={threads}
@@ -316,7 +246,7 @@ function CoachChatContent({ data }: { data: RepoData }) {
                   thread={activeThread}
                   draft={draft}
                   onDraftChange={setDraft}
-                  onSend={() => appendUserMessage(draft, activeId)}
+                  onSend={() => void appendUserMessage(draft, activeId)}
                   showBack
                   onBack={() => setMobileView("list")}
                 />
@@ -327,7 +257,7 @@ function CoachChatContent({ data }: { data: RepoData }) {
                   engineLoad={engineLoad}
                   draft={draft}
                   onDraftChange={setDraft}
-                  onSend={() => appendUserMessage(draft, null)}
+                  onSend={() => void appendUserMessage(draft, null)}
                   onStarter={handleStarter}
                   showBack
                   onBack={() => setMobileView("list")}

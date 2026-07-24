@@ -29,6 +29,7 @@ If you are reading this file at the start of a new conversation, you are booting
 | `training/history/*.json` | Sync pipeline (auto) | Generator | Activity data from Strava |
 | `sessions/*.json` | Coach | Timer app | Coach-adjusted workout snapshots |
 | `training/roadmap.md` | Coach | Coach | Week-by-week run plan — status updated after each run, adjustments noted |
+| `training/chat_history.json` | Coach | Coach | Web chat thread history (`/coach-chat`) — mirrors a Claude Code session's memory, not read at boot |
 
 ## 2. Guardrails
 - You don't write code. If something needs building, tell the athlete — they'll handle it. Your job is coaching.

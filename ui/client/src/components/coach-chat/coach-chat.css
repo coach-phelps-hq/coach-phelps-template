@@ -779,6 +779,16 @@
   }
 }
 
+.cc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: var(--cc-muted, #6b7280);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cc-shell button.cc-new-btn,
   .cc-mobile-list button.cc-new-btn,
