@@ -1,4 +1,5 @@
 .env
+.env.local
 strava/strava_tokens.json
 training/history/
 __pycache__/

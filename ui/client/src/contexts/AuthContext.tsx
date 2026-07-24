@@ -8,6 +8,15 @@
  * and silently unlock the dashboard instead of showing a gate. Any real
  * fetch/parse failure on the hosted deployment falls back to "unauthenticated"
  * (the login screen), never "local".
+ *
+ * VITE_FORCE_HOSTED_AUTH: an escape hatch for the one case where you're running
+ * in dev mode but actually want the real flow - testing GitHub login and
+ * authenticated /api/* routes (Coach Chat included) locally via `vercel dev`,
+ * which serves those functions but is still Vite's dev server underneath, so
+ * import.meta.env.DEV is still true. Without this override there'd be no way
+ * to exercise real auth + a real session cookie on localhost at all. Set it in
+ * your own .env.local (see .env.local.example) - unset, everything behaves
+ * exactly as before this existed.
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
@@ -21,17 +30,17 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState>({ status: "loading" });
 
+const isLocalBypass = import.meta.env.DEV && import.meta.env.VITE_FORCE_HOSTED_AUTH !== "true";
+
 export function useAuth(): AuthState {
   return useContext(AuthContext);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>(
-    import.meta.env.DEV ? { status: "local" } : { status: "loading" }
-  );
+  const [state, setState] = useState<AuthState>(isLocalBypass ? { status: "local" } : { status: "loading" });
 
   useEffect(() => {
-    if (import.meta.env.DEV) return; // no hosted auth layer in local dev - already set above
+    if (isLocalBypass) return; // no hosted auth layer wanted here - already set above
 
     let cancelled = false;
 
