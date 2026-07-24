@@ -109,23 +109,30 @@ export async function fetchThreads(): Promise<ChatThread[]> {
   return purgeExpiredThreads(body.threads).map(normalizeThread);
 }
 
-export interface SendMessageResult {
-  reply: string;
-  threadId: string;
-  threads: ChatThread[];
-}
+// Nothing is persisted server-side until the athlete says wrap/close - the server is stateless
+// per turn, so the client sends its own in-memory running history with every message. Only a
+// `closed: true` response means an actual commit happened and `threads` reflects real repo state;
+// otherwise the caller is responsible for appending the reply to its own local thread.
+export type SendMessageResult =
+  | { closed: false; reply: string }
+  | { closed: true; reply: string; threadId: string; threads: ChatThread[] };
 
-export async function sendMessage(threadId: string | null, message: string): Promise<SendMessageResult> {
+export async function sendMessage(
+  threadId: string | null,
+  priorMessages: ChatMessage[],
+  message: string,
+): Promise<SendMessageResult> {
   const res = await fetch("/api/coach-chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ threadId: threadId ?? undefined, message }),
+    body: JSON.stringify({ threadId: threadId ?? undefined, messages: priorMessages, message }),
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     throw new Error(body.error ?? `Coach chat request failed (${res.status})`);
   }
   const body = (await res.json()) as SendMessageResult;
+  if (!body.closed) return body;
   return { ...body, threads: purgeExpiredThreads(body.threads).map(normalizeThread) };
 }
 
