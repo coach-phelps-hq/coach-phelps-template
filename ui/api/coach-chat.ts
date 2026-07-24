@@ -145,31 +145,16 @@ function purgeExpired(threads: ChatThread[], now = Date.now()): ChatThread[] {
   });
 }
 
-// After a chat-triggered challenge_v2.json update, re-dispatch the repo's existing sync.yml -
-// it already runs generate_quest_log.py as one of its pipeline steps (see
-// scripts/run_sync_pipeline.py's step_generate_quest_log), so this is the same "re-derive
-// quest_log.md from challenge_v2.json" work the Sync button already does, not a new workflow.
-// Own per-repo cooldown map, separate from trigger-sync.ts's - two different serverless files
-// can't share in-memory state.
-const SYNC_DISPATCH_COOLDOWN_MS = 60_000;
-const lastSyncDispatchByRepo = new Map<string, number>();
-
-async function maybeDispatchSync(repo: string, token: string): Promise<void> {
-  const now = Date.now();
-  const last = lastSyncDispatchByRepo.get(repo) ?? 0;
-  if (now - last < SYNC_DISPATCH_COOLDOWN_MS) return;
-  lastSyncDispatchByRepo.set(repo, now);
-  try {
-    await fetch(`https://api.github.com/repos/${repo}/actions/workflows/sync.yml/dispatches`, {
-      method: "POST",
-      headers: { ...GH_HEADERS_JSON(token), "Content-Type": "application/json" },
-      body: JSON.stringify({ ref: "main" }),
-    });
-  } catch {
-    // Quest log staying stale until the next manual sync isn't worth failing the chat reply over -
-    // a repo without sync.yml yet (see the personal-repo drift issue) 404s here too, same handling.
-  }
-}
+// Deliberately NOT dispatching sync.yml here. Checked both real personal repos: Akash's
+// sync.yml already runs automatically on a `push` to main touching
+// training/challenge_v2.json (added for his iOS app's direct commits) - and our own
+// challenge_v2.json commit via the Contents API above IS exactly that push, so his repo
+// already re-syncs on its own. A manual workflow_dispatch here would fire a second,
+// redundant run of the same workflow for him (extra Strava-step attempt, a real chance of
+// the two runs' git pushes racing and one failing). Skanda's sync.yml is workflow_dispatch-only
+// with no push trigger, so training/quest_log.md just stays slightly stale after a chat-
+// triggered quest update until he next hits Sync himself - same as any other out-of-band
+// change to challenge_v2.json today. Simpler and fully transparent beats correct-but-clever.
 
 interface GeminiReply {
   reply: string;
@@ -387,13 +372,6 @@ export default {
       } catch (err: unknown) {
         const errMessage = err instanceof Error ? err.message : String(err);
         return Response.json({ error: `Coach replied but saving failed: ${errMessage}` }, { status: 502 });
-      }
-
-      if (validUpdates.some((u) => u.path === "training/challenge_v2.json")) {
-        // Awaited, not fire-and-forget: a serverless function can be frozen/terminated the
-        // moment it returns a response, so an un-awaited dispatch call risks never actually
-        // going out. maybeDispatchSync already swallows its own errors internally.
-        await maybeDispatchSync(repo, token);
       }
 
       return Response.json({ reply: reply.reply, threadId: thread.id, threads: purgeExpired(history.threads) });
