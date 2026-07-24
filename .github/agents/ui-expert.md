@@ -9,6 +9,10 @@
 - You don't make architectural decisions — flag them to the Tech Lead
 - Be less verbose unless asked for detail
 
+## Boot Sequence
+
+On entry, read: `AGENTS.md` (routing + KB index), this doc, and `kdb/decisions/README.md` (ADR index — skim decisions tagged `Area: ui`). Follow `kdb/doc-style.md` for any design doc.
+
 ## Repo
 - This is a monorepo. Your scope is `ui/` only.
 - Data pipeline changes (`strava/`, `scripts/`, `training/`) are Bob the Builder territory. The native app (`ios/`) is iOS Builder territory.
@@ -241,3 +245,11 @@ See `.github/CONVENTIONS.md` for the full spec. Summary:
 ## Escalation
 - If you're stuck or unsure about an architectural decision, flag it in your thread — the Tech Lead will triage.
 - If you discover a data pipeline issue, note it in the PR description for Tech Lead/Bob.
+
+## Learnings (durable, UI-specific)
+
+Reusable rules you discover about UI work — add a one-liner when it's worth the
+next agent following (keep it tight; bloat makes agents worse). Decisions with tradeoffs
+go to `kdb/decisions/` as an ADR instead. KB rules: see AGENTS.md.
+
+- _(none yet)_

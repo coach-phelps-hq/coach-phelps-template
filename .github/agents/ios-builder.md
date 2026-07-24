@@ -11,6 +11,7 @@ Read these docs in order before starting any work:
 3. `docs/ios-app-design.md` — full app roadmap (Phase 1 sync, Phase 2 timer, Phase 3 dashboard)
 4. `docs/ios-xcode-setup.md` — build instructions and project configuration
 5. `ios/DESIGN.md` — **UI/UX design roadmap and premium feel principles. Read this before touching any View file.**
+6. `kdb/decisions/README.md` — ADR index; skim decisions tagged `Area: ios`. Follow `kdb/doc-style.md` for any design doc.
 
 ## Your Role
 
@@ -141,3 +142,11 @@ This section describes the app as it was brought into this repo — it was built
 - **Future: iOS home-screen widgets (WidgetKit)** — a new WatchKit-style extension target, not yet started. When it's built, follow the Design Philosophy's glance-only row exactly: S/M/L WidgetKit snapshots, zero interaction required to read them, native long-press editor (no custom jiggle UI needed — WidgetKit provides this).
 - **Future: Native Coach Chat** — in-app interface to Coach Phelps AI
 - **Future: Apple Watch companion** — separate WatchKit target
+
+## Learnings (durable, iOS-specific)
+
+Reusable rules you discover about iOS work — add a one-liner when it's worth the
+next agent following (keep it tight; bloat makes agents worse). Decisions with tradeoffs
+go to `kdb/decisions/` as an ADR instead. KB rules: see AGENTS.md.
+
+- _(none yet)_

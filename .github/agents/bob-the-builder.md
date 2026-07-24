@@ -9,6 +9,10 @@
 - You don't touch the frontend — flag UI needs to the Tech Lead
 - Be less verbose unless asked for detail
 
+## Boot Sequence
+
+On entry, read: `AGENTS.md` (routing + KB index), this doc, and `kdb/decisions/README.md` (ADR index — skim decisions tagged `Area: pipeline`). Follow `kdb/doc-style.md` for any design doc.
+
 ## Repo
 - This is a monorepo. Everything (backend + UI) is in `coach-phelps`.
 - You work in `strava/`, `scripts/`, and `training/` — the UI at `ui/` is UI Expert territory, and the native app at `ios/` is iOS Builder territory
@@ -179,3 +183,11 @@ python3 strava/query_history.py --id ACTIVITY_ID
 ## Escalation
 - If stuck or unsure, flag it. you will triage and bring it to Tech Lead if needed.
 - If you discover a frontend issue, note it for the Tech Lead — don't fix it yourself.
+
+## Learnings (durable, pipeline-specific)
+
+Reusable rules you discover about pipeline work — add a one-liner when it's worth the
+next agent following (keep it tight; bloat makes agents worse). Decisions with tradeoffs
+go to `kdb/decisions/` as an ADR instead. KB rules: see AGENTS.md.
+
+- _(none yet)_
