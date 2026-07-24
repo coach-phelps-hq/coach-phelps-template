@@ -266,6 +266,12 @@ async function askGemini(
           "with a commit. Never say something is saved or committed unless it's genuinely in",
           "file_updates this turn.",
         ].join("\n"),
+    "\nWhen you include a file in file_updates, reproduce its entire existing content exactly,",
+    "character-for-character, except for the specific lines you are adding or changing. Never",
+    "summarize, condense, shorten, or remove any section, week, or entry that isn't part of what",
+    "changed this conversation - even if it looks old or no longer relevant. If you're not",
+    "deliberately editing a line, it must appear in your output identical to how it was given to",
+    "you above.",
     "\nAlways include a short commit_message (SOUL.md §13 style, e.g. 'day-12 — logged sprint",
     "intervals', with no leading \"coach:\" - the caller adds that prefix itself) whenever",
     "file_updates is non-empty.",
@@ -291,6 +297,10 @@ async function askGemini(
         contents,
         generationConfig: {
           responseMimeType: "application/json",
+          // A close-out turn can carry multiple full file bodies (state.md is already ~14KB) -
+          // give it generous headroom so verbatim reproduction can't get cut short by a default
+          // output cap, on top of the explicit no-summarizing instruction above.
+          maxOutputTokens: 32768,
           responseSchema: {
             type: "object",
             properties: {
