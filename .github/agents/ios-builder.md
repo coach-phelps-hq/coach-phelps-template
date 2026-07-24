@@ -142,14 +142,10 @@ This section describes the app as it was brought into this repo — it was built
 - **Future: Native Coach Chat** — in-app interface to Coach Phelps AI
 - **Future: Apple Watch companion** — separate WatchKit target
 
-## Knowledge base — read on entry, record on exit
+## Learnings (durable, iOS-specific)
 
-**On entry:** read the ADRs in `kdb/decisions/` tagged for your area, and `kdb/doc-style.md`
-before writing any design or architecture doc.
+Reusable rules you discover about iOS work — add a one-liner when it's worth the
+next agent following (keep it tight; bloat makes agents worse). Decisions with tradeoffs
+go to `kdb/decisions/` as an ADR instead. KB rules: see AGENTS.md.
 
-**On a durable learning:** if it's a reusable rule for your area, add it to this doc as a
-short rule (Tech Lead reviews it in your PR). If it's a decision with tradeoffs and rejected
-alternatives, add an ADR to `kdb/decisions/` — plain English, no jargon.
-
-**Don't re-litigate** an accepted ADR; if one is wrong, supersede it with a new ADR.
-
+- _(none yet)_

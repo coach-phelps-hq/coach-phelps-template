@@ -1,5 +1,15 @@
 # Decisions (ADRs)
 
+## Index
+
+| # | Title | Area |
+|---|---|---|
+| 0001 | Each user's app can only touch their own repo | cross-cutting |
+| 0002 | Wait to decide where the coach's brain lives | cross-cutting |
+| 0003 | Start new users from a clean template, archive the original | cross-cutting |
+
+Keep this table updated when you add an ADR.
+
 One file per durable, hard-to-reverse decision: `NNNN-kebab-title.md`.
 Fields: **Context / Decision / Why / Rejected**, plus an `Area:` tag.
 

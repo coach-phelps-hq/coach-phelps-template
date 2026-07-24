@@ -7,7 +7,5 @@ Everything an agent needs beyond the code, in one place. Two layers, kept small 
   the per-area role docs in `.github/agents/`. Root files stay at root so agents discover them.
 - **Decisions** live here in `kdb/decisions/` — ADRs: durable, hard-to-reverse choices and why.
 
-Also here: `kb-enforcement-m0-note.md` — how KB discipline gets wired into the M0 validator.
-
 Rules of the road: read your area's ADRs on entry, don't re-litigate them, and record a new
 ADR when you make an architectural decision. See `kdb/decisions/README.md`.

@@ -41,11 +41,13 @@ Two layers, both small on purpose:
 - **Orientation (this file + your role doc).** This file has the high-level architecture and
   the routing table above. Then read your **one** role doc in `.github/agents/` for your
   area's conventions — read only your area, not the whole repo.
-- **Decisions — `kdb/decisions/`.** ADRs: durable, hard-to-reverse choices and *why*. Read
-  the ones tagged for your area on entry; don't re-litigate them. If one is wrong, supersede
-  it with a new ADR (see `kdb/README.md`). A PR that changes a locked/architectural
+- **Decisions — `kdb/decisions/`.** ADRs: durable, hard-to-reverse choices and *why*. Skim
+  them on entry (they're short; `kdb/decisions/README.md` indexes them by area). Don't
+  re-litigate them; if one is wrong, supersede it with a new ADR. A PR that changes a locked/architectural
   decision must add or supersede an ADR — Tech Lead checks this in review.
 - **Doc style — `kdb/doc-style.md`.** Any design/architecture doc, RFC, plan, or ADR follows the house style: short, diagram-led, plain English. Claude agents can invoke the `design-doc-style` skill (same rules).
+- **Recording:** a durable rule for your area → your role doc's `## Learnings` section; a
+  decision with tradeoffs → a new ADR in `kdb/decisions/`.
 
 ## Universal Rules
 
