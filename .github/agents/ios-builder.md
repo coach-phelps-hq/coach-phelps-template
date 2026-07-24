@@ -141,3 +141,15 @@ This section describes the app as it was brought into this repo — it was built
 - **Future: iOS home-screen widgets (WidgetKit)** — a new WatchKit-style extension target, not yet started. When it's built, follow the Design Philosophy's glance-only row exactly: S/M/L WidgetKit snapshots, zero interaction required to read them, native long-press editor (no custom jiggle UI needed — WidgetKit provides this).
 - **Future: Native Coach Chat** — in-app interface to Coach Phelps AI
 - **Future: Apple Watch companion** — separate WatchKit target
+
+## Knowledge base — read on entry, record on exit
+
+**On entry:** read the ADRs in `kdb/decisions/` tagged for your area, and `kdb/doc-style.md`
+before writing any design or architecture doc.
+
+**On a durable learning:** if it's a reusable rule for your area, add it to this doc as a
+short rule (Tech Lead reviews it in your PR). If it's a decision with tradeoffs and rejected
+alternatives, add an ADR to `kdb/decisions/` — plain English, no jargon.
+
+**Don't re-litigate** an accepted ADR; if one is wrong, supersede it with a new ADR.
+

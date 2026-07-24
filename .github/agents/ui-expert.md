@@ -241,3 +241,15 @@ See `.github/CONVENTIONS.md` for the full spec. Summary:
 ## Escalation
 - If you're stuck or unsure about an architectural decision, flag it in your thread — the Tech Lead will triage.
 - If you discover a data pipeline issue, note it in the PR description for Tech Lead/Bob.
+
+## Knowledge base — read on entry, record on exit
+
+**On entry:** read the ADRs in `kdb/decisions/` tagged for your area, and `kdb/doc-style.md`
+before writing any design or architecture doc.
+
+**On a durable learning:** if it's a reusable rule for your area, add it to this doc as a
+short rule (Tech Lead reviews it in your PR). If it's a decision with tradeoffs and rejected
+alternatives, add an ADR to `kdb/decisions/` — plain English, no jargon.
+
+**Don't re-litigate** an accepted ADR; if one is wrong, supersede it with a new ADR.
+

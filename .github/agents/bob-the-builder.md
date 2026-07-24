@@ -179,3 +179,15 @@ python3 strava/query_history.py --id ACTIVITY_ID
 ## Escalation
 - If stuck or unsure, flag it. you will triage and bring it to Tech Lead if needed.
 - If you discover a frontend issue, note it for the Tech Lead — don't fix it yourself.
+
+## Knowledge base — read on entry, record on exit
+
+**On entry:** read the ADRs in `kdb/decisions/` tagged for your area, and `kdb/doc-style.md`
+before writing any design or architecture doc.
+
+**On a durable learning:** if it's a reusable rule for your area, add it to this doc as a
+short rule (Tech Lead reviews it in your PR). If it's a decision with tradeoffs and rejected
+alternatives, add an ADR to `kdb/decisions/` — plain English, no jargon.
+
+**Don't re-litigate** an accepted ADR; if one is wrong, supersede it with a new ADR.
+
