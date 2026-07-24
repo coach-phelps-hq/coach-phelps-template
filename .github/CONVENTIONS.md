@@ -81,9 +81,9 @@ Always include `fixes #N` in the PR body. PR body must follow `.github/agents/is
 Update the KB in the **same commit** as the change that motivated it — don't leave it for later:
 
 - Made a durable, hard-to-reverse decision? Add or supersede an ADR in `kdb/decisions/`, then
-  run `python3 scripts/kb/gen_adr_index.py`.
+  run `python3 scripts/kdb/gen_adr_index.py`.
 - Found a reusable rule for your area? Add a one-liner to your role doc's `## Learnings`.
 - Writing a design/architecture doc? Follow `kdb/doc-style.md`.
 
-CI (`validate-kb`) rejects a malformed ADR, a duplicate number, or a stale index. To catch it
-locally before you commit: `ln -s ../../scripts/kb/pre-commit .git/hooks/pre-commit`.
+CI (`validate-kdb`) rejects a malformed ADR, a duplicate number, or a stale index. To catch it
+locally before you commit: `ln -s ../../scripts/kdb/pre-commit .git/hooks/pre-commit`.

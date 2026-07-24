@@ -45,7 +45,7 @@ before = (DEC / "README.md").read_text()
 subprocess.run([sys.executable, str(gen)], capture_output=True)
 after = (DEC / "README.md").read_text()
 if before != after:
-    errors.append("ADR index in kdb/decisions/README.md is stale — run scripts/kb/gen_adr_index.py")
+    errors.append("ADR index in kdb/decisions/README.md is stale — run scripts/kdb/gen_adr_index.py")
 
 # AGENTS.md size (soft cap)
 if AGENTS.exists():
@@ -56,8 +56,8 @@ if AGENTS.exists():
 for w in warnings:
     print(f"warn: {w}")
 if errors:
-    print("\nvalidate-kb FAILED:")
+    print("\nvalidate-kdb FAILED:")
     for e in errors:
         print(f"  - {e}")
     sys.exit(1)
-print(f"validate-kb OK ({len(adr_files())} ADRs)")
+print(f"validate-kdb OK ({len(adr_files())} ADRs)")
