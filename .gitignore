@@ -1,4 +1,6 @@
 .env
+.env.local
+ui/.vercel/
 strava/strava_tokens.json
 training/history/
 __pycache__/
