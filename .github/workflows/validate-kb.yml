@@ -1,0 +1,28 @@
+name: Validate KB
+
+# Guards the knowledge base (kdb/ + AGENTS.md + agent role docs). Keeps ADRs
+# well-formed, numbering unique, the decisions index in sync, and AGENTS.md lean —
+# so the KB stays high-signal instead of rotting. See kdb/README.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'kdb/**'
+      - 'AGENTS.md'
+      - '.github/agents/**'
+      - 'scripts/kb/**'
+  pull_request:
+    paths:
+      - 'kdb/**'
+      - 'AGENTS.md'
+      - '.github/agents/**'
+      - 'scripts/kb/**'
+
+jobs:
+  validate-kb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lint the knowledge base
+        run: python3 scripts/kb/validate_kb.py
